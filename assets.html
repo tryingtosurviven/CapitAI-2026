@@ -174,6 +174,7 @@ a { color: inherit; text-decoration: none; }
                 <th>Category</th>
                 <th>Balance</th>
                 <th>Status</th>
+                <th>Action</th> 
               </tr>
             </thead>
             <tbody id="linked-table-body"></tbody>
@@ -235,17 +236,25 @@ a { color: inherit; text-decoration: none; }
 
     function renderTables() {
       const linkedBody = document.getElementById("linked-table-body");
-      const assetBody = document.getElementById("asset-breakdown-body");
+      const assetBody = document.getElementById("asset-breakdown-body"); // Added this line
 
-      linkedBody.innerHTML = window.mockPortfolio.linkedAccounts.map(item => `
-        <tr>
+      // Renders the Linked Accounts table with Disconnect buttons
+      linkedBody.innerHTML = window.mockPortfolio.linkedAccounts.map((item, index) => `
+        <tr id="row-${index}">
           <td>${item.name}</td>
           <td>${item.category}</td>
           <td>${formatMoney(item.balance)}</td>
           <td>${item.status}</td>
+          <td>
+            <button class="mini-btn" style="color: #ff4c4c; border-color: rgba(255, 76, 76, 0.3);" 
+                    onclick="disconnectAccount(${index}, '${item.name}')">
+              Disconnect
+            </button>
+          </td>
         </tr>
       `).join("");
 
+      // Renders the Asset Type breakdown table
       assetBody.innerHTML = window.mockPortfolio.assetBreakdown.map(item => `
         <tr>
           <td>${item.asset}</td>
@@ -263,12 +272,54 @@ a { color: inherit; text-decoration: none; }
       document.getElementById('connect-modal').style.display = 'none';
     }
 
+    // ... existing openConnectModal and closeConnectModal functions ...
+
     function mockConnect(provider) {
       const toast = document.getElementById("toast");
       toast.textContent = `Linking ${provider} to your Lifepath...`;
       toast.classList.add("show");
       closeConnectModal();
       setTimeout(() => { toast.classList.remove("show"); }, 3000);
+    }
+
+    // PASTE THE NEW DISCONNECT LOGIC HERE:
+    function disconnectAccount(index, name) {
+      // Demo Guardrail: Only allow disconnecting specific demo accounts
+      const allowList = ['DBS / POSB', 'Tiger Brokers', 'Syfe', 'MetaMask'];
+      
+      if (!allowList.includes(name)) {
+        const toast = document.getElementById("toast");
+        toast.textContent = `⚠️ Action Restricted: ${name} is a core demo asset.`;
+        toast.style.background = "#f59e0b"; // Amber warning color
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 3000);
+        return; // Stop here
+      }
+
+      // Functional Disconnect
+      if (confirm(`Are you sure you want to disconnect ${name}? This will revoke Lifepath AI's access to this data.`)) {
+        const toast = document.getElementById("toast");
+        toast.textContent = `✅ Successfully disconnected ${name}.`;
+        toast.style.background = "#22c55e"; // Green success color
+        toast.classList.add("show");
+        
+        // Physically remove the row from the UI
+        const row = document.getElementById(`row-${index}`);
+        if (row) {
+          row.style.transition = "all 0.4s ease";
+          row.style.transform = "translateX(20px)";
+          row.style.opacity = "0";
+          
+          // Wait for animation to finish before removing from DOM
+          setTimeout(() => {
+            row.remove();
+          }, 4000);
+        }
+        
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      }
     }
 
     renderTables();
