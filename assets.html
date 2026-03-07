@@ -205,9 +205,21 @@ a { color: inherit; text-decoration: none; }
       <h2 class="section-title">Select Provider</h2>
       <p class="connector-subtitle">Choose a wallet or bank to link to your Digital Twin.</p>
       <div class="provider-list">
-        <button class="provider-btn" onclick="mockConnect('MetaMask')"><span>🦊</span> MetaMask</button>
-        <button class="provider-btn" onclick="mockConnect('Coinbase')"><span>🛡️</span> Coinbase Wallet</button>
-        <button class="provider-btn" onclick="mockConnect('DBS NAV')"><span>🏦</span> DBS NAV Planner</button>
+        <button class="provider-btn" onclick="mockConnect('DBS / POSB')">
+          <span>🏦</span> DBS / POSB (Bank)
+        </button>
+        
+        <button class="provider-btn" onclick="mockConnect('Tiger Brokers')">
+          <span>📈</span> Tiger Brokers (Investment)
+        </button>
+        
+        <button class="provider-btn" onclick="mockConnect('Syfe')">
+          <span>🤖</span> Syfe (Robo-Advisor)
+        </button>
+        
+        <button class="provider-btn" onclick="mockConnect('MetaMask')">
+          <span>🦊</span> MetaMask (Crypto)
+        </button>
       </div>
     </div>
   </div> <script src="mock-data.js"></script>
