@@ -20,9 +20,9 @@ window.mockPortfolio = {
   ],
 
   insights: [
-    "Your liquidity buffer covers about 8 months of essential expenses.",
-    "Crypto exposure is slightly high relative to your balanced risk profile.",
-    "Your portfolio is diversified, but private assets are less liquid in emergencies."
+    "You have around 8 months of essential expenses in cash, which is a healthy liquidity buffer.",
+    "Crypto is slightly above your target range for a balanced profile. Gradual de-risking can reduce future stress.",
+    "Private assets like your 3D printing business are valuable but illiquid. They should not be your first line of defence in an emergency."
   ],
 
   linkedAccounts: [
@@ -49,12 +49,13 @@ window.mockPortfolio = {
     fragility: 63,
     behavior: 79,
     suggestedActions: [
-      "Reduce crypto allocation from 14% to below 10% over the next 3 months.",
-      "Increase emergency cash buffer by S$8,000 to strengthen shock resilience.",
-      "Set a cooling-off rule before selling during sharp market drops.",
-      "Gradually shift part of private-asset concentration into liquid diversified ETFs."
+      "Dial crypto down from 14% toward 8–10% over the next 3–6 months, using scheduled rebalancing instead of panic selling.",
+      "Top up your emergency cash by about S$8,000 so you always have at least 9–12 months of expenses in liquid form.",
+      "Create a simple rule: wait 24 hours before reacting to big market drops. This reduces emotional, regret-driven trades.",
+      "Gradually shift a small slice of your private-asset value into diversified ETFs so more of your wealth is liquid and flexible."
     ]
   },
+
 
   scenarios: {
     base: {

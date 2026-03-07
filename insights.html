@@ -22,10 +22,11 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background:
-        radial-gradient(circle at top right, rgba(109, 124, 255, 0.12), transparent 28%),
-        radial-gradient(circle at top left, rgba(57, 198, 233, 0.08), transparent 22%),
-        var(--bg);
+background:
+  radial-gradient(circle at top right, rgba(109, 124, 255, 0.08), transparent 28%),
+  radial-gradient(circle at top left, rgba(57, 198, 233, 0.05), transparent 22%),
+  var(--bg);
+
       color: var(--text);
     }
 
@@ -114,13 +115,15 @@
       margin: 0;
     }
 
-    .card,
-    .panel {
-      background: linear-gradient(180deg, rgba(21, 33, 58, 0.98), rgba(16, 26, 46, 0.98));
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
+.card,
+.panel {
+  background: linear-gradient(180deg, rgba(21, 33, 58, 0.98), rgba(16, 26, 46, 0.98));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+
 
     .card {
       padding: 18px;
@@ -134,7 +137,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 16px;
-      margin-bottom: 18px;
+      margin-bottom: 26px;
     }
 
     .card-title {
@@ -180,13 +183,41 @@
       font-size: 1.1rem;
     }
 
-    .insight-list,
-    .action-list {
-      margin: 0;
-      padding-left: 20px;
-      color: var(--muted);
-      line-height: 1.8;
-    }
+.insight-list,
+.action-list {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.6;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding-top: 8px;
+  font-size: 0.9rem;
+}
+
+.chip-good,
+.chip-watch,
+.chip-risk {
+  float: right;
+  font-size: 0.7rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.chip-good {
+  background: rgba(34,197,94,0.18);
+  color: #9ef0b5;
+}
+
+.chip-watch {
+  background: rgba(245,158,11,0.18);
+  color: #facc15;
+}
+
+.chip-risk {
+  background: rgba(239,68,68,0.18);
+  color: #fecaca;
+}
+
 
     @media (max-width: 1024px) {
       .metric-grid,
@@ -237,7 +268,10 @@
 
     <div class="metric-grid">
       <div class="card">
-        <div class="card-title">Diversification score</div>
+  <div class="card-title">
+    Diversification score
+    <span class="chip-good">Good</span>
+  </div>
         <div class="metric-score metric-good" id="div-score">81</div>
         <div class="card-note">
           Healthy spread across cash, public markets, crypto, and private assets.
@@ -245,7 +279,10 @@
       </div>
 
       <div class="card">
-        <div class="card-title">Liquidity score</div>
+  <div class="card-title">
+    Liquidity score
+    <span class="chip-watch">Watch</span>
+  </div>
         <div class="metric-score metric-mid" id="liq-score">74</div>
         <div class="card-note">
           You have a decent emergency buffer, but more accessible cash would improve resilience.
@@ -253,7 +290,10 @@
       </div>
 
       <div class="card">
-        <div class="card-title">Fragility score</div>
+  <div class="card-title">
+    Fragility score
+    <span class="chip-watch">Watch</span>
+  </div>
         <div class="metric-score metric-mid" id="frag-score">63</div>
         <div class="card-note">
           Private assets and crypto can create stress during sharp market or life shocks.
@@ -261,7 +301,10 @@
       </div>
 
       <div class="card">
-        <div class="card-title">Behavior discipline</div>
+  <div class="card-title">
+    Behavior discipline
+    <span class="chip-good">Good</span>
+  </div>
         <div class="metric-score metric-good" id="beh-score">79</div>
         <div class="card-note">
           Your current pattern suggests relatively stable decision-making with room for guardrails.
@@ -272,17 +315,22 @@
     <div class="layout-2">
       <div class="panel">
         <h2 class="section-title">What these scores are saying</h2>
-        <ul class="insight-list">
-          <li>Your overall wealth is strong, but a higher liquid reserve would improve short-term resilience.</li>
-          <li>Your crypto allocation adds upside potential but also increases portfolio volatility.</li>
-          <li>Private assets strengthen long-term wealth but reduce flexibility in emergencies.</li>
-          <li>Your behavior score suggests you respond better with structured nudges than reactive decisions.</li>
-        </ul>
+<ul class="insight-list">
+  <li><strong>Diversification:</strong> Well spread; no single bet dominates.</li>
+  <li><strong>Liquidity:</strong> Okay today; add a bit more cash for big shocks.</li>
+  <li><strong>Fragility:</strong> Crypto and private deals can hurt in a downturn.</li>
+</ul>
+
       </div>
 
       <div class="panel">
         <h2 class="section-title">Suggested actions</h2>
-        <ul class="action-list" id="suggested-actions"></ul>
+<ul class="action-list">
+  <li><strong>Boost cash:</strong> Aim for 9–12 months of expenses.</li>
+  <li><strong>Tame crypto:</strong> Cap it at your target range and rebalance.</li>
+  <li><strong>Loosen illiquid:</strong> Gradually trim the least liquid private assets.</li>
+</ul>
+
       </div>
     </div>
   </div>
@@ -299,9 +347,7 @@
       document.getElementById("frag-score").textContent = analytics.fragility;
       document.getElementById("beh-score").textContent = analytics.behavior;
 
-      document.getElementById("suggested-actions").innerHTML = analytics.suggestedActions
-        .map(action => `<li>${action}</li>`)
-        .join("");
+
     }
   </script>
 </body>
