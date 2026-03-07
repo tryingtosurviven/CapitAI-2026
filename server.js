@@ -23,8 +23,7 @@ app.post("/api/chat", async (req, res) => {
 
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const systemInstruction = `You are LifePath AI. User Net Worth: ${portfolioContext.netWorth}. Focus on the user's specific question: ${prompt}`;
-
+    const systemInstruction = `You are Lifepath AI. User Net Worth: $${portfolioContext.netWorth}. User Goal: Retire by 50. Assets include Cash, Stocks, Crypto, and $100k in 3D Printing Equipment. Focus on: ${prompt}`;
     const result = await model.generateContent([systemInstruction, prompt]);
     res.json({ response: result.response.text() });
   } catch (err) {
@@ -56,15 +55,21 @@ app.get("/api/portfolio", async (req, res) => {
       user: {
         name: "Demo Investor",
         age: 32,
-        riskProfile: "balanced"
+        riskProfile: "balanced",
+        goal: "Retire by 50" // Added to match the UI screenshot
       },
+      // New Category: Matches your "Other Assets" tab
+      privateAssets: [
+        { name: "3D Printing Equipment", value: 100000, type: "Illiquid", status: "Manual" }
+      ],
       cashAccounts: [
-        { name: "Salary Account", institution: "Demo Bank", currency: "SGD", balance: 12000 },
-        { name: "Savings", institution: "Demo Bank", currency: "SGD", balance: 25000 }
+        { name: "DBS / POSB", institution: "DBS", currency: "SGD", balance: 22000 },
+        { name: "OCBC", institution: "OCBC", currency: "SGD", balance: 15000 }
       ],
       securities: [
         { symbol: "AAPL", qty: 20 },
-        { symbol: "VOO", qty: 15 }
+        { symbol: "VOO", qty: 15 },
+        { symbol: "TSLA", qty: 10 } // Added for more diversification
       ],
       crypto: [
         { symbol: "bitcoin", qty: 0.3 },
@@ -109,12 +114,16 @@ app.get("/api/portfolio", async (req, res) => {
     const cashValue = portfolio.cashAccounts.reduce((sum, a) => sum + a.balance, 0);
     const securitiesValue = portfolio.securities.reduce((sum, s) => sum + s.qty * s.price, 0);
     const cryptoValue = portfolio.crypto.reduce((sum, c) => sum + c.qty * c.price, 0);
-    const netWorth = cashValue + securitiesValue + cryptoValue;
+    const privateAssetsValue = portfolio.privateAssets.reduce((sum, p) => sum + p.value, 0);
+
+    // New Net Worth including your 3D Printing business
+    const netWorth = cashValue + securitiesValue + cryptoValue + privateAssetsValue;
 
     const allocation = {
       cash: cashValue,
       securities: securitiesValue,
-      crypto: cryptoValue
+      crypto: cryptoValue,
+      private: privateAssetsValue // Add this to the allocation object for the chart
     };
 
     const liquidityRatio = netWorth > 0 ? cashValue / netWorth : 0;
