@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lifepath AI | Wealth Wellness Hub</title>
+  <style>
+    :root {
+      --bg: #081120;
+      --panel: #101a2e;
+      --line: #223150;
+      --text: #edf2ff;
+      --muted: #a8b3cf;
+      --primary: #6d7cff;
+      --cyan: #39c6e9;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(109, 124, 255, 0.12), transparent 28%),
+        radial-gradient(circle at top left, rgba(57, 198, 233, 0.08), transparent 22%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 16px 18px;
+      background: rgba(16, 26, 46, 0.78);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .nav-link {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(255,255,255,0.02);
+      transition: 0.2s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: white;
+      background: rgba(109, 124, 255, 0.18);
+      border-color: rgba(109, 124, 255, 0.5);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.25fr 0.9fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel,
+    .card {
+      background: linear-gradient(180deg, rgba(21,33,58,0.98), rgba(16,26,46,0.98));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      padding: 22px;
+    }
+
+    .card {
+      padding: 18px;
+    }
+
+    .eyebrow {
+      color: #95a4ff;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.74rem;
+      margin-bottom: 10px;
+    }
+
+    .hero h1,
+    .page-title {
+      margin: 0 0 10px;
+      font-size: 2rem;
+    }
+
+    .hero p,
+    .page-subtitle {
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .card-title {
+      color: #98a8d3;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .card-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .card-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.14);
+      color: #9ef0b5;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      font-size: 0.88rem;
+    }
+
+    .layout-2 {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .chart-wrap {
+      height: 360px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 1.1rem;
+    }
+
+    .insight-list,
+    .action-list {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .mini-btn {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .primary-btn {
+      background: var(--primary);
+      color: white;
+    }
+
+    .primary-btn:hover,
+    .mini-btn:hover {
+      filter: brightness(1.08);
+    }
+
+    .secondary-btn {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+    }
+
+    .mini-btn {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.72rem;
+      background: transparent;
+      color: #9ca3ff;
+      border: 1px solid transparent;
+    }
+
+    .mini-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: rgba(109, 124, 255, 0.5);
+    }
+
+    .toolbar-inline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .score-big {
+      color: #7ef0a2;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: help;
+      margin-left: 6px;
+      color: #9ca3ff;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 240px;
+      background-color: #111c31;
+      color: #fff;
+      text-align: left;
+      border-radius: 10px;
+      padding: 10px;
+      position: absolute;
+      z-index: 1001;
+      bottom: 135%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      font-size: 11px;
+      line-height: 1.45;
+      border: 1px solid rgba(109, 124, 255, 0.5);
+      box-shadow: var(--shadow);
+      text-transform: none;
+      letter-spacing: normal;
+      white-space: normal;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .card-highlight {
+      border: 1px solid rgba(34, 197, 94, 0.45);
+      background: linear-gradient(180deg, rgba(21,33,58,0.98), rgba(16,26,46,0.98));
+    }
+
+    .rebalance-box {
+      display: none;
+      margin-bottom: 18px;
+      border: 1px solid rgba(34, 197, 94, 0.45);
+      background: rgba(34, 197, 94, 0.06);
+    }
+
+    .rebalance-title {
+      color: #9ef0b5;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .rebalance-text {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .rebalance-note {
+      color: #9ef0b5;
+      font-size: 0.86rem;
+    }
+
+    .copilot-card {
+      margin-top: 0;
+    }
+
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .chip-btn {
+      background: rgba(76, 106, 255, 0.16);
+      color: #cbd5f5;
+      border: 1px solid rgba(76, 106, 255, 0.55);
+      padding: 7px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.78rem;
+    }
+
+    .chat-box {
+      margin: 10px 0;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      color: #cbd5f5;
+      min-height: 54px;
+      line-height: 1.6;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #0b1020;
+      color: white;
+      outline: none;
+    }
+
+    .chat-input:focus {
+      border-color: rgba(109, 124, 255, 0.6);
+    }
+
+    .audit-row {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--line);
+      font-size: 0.76rem;
+      color: #9ca3ff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: #ff4c4c;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 14px;
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.2s ease;
+      z-index: 999;
+      font-weight: 700;
+      min-width: 280px;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 1024px) {
+      .hero,
+      .layout-2,
+      .stat-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .hero,
+      .layout-2,
+      .stat-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .page-title,
+      .hero h1 {
+        font-size: 1.6rem;
+      }
+
+      .chat-input-row,
+      .toolbar-inline {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="toast" id="guardrail-toast">
+    ⚠️ Regret Prevention Alert: Crypto exposure is above your recommended range.
+  </div>
+
+  <div class="container">
+    <nav class="navbar">
+      <div class="brand">
+        <div class="brand-title">Lifepath AI</div>
+        <div class="brand-subtitle">Your Financial Digital Twin</div>
+      </div>
+      <div class="nav-links">
+        <a class="nav-link active" href="index.html">Dashboard</a>
+        <a class="nav-link" href="assets.html">Assets</a>
+        <a class="nav-link" href="insights.html">Insights</a>
+        <a class="nav-link" href="simulator.html">Simulator</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="panel">
+        <div class="eyebrow">Wealth Wellness Hub</div>
+        <h1>One place to see your full financial life</h1>
+        <p>
+          Lifepath AI unifies traditional and digital assets, measures financial resilience,
+          and gives scenario-tested guidance you can actually act on.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="eyebrow">Overall status</div>
+        <div class="score-pill">Stable financial position</div>
+        <p style="margin-top:14px; color:var(--muted); line-height:1.7;">
+          Your current profile is well diversified, though liquidity and crypto exposure should be monitored closely.
+        </p>
+      </div>
+    </section>
+
+    <section class="stat-grid">
+      <div class="card">
+        <div class="toolbar-inline">
+          <div class="card-title" style="margin-bottom:0;">Net Worth</div>
+          <div>
+            <button class="mini-btn active" id="btn-sgd" onclick="setCurrency('SGD')">SGD</button>
+            <button class="mini-btn" id="btn-usd" onclick="setCurrency('USD')">USD</button>
+          </div>
+        </div>
+        <div class="card-value" id="net-worth"></div>
+        <div class="card-note">Total across cash, investments, crypto, and private assets.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          Wealth Wellness Score
+          <span class="tooltip">ⓘ
+            <span class="tooltiptext">
+              <strong>How this score works</strong><br><br>
+              • Liquidity strength<br>
+              • Diversification quality<br>
+              • Fragility to shocks<br>
+              • Behavioral discipline<br><br>
+              Higher is better. This score is designed as a simple financial health signal.
+            </span>
+          </span>
+        </div>
+        <div class="card-value score-big" id="wellness-score"></div>
+        <div class="card-note">Composite measure of resilience, liquidity, diversification, and behavior.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Liquidity Buffer</div>
+        <div class="card-value" id="liquidity-buffer"></div>
+        <div class="card-note">Months of essential expenses covered by liquid reserves.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Investor Goal</div>
+        <div class="card-value" style="font-size:1.3rem;" id="user-goal"></div>
+        <div class="card-note">Personalized planning target for the digital twin.</div>
+      </div>
+    </section>
+
+    <section class="panel rebalance-box" id="rebalance-card">
+      <div class="rebalance-title">🎯 Recommended Rebalance</div>
+      <div class="rebalance-text" id="rebalance-text"></div>
+      <div class="rebalance-note">Expected impact: stronger resilience and lower concentration risk.</div>
+    </section>
+
+    <section class="layout-2">
+      <div class="panel">
+        <h2 class="section-title">Asset Allocation Chart</h2>
+        <div class="chart-wrap">
+          <canvas id="allocationChart"></canvas>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="section-title">Quick Insights</h2>
+        <ul class="insight-list" id="quick-insights"></ul>
+
+        <div style="margin-top: 24px;">
+          <h2 class="section-title">Go deeper</h2>
+          <div class="button-row">
+            <a class="primary-btn" href="assets.html">View Assets</a>
+            <a class="primary-btn" href="insights.html">View Insights</a>
+            <a class="primary-btn" href="simulator.html">Run Simulator</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel copilot-card">
+      <h2 class="section-title">AI Decision Copilot</h2>
+      <p class="card-note" style="margin-bottom:12px;">
+        Ask about life goals, affordability, liquidity, or stress scenarios.
+      </p>
+
+      <div class="chip-row">
+        <button class="chip-btn" onclick="quickAsk('Can I afford a $1.5M house?')">🏠 Home Goal</button>
+        <button class="chip-btn" onclick="quickAsk('How is my liquidity?')">💧 Liquidity Check</button>
+        <button class="chip-btn" onclick="quickAsk('What happens if crypto drops 50%?')">📉 Crash Scenario</button>
+      </div>
+
+      <div class="chat-box" id="chat-output">
+        Ask a question to see a scenario-based response.
+      </div>
+
+      <div class="chat-input-row">
+        <input
+          type="text"
+          id="chat-input"
+          class="chat-input"
+          placeholder="Type your question..."
+        />
+        <button class="primary-btn" onclick="askAI()">Ask</button>
+      </div>
+
+      <div class="audit-row">
+        <span>🛡️ AI Audit Trail Active</span>
+        <span id="audit-id">REF: LP-START-01</span>
+      </div>
+    </section>
+  </div>
+
+  <script src="mock-data.js"></script>
+  <script>
+    let currentCurrency = "SGD";
+    let allocationChart;
+
+    const FX_RATE = 0.74; // 1 SGD ≈ 0.74 USD (demo rate)
+
+    function formatMoney(value) {
+      return new Intl.NumberFormat("en-SG", {
+        style: "currency",
+        currency: currentCurrency,
+        maximumFractionDigits: 0
+      }).format(value);
+    }
+
+    function convertFromSGD(value) {
+      if (currentCurrency === "USD") {
+        return value * FX_RATE;
+      }
+      return value;
+    }
+
+    function setCurrency(currency) {
+      currentCurrency = currency;
+
+      document.getElementById("btn-sgd").classList.toggle("active", currency === "SGD");
+      document.getElementById("btn-usd").classList.toggle("active", currency === "USD");
+
+      renderDashboard();
+    }
+
+    function renderDashboard() {
+      const portfolio = window.mockPortfolio;
+
+      const netWorthValue = convertFromSGD(portfolio.summary.netWorth);
+
+      document.getElementById("net-worth").textContent = formatMoney(netWorthValue);
+      document.getElementById("wellness-score").textContent = `${portfolio.summary.wealthWellnessScore}/100`;
+      document.getElementById("liquidity-buffer").textContent = `${portfolio.summary.emergencyMonths} months`;
+      document.getElementById("user-goal").textContent = portfolio.user.goal;
+
+      document.getElementById("quick-insights").innerHTML = portfolio.insights
+        .map(item => `<li>${item}</li>`)
+        .join("");
+
+      renderRebalanceCard(portfolio);
+      renderToastIfNeeded(portfolio);
+      renderChart(portfolio);
+    }
+
+    function renderRebalanceCard(portfolio) {
+      const cryptoItem = portfolio.allocation.find(item => item.label === "Crypto");
+      const total = portfolio.allocation.reduce((sum, item) => sum + item.value, 0);
+      const cryptoPct = total > 0 ? (cryptoItem.value / total) * 100 : 0;
+
+      const rebalanceCard = document.getElementById("rebalance-card");
+      const rebalanceText = document.getElementById("rebalance-text");
+
+      if (cryptoPct > 12) {
+        const excessPct = cryptoPct - 10;
+        const shiftAmount = portfolio.summary.netWorth * (excessPct / 100);
+        const shiftedDisplay = formatMoney(convertFromSGD(shiftAmount));
+
+        rebalanceCard.style.display = "block";
+        rebalanceText.innerHTML = `Reduce crypto exposure by approximately <strong>${shiftedDisplay}</strong> and reallocate to liquid diversified assets to improve shock resilience.`;
+      } else {
+        rebalanceCard.style.display = "none";
+      }
+    }
+
+    function renderToastIfNeeded(portfolio) {
+      const cryptoItem = portfolio.allocation.find(item => item.label === "Crypto");
+      const total = portfolio.allocation.reduce((sum, item) => sum + item.value, 0);
+      const cryptoPct = total > 0 ? (cryptoItem.value / total) * 100 : 0;
+
+      const toast = document.getElementById("guardrail-toast");
+
+      if (cryptoPct > 12) {
+        toast.classList.add("show");
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3200);
+      }
+    }
+
+    function renderChart(portfolio) {
+      const ctx = document.getElementById("allocationChart");
+
+      if (allocationChart) {
+        allocationChart.destroy();
+      }
+
+      allocationChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: portfolio.allocation.map(item => item.label),
+          datasets: [{
+            data: portfolio.allocation.map(item => convertFromSGD(item.value)),
+            backgroundColor: portfolio.allocation.map(item => item.color),
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: "#edf2ff" }
+            }
+          }
+        }
+      });
+    }
+
+    async function askAI() {
+      const input = document.getElementById("chat-input");
+      const output = document.getElementById("chat-output");
+      const question = input.value.trim();
+
+      if (!question) return;
+
+      output.textContent = "Processing LifePath scenarios...";
+
+      const netWorthText = document.getElementById("net-worth").textContent;
+      const netWorthNumber = parseFloat(netWorthText.replace(/[^0-9.-]+/g, "")) || 0;
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt: question,
+            portfolioContext: {
+              netWorth: netWorthNumber,
+              currency: currentCurrency
+            }
+          })
+        });
+
+        const data = await res.json();
+        output.textContent = data.response || "No response received.";
+      } catch (e) {
+        output.textContent = "System connection error. Please ensure your local server is running on Port 3000.";
+      }
+
+      document.getElementById("audit-id").textContent =
+        "REF: " + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+      input.value = "";
+    }
+
+    function quickAsk(text) {
+      document.getElementById("chat-input").value = text;
+      askAI();
+    }
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" && document.activeElement.id === "chat-input") {
+        askAI();
+      }
+    });
+
+    renderDashboard();
+  </script>
+</body>
+</html>

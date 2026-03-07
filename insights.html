@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insights | Lifepath AI</title>
+  <style>
+    :root {
+      --bg: #081120;
+      --line: #223150;
+      --text: #edf2ff;
+      --muted: #a8b3cf;
+      --primary: #6d7cff;
+      --shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(109, 124, 255, 0.12), transparent 28%),
+        radial-gradient(circle at top left, rgba(57, 198, 233, 0.08), transparent 22%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 16px 18px;
+      background: rgba(16, 26, 46, 0.78);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .nav-link {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.02);
+      transition: 0.2s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: white;
+      background: rgba(109, 124, 255, 0.18);
+      border-color: rgba(109, 124, 255, 0.5);
+    }
+
+    .page-header {
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      color: #95a4ff;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.74rem;
+      margin-bottom: 10px;
+    }
+
+    .page-title {
+      margin: 0 0 10px;
+      font-size: 2rem;
+    }
+
+    .page-subtitle {
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .card,
+    .panel {
+      background: linear-gradient(180deg, rgba(21, 33, 58, 0.98), rgba(16, 26, 46, 0.98));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .card {
+      padding: 18px;
+    }
+
+    .panel {
+      padding: 22px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .card-title {
+      color: #98a8d3;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .metric-score {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .metric-good {
+      color: #7ef0a2;
+    }
+
+    .metric-mid {
+      color: #ffd166;
+    }
+
+    .metric-low {
+      color: #ff8e8e;
+    }
+
+    .card-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .layout-2 {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 1.1rem;
+    }
+
+    .insight-list,
+    .action-list {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    @media (max-width: 1024px) {
+      .metric-grid,
+      .layout-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .metric-grid,
+      .layout-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .page-title {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="navbar">
+      <div class="brand">
+        <div class="brand-title">Lifepath AI</div>
+        <div class="brand-subtitle">Financial Wellness Analytics</div>
+      </div>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">Dashboard</a>
+        <a class="nav-link" href="assets.html">Assets</a>
+        <a class="nav-link active" href="insights.html">Insights</a>
+        <a class="nav-link" href="simulator.html">Simulator</a>
+      </div>
+    </nav>
+
+    <div class="page-header">
+      <div class="eyebrow">Analytics engine</div>
+      <h1 class="page-title">Your financial health, explained</h1>
+      <p class="page-subtitle">
+        These scores combine diversification, liquidity, shock sensitivity, and behavior patterns into one actionable wellness view.
+      </p>
+    </div>
+
+    <div class="metric-grid">
+      <div class="card">
+        <div class="card-title">Diversification score</div>
+        <div class="metric-score metric-good" id="div-score">81</div>
+        <div class="card-note">
+          Healthy spread across cash, public markets, crypto, and private assets.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Liquidity score</div>
+        <div class="metric-score metric-mid" id="liq-score">74</div>
+        <div class="card-note">
+          You have a decent emergency buffer, but more accessible cash would improve resilience.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Fragility score</div>
+        <div class="metric-score metric-mid" id="frag-score">63</div>
+        <div class="card-note">
+          Private assets and crypto can create stress during sharp market or life shocks.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Behavior discipline</div>
+        <div class="metric-score metric-good" id="beh-score">79</div>
+        <div class="card-note">
+          Your current pattern suggests relatively stable decision-making with room for guardrails.
+        </div>
+      </div>
+    </div>
+
+    <div class="layout-2">
+      <div class="panel">
+        <h2 class="section-title">What these scores are saying</h2>
+        <ul class="insight-list">
+          <li>Your overall wealth is strong, but a higher liquid reserve would improve short-term resilience.</li>
+          <li>Your crypto allocation adds upside potential but also increases portfolio volatility.</li>
+          <li>Private assets strengthen long-term wealth but reduce flexibility in emergencies.</li>
+          <li>Your behavior score suggests you respond better with structured nudges than reactive decisions.</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h2 class="section-title">Suggested actions</h2>
+        <ul class="action-list" id="suggested-actions"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="mock-data.js"></script>
+  <script>
+    if (!window.mockPortfolio || !window.mockPortfolio.analytics) {
+      console.error("mockPortfolio analytics not loaded");
+    } else {
+      const analytics = window.mockPortfolio.analytics;
+
+      document.getElementById("div-score").textContent = analytics.diversification;
+      document.getElementById("liq-score").textContent = analytics.liquidity;
+      document.getElementById("frag-score").textContent = analytics.fragility;
+      document.getElementById("beh-score").textContent = analytics.behavior;
+
+      document.getElementById("suggested-actions").innerHTML = analytics.suggestedActions
+        .map(action => `<li>${action}</li>`)
+        .join("");
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulator | Lifepath AI</title>
+  <style>
+:root {
+  --bg: #081120;
+  --panel: #101a2e;
+  --panel-2: #15213a;
+  --line: #223150;
+  --text: #edf2ff;
+  --muted: #a8b3cf;
+  --primary: #6d7cff;
+  --cyan: #39c6e9;
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
+  --radius: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(109, 124, 255, 0.12), transparent 28%),
+    radial-gradient(circle at top left, rgba(57, 198, 233, 0.08), transparent 22%),
+    var(--bg);
+  color: var(--text);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.container {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 48px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px 18px;
+  background: rgba(16, 26, 46, 0.78);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brand-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.brand-subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nav-link {
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  background: rgba(255,255,255,0.02);
+  transition: 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: white;
+  background: rgba(109, 124, 255, 0.18);
+  border-color: rgba(109, 124, 255, 0.5);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.25fr 0.9fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.panel,
+.card {
+  background: linear-gradient(180deg, rgba(21,33,58,0.98), rgba(16,26,46,0.98));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.panel {
+  padding: 22px;
+}
+
+.eyebrow {
+  color: #95a4ff;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.74rem;
+  margin-bottom: 10px;
+}
+
+.hero h1,
+.page-title {
+  margin: 0 0 10px;
+  font-size: 2rem;
+}
+
+.hero p,
+.page-subtitle {
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.card {
+  padding: 18px;
+}
+
+.card-title {
+  color: #98a8d3;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+
+.card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.card-note {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.14);
+  color: #9ef0b5;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  font-size: 0.88rem;
+}
+
+.layout-2 {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 18px;
+}
+
+.chart-wrap {
+  height: 360px;
+}
+
+.section-title {
+  margin: 0 0 14px;
+  font-size: 1.1rem;
+}
+
+.insight-list,
+.action-list {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.page-header {
+  margin-bottom: 18px;
+}
+
+.connector-section {
+  margin-bottom: 22px;
+}
+
+.connector-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.connector-card {
+  width: 100%;
+  text-align: left;
+  padding: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.connector-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(109, 124, 255, 0.55);
+  background: rgba(109, 124, 255, 0.08);
+}
+
+.connector-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.connector-name {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.connector-subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.connector-badge {
+  font-size: 0.76rem;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(57, 198, 233, 0.12);
+  color: #92ebff;
+  border: 1px solid rgba(57, 198, 233, 0.3);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  padding: 14px 10px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.data-table th {
+  color: #9fb0db;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.metric-score {
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.metric-good { color: #7ef0a2; }
+.metric-mid { color: #ffd166; }
+.metric-low { color: #ff8e8e; }
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.scenario-btn,
+.primary-btn,
+.secondary-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.scenario-btn,
+.primary-btn {
+  background: var(--primary);
+  color: white;
+}
+
+.scenario-btn:hover,
+.primary-btn:hover {
+  filter: brightness(1.08);
+}
+
+.secondary-btn {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.result-box {
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.02);
+}
+
+.result-label {
+  color: #97a6cc;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.result-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.result-explainer {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.toast {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  background: #111c31;
+  color: white;
+  border: 1px solid rgba(109, 124, 255, 0.45);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: 0.2s ease;
+  z-index: 999;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 1024px) {
+  .hero,
+  .layout-2,
+  .stat-grid,
+  .metric-grid,
+  .result-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .connector-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero,
+  .layout-2,
+  .stat-grid,
+  .metric-grid,
+  .result-grid,
+  .connector-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-title,
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+}
+</style>
+  <script src="mock-data.js"></script>
+</head>
+<body>
+  <div class="container">
+    <nav class="navbar">
+      <div class="brand">
+        <div class="brand-title">Lifepath AI</div>
+        <div class="brand-subtitle">Future Shock Simulator</div>
+      </div>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">Dashboard</a>
+        <a class="nav-link" href="assets.html">Assets</a>
+        <a class="nav-link" href="insights.html">Insights</a>
+        <a class="nav-link active" href="simulator.html">Simulator</a>
+      </div>
+    </nav>
+
+    <div class="page-header">
+      <div class="eyebrow">Scenario testing</div>
+      <h1 class="page-title">Stress-test your financial future</h1>
+      <p class="page-subtitle">
+        Apply a scenario and see how your wealth, wellness score, liquidity, and goal probability change.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="button-row">
+        <button class="scenario-btn" onclick="applyScenario('recession')">Simulate Recession</button>
+        <button class="scenario-btn" onclick="applyScenario('cryptoCrash')">Crypto Crash</button>
+        <button class="scenario-btn" onclick="applyScenario('rateHike')">Interest Rate Hike</button>
+        <button class="scenario-btn" onclick="applyScenario('jobLoss')">Job Loss</button>
+        <button class="scenario-btn" onclick="applyScenario('medicalEmergency')">Medical Emergency</button>
+        <button class="secondary-btn" onclick="applyScenario('base')">Reset to Base Case</button>
+      </div>
+
+      <div class="result-grid">
+        <div class="result-box">
+          <div class="result-label">Net worth</div>
+          <div class="result-value" id="sim-networth"></div>
+        </div>
+
+        <div class="result-box">
+          <div class="result-label">Wellness score</div>
+          <div class="result-value" id="sim-score"></div>
+        </div>
+
+        <div class="result-box">
+          <div class="result-label">Retirement probability</div>
+          <div class="result-value" id="sim-retire"></div>
+        </div>
+
+        <div class="result-box">
+          <div class="result-label">Liquidity months</div>
+          <div class="result-value" id="sim-liquidity"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:16px; padding:18px;">
+        <h2 class="section-title" id="scenario-title">Base case</h2>
+        <p class="result-explainer" id="scenario-description">
+          Your current portfolio shows a balanced but slightly crypto-sensitive wealth profile.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function formatMoney(value) {
+      return new Intl.NumberFormat("en-SG", {
+        style: "currency",
+        currency: "SGD",
+        maximumFractionDigits: 0
+      }).format(value);
+    }
+
+    const titles = {
+      base: "Base case",
+      recession: "Recession scenario",
+      cryptoCrash: "Crypto crash scenario",
+      rateHike: "Interest rate hike scenario",
+      jobLoss: "Job loss scenario",
+      medicalEmergency: "Medical emergency scenario"
+    };
+
+    function applyScenario(key) {
+      const scenario = window.mockPortfolio.scenarios[key];
+
+      document.getElementById("sim-networth").textContent = formatMoney(scenario.netWorth);
+      document.getElementById("sim-score").textContent = `${scenario.wellnessScore}/100`;
+      document.getElementById("sim-retire").textContent = `${scenario.retirementProbability}%`;
+      document.getElementById("sim-liquidity").textContent = `${scenario.liquidityMonths} months`;
+      document.getElementById("scenario-title").textContent = titles[key];
+      document.getElementById("scenario-description").textContent =
+        scenario.changeText || "This is your current baseline before any shock is applied.";
+    }
+
+    applyScenario("base");
+  </script>
+</body>
+</html>

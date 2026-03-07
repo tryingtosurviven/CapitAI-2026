@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assets | Lifepath AI</title>
+  <style>
+:root {
+  --bg: #081120;
+  --line: #223150;
+  --text: #edf2ff;
+  --muted: #a8b3cf;
+  --primary: #6d7cff;
+  --shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
+  --radius: 20px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(109, 124, 255, 0.12), transparent 28%),
+    radial-gradient(circle at top left, rgba(57, 198, 233, 0.08), transparent 22%),
+    var(--bg);
+  color: var(--text);
+}
+a { color: inherit; text-decoration: none; }
+.container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 48px; }
+.navbar {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  margin-bottom: 24px; padding: 16px 18px;
+  background: rgba(16, 26, 46, 0.78); border: 1px solid var(--line);
+  border-radius: 18px; box-shadow: var(--shadow);
+}
+.brand { display: flex; flex-direction: column; gap: 4px; }
+.brand-title { font-size: 1.25rem; font-weight: 700; }
+.brand-subtitle { color: var(--muted); font-size: 0.9rem; }
+.nav-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.nav-link {
+  padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line);
+  color: var(--muted); background: rgba(255,255,255,0.02);
+}
+.nav-link.active { color: white; background: rgba(109, 124, 255, 0.18); border-color: rgba(109, 124, 255, 0.5); }
+.page-header { margin-bottom: 18px; }
+.eyebrow { color: #95a4ff; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.74rem; margin-bottom: 10px; }
+.page-title { margin: 0 0 10px; font-size: 2rem; }
+.page-subtitle { color: var(--muted); line-height: 1.6; margin: 0; }
+.panel {
+  padding: 22px; margin-bottom: 22px;
+  background: linear-gradient(180deg, rgba(21,33,58,0.98), rgba(16,26,46,0.98));
+  border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.section-title { margin: 0 0 14px; font-size: 1.1rem; }
+.connector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.connector-card {
+  width: 100%; text-align: left; padding: 16px; background: rgba(255,255,255,0.02);
+  border: 1px solid var(--line); border-radius: 18px; color: white; cursor: pointer;
+}
+.connector-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+.connector-name { font-weight: 700; font-size: 1rem; }
+.connector-subtitle { color: var(--muted); font-size: 0.9rem; line-height: 1.45; }
+.connector-badge {
+  font-size: 0.76rem; padding: 5px 10px; border-radius: 999px;
+  background: rgba(57, 198, 233, 0.12); color: #92ebff; border: 1px solid rgba(57, 198, 233, 0.3);
+}
+.layout-2 { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 18px; }
+.table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { padding: 14px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+.data-table th { color: #9fb0db; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.toast {
+  position: fixed; top: 18px; right: 18px; background: #111c31; color: white;
+  border: 1px solid rgba(109, 124, 255, 0.45); border-radius: 14px; padding: 14px 16px;
+  box-shadow: var(--shadow); opacity: 0; transform: translateY(-10px); pointer-events: none; transition: 0.2s ease;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+@media (max-width: 1024px) {
+  .layout-2 { grid-template-columns: 1fr; }
+  .connector-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 720px) {
+  .connector-grid { grid-template-columns: 1fr; }
+  .navbar { flex-direction: column; align-items: flex-start; }
+  .page-title { font-size: 1.6rem; }
+}
+  </style>
+</head>
+<body>
+  <div class="toast" id="toast"></div>
+
+  <div class="container">
+    <nav class="navbar">
+      <div class="brand">
+        <div class="brand-title">Lifepath AI</div>
+        <div class="brand-subtitle">Unified Wealth Wallet</div>
+      </div>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">Dashboard</a>
+        <a class="nav-link active" href="assets.html">Assets</a>
+        <a class="nav-link" href="insights.html">Insights</a>
+        <a class="nav-link" href="simulator.html">Simulator</a>
+      </div>
+    </nav>
+
+    <div class="page-header">
+      <div class="eyebrow">Wealth wallet</div>
+      <h1 class="page-title">Connect your financial world</h1>
+      <p class="page-subtitle">
+        Bring together bank cash, investment platforms, crypto wallets, and private assets into one clean investor view.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h2 class="section-title">Banks</h2>
+      <div class="connector-grid" id="banks-grid"></div>
+    </div>
+
+    <div class="panel">
+      <h2 class="section-title">Investments</h2>
+      <div class="connector-grid" id="investments-grid"></div>
+    </div>
+
+    <div class="panel">
+      <h2 class="section-title">Crypto</h2>
+      <div class="connector-grid" id="crypto-grid"></div>
+    </div>
+
+    <div class="panel">
+      <h2 class="section-title">Other Assets</h2>
+      <div class="connector-grid" id="other-grid"></div>
+    </div>
+
+    <div class="layout-2">
+      <div class="panel">
+        <h2 class="section-title">Linked accounts</h2>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Account</th>
+                <th>Category</th>
+                <th>Balance</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="linked-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="section-title">Asset type / value breakdown</h2>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>Type</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody id="asset-breakdown-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="mock-data.js"></script>
+  <script src="connectors.js"></script>
+  <script>
+    function formatMoney(value) {
+      return new Intl.NumberFormat("en-SG", {
+        style: "currency",
+        currency: "SGD",
+        maximumFractionDigits: 0
+      }).format(value);
+    }
+
+    function renderTables() {
+      const linkedBody = document.getElementById("linked-table-body");
+      const assetBody = document.getElementById("asset-breakdown-body");
+
+      linkedBody.innerHTML = window.mockPortfolio.linkedAccounts.map(item => `
+        <tr>
+          <td>${item.name}</td>
+          <td>${item.category}</td>
+          <td>${formatMoney(item.balance)}</td>
+          <td>${item.status}</td>
+        </tr>
+      `).join("");
+
+      assetBody.innerHTML = window.mockPortfolio.assetBreakdown.map(item => `
+        <tr>
+          <td>${item.asset}</td>
+          <td>${item.type}</td>
+          <td>${formatMoney(item.value)}</td>
+        </tr>
+      `).join("");
+    }
+
+    renderTables();
+  </script>
+</body>
+</html>
