@@ -218,6 +218,27 @@ background:
   color: #fecaca;
 }
 
+/* Sparkline Styles */
+    .sparkline-box {
+      margin-top: 16px;
+      height: 32px;
+      width: 100%;
+      position: relative;
+      /* Optional: Adds a subtle baseline to show it's a chart */
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.1); 
+    }
+    .sparkline {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .sparkline polyline {
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
 
     @media (max-width: 1024px) {
       .metric-grid,
@@ -241,9 +262,31 @@ background:
         font-size: 1.6rem;
       }
     }
+
+    .primary-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .primary-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+}
+    /* Add this class to make the toast and animations work */
+    .toast.show {
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+    }
+    
   </style>
 </head>
 <body>
+  <div id="toast" class="toast" style="position: fixed; top: 18px; right: 18px; z-index: 9999; padding: 14px 16px; border-radius: 12px; color: white; opacity: 0; transform: translateY(-10px); transition: 0.3s ease; pointer-events: none;"></div>
   <div class="container">
     <nav class="navbar">
       <div class="brand">
@@ -268,46 +311,52 @@ background:
 
     <div class="metric-grid">
       <div class="card">
-  <div class="card-title">
-    Diversification score
-    <span class="chip-good">Good</span>
-  </div>
-        <div class="metric-score metric-good" id="div-score">81</div>
-        <div class="card-note">
-          Healthy spread across cash, public markets, crypto, and private assets.
+        <div class="card-title">Diversification score <span class="chip-good">Good</span></div>
+        <div class="metric-score metric-good" id="diversification-val">81</div>
+        <div class="card-note">Healthy spread across cash, public markets, crypto, and private assets.</div>
+        <div class="sparkline-box">
+          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+            <polyline points="0,25 20,22 40,28 60,15 80,18 100,5" stroke="#7ef0a2"></polyline>
+          </svg>
         </div>
       </div>
 
       <div class="card">
-  <div class="card-title">
-    Liquidity score
-    <span class="chip-watch">Watch</span>
-  </div>
-        <div class="metric-score metric-mid" id="liq-score">74</div>
-        <div class="card-note">
-          You have a decent emergency buffer, but more accessible cash would improve resilience.
+        <div class="card-title">Liquidity score <span class="chip-watch">Watch</span></div>
+        <div class="metric-score metric-mid" id="liquidity-val">74</div>
+        <div class="card-note">You have a decent emergency buffer, but more accessible cash would improve resilience.</div>
+        <div class="sparkline-box">
+          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+            <polyline points="0,15 20,25 40,10 60,20 80,15 100,12" stroke="#ffd166"></polyline>
+          </svg>
         </div>
       </div>
 
       <div class="card">
-  <div class="card-title">
-    Fragility score
-    <span class="chip-watch">Watch</span>
-  </div>
-        <div class="metric-score metric-mid" id="frag-score">63</div>
-        <div class="card-note">
-          Private assets and crypto can create stress during sharp market or life shocks.
+        <div class="card-title">Fragility score <span class="chip-watch">Watch</span></div>
+        <div class="metric-score metric-mid" id="fragility-val">63</div>
+        <div class="card-note">Private assets and crypto can create stress during sharp market or life shocks.</div>
+        <div class="sparkline-box">
+          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+            <polyline points="0,20 20,5 40,25 60,10 80,22 100,15" stroke="#ffd166"></polyline>
+          </svg>
         </div>
       </div>
 
       <div class="card">
-  <div class="card-title">
-    Behavior discipline
-    <span class="chip-good">Good</span>
-  </div>
-        <div class="metric-score metric-good" id="beh-score">79</div>
-        <div class="card-note">
-          Your current pattern suggests relatively stable decision-making with room for guardrails.
+        <div class="card-title">Behavior discipline <span class="chip-good">Good</span></div>
+        <div class="metric-score metric-good" id="behavior-val">79</div>
+        <div class="card-note">Your current pattern suggests relatively stable decision-making with room for guardrails.</div>
+        <div class="sparkline-box">
+          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+            <polyline points="0,28 20,25 40,20 60,18 80,10 100,8" stroke="#7ef0a2"></polyline>
+          </svg>
+        </div>
+        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255, 255, 255, 0.1); font-size: 0.85rem; line-height: 1.4;">
+          <span style="color: var(--muted);">Your resilience is high—can you handle a 50% Crypto Crash?</span>
+          <a href="simulator.html" style="color: var(--primary); font-weight: 600; display: inline-block; margin-top: 6px; transition: 0.2s; text-decoration: none;">
+            Test it in the Simulator &rarr;
+          </a>
         </div>
       </div>
     </div>
@@ -315,40 +364,135 @@ background:
     <div class="layout-2">
       <div class="panel">
         <h2 class="section-title">What these scores are saying</h2>
-<ul class="insight-list">
-  <li><strong>Diversification:</strong> Well spread; no single bet dominates.</li>
-  <li><strong>Liquidity:</strong> Okay today; add a bit more cash for big shocks.</li>
-  <li><strong>Fragility:</strong> Crypto and private deals can hurt in a downturn.</li>
-</ul>
-
+        <ul class="insight-list">
+          <li><strong>Diversification:</strong> Well spread; no single bet dominates.</li>
+          <li><strong>Liquidity:</strong> Okay today; add a bit more cash for big shocks.</li>
+          <li><strong>Fragility:</strong> Crypto and private deals can hurt in a downturn.</li>
+        </ul>
       </div>
 
       <div class="panel">
         <h2 class="section-title">Suggested actions</h2>
-<ul class="action-list">
-  <li><strong>Boost cash:</strong> Aim for 9–12 months of expenses.</li>
-  <li><strong>Tame crypto:</strong> Cap it at your target range and rebalance.</li>
-  <li><strong>Loosen illiquid:</strong> Gradually trim the least liquid private assets.</li>
-</ul>
-
+        <ul id="suggested-actions-list" style="list-style: none; padding: 0;"></ul>
+        <button onclick="resetSimulation()" style="margin-top: 15px; padding: 6px 12px; background: transparent; border: 1px solid var(--muted); color: var(--muted); border-radius: 8px; cursor: pointer; font-size: 0.8rem; width: 100%;">
+          Reset Simulation
+        </button>
       </div>
+
     </div>
   </div>
 
   <script src="mock-data.js"></script>
   <script>
-    if (!window.mockPortfolio || !window.mockPortfolio.analytics) {
-      console.error("mockPortfolio analytics not loaded");
-    } else {
-      const analytics = window.mockPortfolio.analytics;
+    // 1. Safe Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+      const defaultData = { diversification: 81, liquidity: 74, fragility: 63, behavior: 79 };
+      const analytics = (window.mockPortfolio && window.mockPortfolio.analytics) ? window.mockPortfolio.analytics : defaultData;
 
-      document.getElementById("div-score").textContent = analytics.diversification;
-      document.getElementById("liq-score").textContent = analytics.liquidity;
-      document.getElementById("frag-score").textContent = analytics.fragility;
-      document.getElementById("beh-score").textContent = analytics.behavior;
+      // Use IDs that match your cards
+      const divEl = document.getElementById("diversification-val");
+      const liqEl = document.getElementById("liquidity-val");
+      const fragEl = document.getElementById("fragility-val");
+      const behEl = document.getElementById("behavior-val");
 
+      if(divEl) divEl.textContent = analytics.diversification;
+      if(liqEl) liqEl.textContent = analytics.liquidity;
+      if(fragEl) fragEl.textContent = analytics.fragility;
+      if(behEl) behEl.textContent = analytics.behavior;
 
+      renderInsights();
+    });
+
+    // ADDED: "color" properties matching your mock-data.js asset allocation colors
+    const suggestions = [
+      { text: "Reduce crypto allocation to below 10%.", color: "#f59e0b", impact: { diversification: 6, fragility: -5 } }, // Amber
+      { text: "Increase emergency cash buffer by S$8,000.", color: "#818cf8", impact: { liquidity: 10 } }, // Indigo (lightened for dark mode)
+      { text: "Diversify private-asset concentration into ETFs.", color: "#10b981", impact: { diversification: 4, fragility: -7 } } // Green
+    ];
+
+    function resetSimulation() {
+      const analytics = (window.mockPortfolio && window.mockPortfolio.analytics) ? window.mockPortfolio.analytics : { diversification: 81, liquidity: 74, fragility: 63, behavior: 79 };
+
+      // Reset the text
+      document.getElementById("diversification-val").textContent = analytics.diversification;
+      document.getElementById("liquidity-val").textContent = analytics.liquidity;
+      document.getElementById("fragility-val").textContent = analytics.fragility;
+
+      // Reset colors to original CSS classes by removing inline styles
+      document.getElementById("diversification-val").style.color = "";
+      document.getElementById("liquidity-val").style.color = "";
+      document.getElementById("fragility-val").style.color = "";
+
+      // Re-render the buttons so they are clickable again
+      renderInsights();
     }
+
+    function renderInsights() {
+      const actionsList = document.getElementById("suggested-actions-list");
+      if (!actionsList) return;
+      
+      actionsList.innerHTML = suggestions.map((action, index) => `
+        <li style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--line); border-left: 4px solid ${action.color};">
+          <span style="font-size: 0.9rem; color: ${action.color}; font-weight: 600;">${action.text}</span>
+          <button class="primary-btn" style="font-size: 0.75rem; padding: 6px 12px; white-space: nowrap; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);" 
+                  onclick='simulateFix(this, ${JSON.stringify(action.impact)})'>
+            Simulate Fix
+          </button>
+        </li>
+      `).join("");
+    }
+
+    function simulateFix(btn, impact) {
+      btn.disabled = true;
+      btn.innerText = "Applied";
+      btn.style.opacity = "0.5";
+      btn.style.background = "#34d399";
+
+      const toast = document.getElementById("toast");
+      if (toast) {
+        toast.textContent = "Simulating portfolio adjustment...";
+        toast.style.background = "var(--primary)";
+        toast.classList.add("show");
+      }
+
+      setTimeout(() => {
+        if (impact.diversification) {
+          const el = document.getElementById("diversification-val");
+          const current = parseInt(el.innerText) || 81;
+          updateScoreVisual("diversification-val", current, current + impact.diversification);
+        }
+        if (impact.liquidity) {
+          const el = document.getElementById("liquidity-val");
+          const current = parseInt(el.innerText) || 74;
+          updateScoreVisual("liquidity-val", current, current + impact.liquidity);
+        }
+        if (impact.fragility) {
+          const el = document.getElementById("fragility-val");
+          const current = parseInt(el.innerText) || 63;
+          updateScoreVisual("fragility-val", current, current + impact.fragility, true);
+        }
+
+        if (toast) {
+          toast.textContent = "✅ Wealth Resilience Improved!";
+          setTimeout(() => toast.classList.remove("show"), 2000);
+        }
+      }, 400); // Shorter delay for better demo feel
+    }
+
+    function updateScoreVisual(id, oldScore, newScore, isInverse = false) {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      el.style.transition = "all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+      el.style.transform = "scale(1.3)";
+      const isGoodChange = isInverse ? (newScore < oldScore) : (newScore > oldScore);
+      el.style.color = isGoodChange ? "#34d399" : "#ff4c4c";
+      el.innerText = newScore;
+
+      setTimeout(() => { el.style.transform = "scale(1)"; }, 600);
+    }
+
+
   </script>
 </body>
 </html>

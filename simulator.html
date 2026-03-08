@@ -430,6 +430,28 @@ a {
     font-size: 1.6rem;
   }
 }
+
+/* Active Scenario Button */
+    .scenario-btn.active {
+      background: white;
+      color: var(--bg);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    }
+
+    /* Number Animation Classes */
+    .val-transition {
+      transition: color 0.4s ease, transform 0.2s ease;
+      display: inline-block;
+    }
+    .val-drop {
+      color: #ff8e8e !important;
+      transform: scale(1.08);
+    }
+    .val-recover {
+      color: #7ef0a2 !important;
+      transform: scale(1.08);
+    }
+
 </style>
   <script src="mock-data.js"></script>
 </head>
@@ -458,12 +480,12 @@ a {
 
     <div class="panel">
       <div class="button-row">
-        <button class="scenario-btn" onclick="applyScenario('recession')">Simulate Recession</button>
-        <button class="scenario-btn" onclick="applyScenario('cryptoCrash')">Crypto Crash</button>
-        <button class="scenario-btn" onclick="applyScenario('rateHike')">Interest Rate Hike</button>
-        <button class="scenario-btn" onclick="applyScenario('jobLoss')">Job Loss</button>
-        <button class="scenario-btn" onclick="applyScenario('medicalEmergency')">Medical Emergency</button>
-        <button class="secondary-btn" onclick="applyScenario('base')">Reset to Base Case</button>
+        <button class="scenario-btn" onclick="applyScenario('recession', this)">Simulate Recession</button>
+        <button class="scenario-btn" onclick="applyScenario('cryptoCrash', this)">Crypto Crash</button>
+        <button class="scenario-btn" onclick="applyScenario('rateHike', this)">Interest Rate Hike</button>
+        <button class="scenario-btn" onclick="applyScenario('jobLoss', this)">Job Loss</button>
+        <button class="scenario-btn" onclick="applyScenario('medicalEmergency', this)">Medical Emergency</button>
+        <button class="secondary-btn" onclick="applyScenario('base', this)">Reset to Base Case</button>
       </div>
 
       <div class="result-grid">
@@ -498,6 +520,7 @@ a {
   </div>
 
   <script>
+    // Formatter for currency
     function formatMoney(value) {
       return new Intl.NumberFormat("en-SG", {
         style: "currency",
@@ -515,18 +538,89 @@ a {
       medicalEmergency: "Medical emergency scenario"
     };
 
-    function applyScenario(key) {
-      const scenario = window.mockPortfolio.scenarios[key];
+    // Store current values to animate FROM
+    let currentData = {
+      netWorth: 286500,
+      wellnessScore: 78,
+      retirementProbability: 74,
+      liquidityMonths: 8.3
+    };
 
-      document.getElementById("sim-networth").textContent = formatMoney(scenario.netWorth);
-      document.getElementById("sim-score").textContent = `${scenario.wellnessScore}/100`;
-      document.getElementById("sim-retire").textContent = `${scenario.retirementProbability}%`;
-      document.getElementById("sim-liquidity").textContent = `${scenario.liquidityMonths} months`;
-      document.getElementById("scenario-title").textContent = titles[key];
-      document.getElementById("scenario-description").textContent =
-        scenario.changeText || "This is your current baseline before any shock is applied.";
+    // Number counter animation function
+    function animateValue(obj, start, end, duration, isCurrency = false, suffix = "") {
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        
+        // Calculate current frame value
+        const currentVal = (progress * (end - start) + start);
+        
+        if (isCurrency) {
+          obj.textContent = formatMoney(currentVal);
+        } else if (suffix === " months") {
+          obj.textContent = currentVal.toFixed(1) + suffix; // Keep 1 decimal for months
+        } else {
+          obj.textContent = Math.floor(currentVal) + suffix;
+        }
+        
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        } else {
+          // Ensure exact final value
+          if (isCurrency) obj.textContent = formatMoney(end);
+          else if (suffix === " months") obj.textContent = end.toFixed(1) + suffix;
+          else obj.textContent = end + suffix;
+        }
+      };
+      window.requestAnimationFrame(step);
     }
 
+    function applyScenario(key, btnElement = null) {
+      const scenario = window.mockPortfolio.scenarios[key];
+      if (!scenario) return;
+
+      // 1. Update Active Button Style
+      document.querySelectorAll('.scenario-btn, .secondary-btn').forEach(b => b.classList.remove('active'));
+      if (btnElement) {
+        btnElement.classList.add('active');
+      }
+
+      // 2. Determine if things got better or worse (for color flashing)
+      const isWorse = scenario.netWorth < currentData.netWorth;
+      const isBetter = scenario.netWorth > currentData.netWorth;
+      const colorClass = isWorse ? 'val-drop' : (isBetter ? 'val-recover' : '');
+
+      // 3. Grab the elements and apply base transition class
+      const nwEl = document.getElementById("sim-networth");
+      const wsEl = document.getElementById("sim-score");
+      const rpEl = document.getElementById("sim-retire");
+      const lmEl = document.getElementById("sim-liquidity");
+
+      [nwEl, wsEl, rpEl, lmEl].forEach(el => {
+        el.className = "result-value val-transition"; // Reset classes
+        if (colorClass) el.classList.add(colorClass); // Add red/green
+      });
+
+      // 4. Animate the numbers (800ms duration)
+      animateValue(nwEl, currentData.netWorth, scenario.netWorth, 800, true);
+      animateValue(wsEl, currentData.wellnessScore, scenario.wellnessScore, 800, false, "/100");
+      animateValue(rpEl, currentData.retirementProbability, scenario.retirementProbability, 800, false, "%");
+      animateValue(lmEl, currentData.liquidityMonths, scenario.liquidityMonths, 800, false, " months");
+
+      // 5. Update text context
+      document.getElementById("scenario-title").textContent = titles[key];
+      document.getElementById("scenario-description").textContent = 
+        scenario.changeText || "This is your current baseline before any shock is applied.";
+
+      // 6. Save new state and remove color flash after 1 second
+      currentData = { ...scenario };
+      setTimeout(() => {
+        [nwEl, wsEl, rpEl, lmEl].forEach(el => el.classList.remove('val-drop', 'val-recover'));
+      }, 1000);
+    }
+
+    // Initialize the page on the Base Case
     applyScenario("base");
   </script>
 </body>
