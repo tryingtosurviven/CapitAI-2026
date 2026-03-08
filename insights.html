@@ -218,6 +218,27 @@ background:
   color: #fecaca;
 }
 
+/* Sparkline Styles */
+    .sparkline-box {
+      margin-top: 16px;
+      height: 32px;
+      width: 100%;
+      position: relative;
+      /* Optional: Adds a subtle baseline to show it's a chart */
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.1); 
+    }
+    .sparkline {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .sparkline polyline {
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
 
     @media (max-width: 1024px) {
       .metric-grid,
@@ -293,24 +314,50 @@ background:
         <div class="card-title">Diversification score <span class="chip-good">Good</span></div>
         <div class="metric-score metric-good" id="diversification-val">81</div>
         <div class="card-note">Healthy spread across cash, public markets, crypto, and private assets.</div>
+        <div class="sparkline-box">
+          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+            <polyline points="0,25 20,22 40,28 60,15 80,18 100,5" stroke="#7ef0a2"></polyline>
+          </svg>
+        </div>
       </div>
 
       <div class="card">
         <div class="card-title">Liquidity score <span class="chip-watch">Watch</span></div>
         <div class="metric-score metric-mid" id="liquidity-val">74</div>
         <div class="card-note">You have a decent emergency buffer, but more accessible cash would improve resilience.</div>
+        <div class="sparkline-box">
+          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+            <polyline points="0,15 20,25 40,10 60,20 80,15 100,12" stroke="#ffd166"></polyline>
+          </svg>
+        </div>
       </div>
 
       <div class="card">
         <div class="card-title">Fragility score <span class="chip-watch">Watch</span></div>
         <div class="metric-score metric-mid" id="fragility-val">63</div>
         <div class="card-note">Private assets and crypto can create stress during sharp market or life shocks.</div>
+        <div class="sparkline-box">
+          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+            <polyline points="0,20 20,5 40,25 60,10 80,22 100,15" stroke="#ffd166"></polyline>
+          </svg>
+        </div>
       </div>
 
       <div class="card">
         <div class="card-title">Behavior discipline <span class="chip-good">Good</span></div>
         <div class="metric-score metric-good" id="behavior-val">79</div>
         <div class="card-note">Your current pattern suggests relatively stable decision-making with room for guardrails.</div>
+        <div class="sparkline-box">
+          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+            <polyline points="0,28 20,25 40,20 60,18 80,10 100,8" stroke="#7ef0a2"></polyline>
+          </svg>
+        </div>
+        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255, 255, 255, 0.1); font-size: 0.85rem; line-height: 1.4;">
+          <span style="color: var(--muted);">Your resilience is high—can you handle a 50% Crypto Crash?</span>
+          <a href="simulator.html" style="color: var(--primary); font-weight: 600; display: inline-block; margin-top: 6px; transition: 0.2s; text-decoration: none;">
+            Test it in the Simulator &rarr;
+          </a>
+        </div>
       </div>
     </div>
 
