@@ -403,10 +403,11 @@ background:
       renderInsights();
     });
 
+    // ADDED: "color" properties matching your mock-data.js asset allocation colors
     const suggestions = [
-      { text: "Reduce crypto allocation to below 10%.", impact: { diversification: 6, fragility: -5 } },
-      { text: "Increase emergency cash buffer by S$8,000.", impact: { liquidity: 10 } },
-      { text: "Diversify private-asset concentration into ETFs.", impact: { diversification: 4, fragility: -7 } }
+      { text: "Reduce crypto allocation to below 10%.", color: "#f59e0b", impact: { diversification: 6, fragility: -5 } }, // Amber
+      { text: "Increase emergency cash buffer by S$8,000.", color: "#818cf8", impact: { liquidity: 10 } }, // Indigo (lightened for dark mode)
+      { text: "Diversify private-asset concentration into ETFs.", color: "#10b981", impact: { diversification: 4, fragility: -7 } } // Green
     ];
 
     function resetSimulation() {
@@ -417,7 +418,7 @@ background:
       document.getElementById("liquidity-val").textContent = analytics.liquidity;
       document.getElementById("fragility-val").textContent = analytics.fragility;
 
-      // Reset colors to white
+      // Reset colors to original CSS classes by removing inline styles
       document.getElementById("diversification-val").style.color = "";
       document.getElementById("liquidity-val").style.color = "";
       document.getElementById("fragility-val").style.color = "";
@@ -431,9 +432,9 @@ background:
       if (!actionsList) return;
       
       actionsList.innerHTML = suggestions.map((action, index) => `
-        <li style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--line);">
-          <span style="font-size: 0.9rem; color: var(--text);">${action.text}</span>
-          <button class="primary-btn" style="font-size: 0.75rem; padding: 6px 12px; white-space: nowrap;" 
+        <li style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--line); border-left: 4px solid ${action.color};">
+          <span style="font-size: 0.9rem; color: ${action.color}; font-weight: 600;">${action.text}</span>
+          <button class="primary-btn" style="font-size: 0.75rem; padding: 6px 12px; white-space: nowrap; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);" 
                   onclick='simulateFix(this, ${JSON.stringify(action.impact)})'>
             Simulate Fix
           </button>
