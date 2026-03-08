@@ -26,21 +26,21 @@ window.mockPortfolio = {
   ],
 
   linkedAccounts: [
-    { name: "DBS / POSB", category: "Bank", balance: 22000, status: "Connected" },
-    { name: "OCBC", category: "Bank", balance: 15000, status: "Connected" },
-    { name: "Syfe", category: "Investment", balance: 38500, status: "Connected" },
-    { name: "Endowus", category: "Investment", balance: 29000, status: "Connected" },
-    { name: "Tiger Brokers", category: "Investment", balance: 42000, status: "Connected" },
-    { name: "Crypto.com", category: "Crypto", balance: 14500, status: "Connected" },
-    { name: "MetaMask", category: "Crypto", balance: 25500, status: "Connected" },
-    { name: "3D Printing Equipment", category: "Private Asset", balance: 100000, status: "Manual" }
+    { name: "DBS / POSB", category: "Bank", balance: 22000, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
+    { name: "OCBC", category: "Bank", balance: 15000, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
+    { name: "Syfe", category: "Investment", balance: 38500, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
+    { name: "Endowus", category: "Investment", balance: 29000, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
+    { name: "Tiger Brokers", category: "Investment", balance: 42000, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
+    { name: "Crypto.com", category: "Crypto", balance: 14500, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
+    { name: "MetaMask", category: "Crypto", balance: 25500, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
+    { name: "3D Printing Equipment", category: "Private Asset", balance: 100000, status: "Manual", source: "Manual Entry", updatedAt: "Today at 9:00 AM" }
   ],
 
   assetBreakdown: [
-    { asset: "Cash Accounts", type: "Liquid", value: 37000 },
-    { asset: "ETF / Equity Portfolio", type: "Market", value: 109500 },
-    { asset: "Crypto Wallets", type: "Volatile", value: 40000 },
-    { asset: "Private Equipment", type: "Illiquid", value: 100000 }
+    { asset: "Cash Accounts", type: "Liquid", value: 37000, liquidityTier: "T+0", ladderNote: "Immediately accessible for expenses and emergencies." },
+    { asset: "ETF / Equity Portfolio", type: "Market", value: 109500, liquidityTier: "T+2", ladderNote: "Can usually be sold and settled within 2 trading days." },
+    { asset: "Crypto Wallets", type: "Volatile", value: 40000, liquidityTier: "T+0 to T+1", ladderNote: "Fast to access, but highly volatile under stress scenarios." },
+    { asset: "Private Equipment", type: "Illiquid", value: 100000, liquidityTier: "T+30+", ladderNote: "High value but slower to monetize in an emergency." }
   ],
 
   analytics: {
@@ -55,7 +55,6 @@ window.mockPortfolio = {
       "Gradually shift a small slice of your private-asset value into diversified ETFs so more of your wealth is liquid and flexible."
     ]
   },
-
 
   scenarios: {
     base: {
