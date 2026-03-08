@@ -7,6 +7,8 @@
   <style>
     :root {
       --bg: #081120;
+      --panel: #101a2e;
+      --panel-2: #15213a;
       --line: #223150;
       --text: #edf2ff;
       --muted: #a8b3cf;
@@ -15,25 +17,19 @@
       --radius: 20px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-background:
-  radial-gradient(circle at top right, rgba(109, 124, 255, 0.08), transparent 28%),
-  radial-gradient(circle at top left, rgba(57, 198, 233, 0.05), transparent 22%),
-  var(--bg);
-
+      background:
+        radial-gradient(circle at top right, rgba(109, 124, 255, 0.12), transparent 28%),
+        radial-gradient(circle at top left, rgba(57, 198, 233, 0.08), transparent 22%),
+        var(--bg);
       color: var(--text);
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+    a { color: inherit; text-decoration: none; }
 
     .container {
       width: min(1180px, calc(100% - 32px));
@@ -81,11 +77,9 @@ background:
       border-radius: 999px;
       border: 1px solid var(--line);
       color: var(--muted);
-      background: rgba(255, 255, 255, 0.02);
-      transition: 0.2s ease;
+      background: rgba(255,255,255,0.02);
     }
 
-    .nav-link:hover,
     .nav-link.active {
       color: white;
       background: rgba(109, 124, 255, 0.18);
@@ -93,7 +87,7 @@ background:
     }
 
     .page-header {
-      margin-bottom: 18px;
+      margin-bottom: 22px;
     }
 
     .eyebrow {
@@ -113,63 +107,87 @@ background:
       color: var(--muted);
       line-height: 1.6;
       margin: 0;
-    }
-
-.card,
-.panel {
-  background: linear-gradient(180deg, rgba(21, 33, 58, 0.98), rgba(16, 26, 46, 0.98));
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-
-
-
-    .card {
-      padding: 18px;
+      max-width: 820px;
     }
 
     .panel {
       padding: 22px;
+      margin-bottom: 22px;
+      background: linear-gradient(180deg, rgba(21,33,58,0.98), rgba(16,26,46,0.98));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
     }
 
-    .metric-grid {
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 1.1rem;
+    }
+
+    .meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      color: #d8e2ff;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+    }
+
+    .metrics-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 16px;
-      margin-bottom: 26px;
+      margin-bottom: 20px;
     }
 
-    .card-title {
-      color: #98a8d3;
-      font-size: 0.8rem;
+    .metric-card {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .metric-label {
+      font-size: 0.82rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
+      color: #9fb0db;
       margin-bottom: 10px;
     }
 
-    .metric-score {
-      font-size: 2.2rem;
-      font-weight: 700;
-      margin-bottom: 8px;
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 10px;
     }
 
-    .metric-good {
-      color: #7ef0a2;
-    }
-
-    .metric-mid {
-      color: #ffd166;
-    }
-
-    .metric-low {
-      color: #ff8e8e;
-    }
-
-    .card-note {
-      color: var(--muted);
-      font-size: 0.92rem;
+    .metric-note {
+      font-size: 0.9rem;
       line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .score-good {
+      color: #34d399;
+    }
+
+    .score-medium {
+      color: #fbbf24;
+    }
+
+    .score-low {
+      color: #f87171;
     }
 
     .layout-2 {
@@ -178,81 +196,173 @@ background:
       gap: 18px;
     }
 
-    .section-title {
-      margin: 0 0 14px;
-      font-size: 1.1rem;
+    .score-wrap {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
     }
 
-.insight-list,
-.action-list {
-  margin: 6px 0 0;
-  padding-left: 18px;
-  color: var(--muted);
-  line-height: 1.6;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  padding-top: 8px;
-  font-size: 0.9rem;
-}
-
-.chip-good,
-.chip-watch,
-.chip-risk {
-  float: right;
-  font-size: 0.7rem;
-  padding: 2px 7px;
-  border-radius: 999px;
-}
-
-.chip-good {
-  background: rgba(34,197,94,0.18);
-  color: #9ef0b5;
-}
-
-.chip-watch {
-  background: rgba(245,158,11,0.18);
-  color: #facc15;
-}
-
-.chip-risk {
-  background: rgba(239,68,68,0.18);
-  color: #fecaca;
-}
-
-/* Sparkline Styles */
-    .sparkline-box {
-      margin-top: 16px;
-      height: 32px;
-      width: 100%;
-      position: relative;
-      /* Optional: Adds a subtle baseline to show it's a chart */
-      border-bottom: 1px dashed rgba(255, 255, 255, 0.1); 
+    .score-label {
+      color: #9fb0db;
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
     }
-    .sparkline {
+
+    .score-value {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .score-subtext {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      max-width: 420px;
+    }
+
+    .score-chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #c7d2fe;
+      background: rgba(109, 124, 255, 0.12);
+      border: 1px solid rgba(109, 124, 255, 0.28);
+      white-space: nowrap;
+    }
+
+    .component-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .component-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 60px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .component-name {
+      color: #dce6ff;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .bar-track {
       width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .bar-fill {
       height: 100%;
-      overflow: visible;
-    }
-    .sparkline polyline {
-      fill: none;
-      stroke-width: 3;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(109,124,255,0.95), rgba(57,198,233,0.95));
+      width: 0;
+      transition: width 0.8s ease;
     }
 
+    .component-score {
+      text-align: right;
+      font-family: monospace;
+      color: white;
+      font-weight: 700;
+    }
+
+    .subsection-title {
+      margin: 22px 0 10px;
+      font-size: 0.98rem;
+      color: #dce6ff;
+      letter-spacing: 0.02em;
+    }
+
+    .insight-list,
+    .action-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .insight-item,
+    .action-item {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      color: #dce6ff;
+      line-height: 1.6;
+      font-size: 0.92rem;
+    }
+
+    .action-item strong {
+      color: white;
+    }
+
+    .priority-card {
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(109, 124, 255, 0.08);
+      border: 1px solid rgba(109, 124, 255, 0.28);
+      margin-top: 16px;
+    }
+
+    .priority-title {
+      font-size: 0.88rem;
+      color: #9fb0db;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .priority-text {
+      color: #edf2ff;
+      line-height: 1.6;
+      font-size: 0.94rem;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .small-tag {
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      color: #d8e2ff;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+    }
 
     @media (max-width: 1024px) {
-      .metric-grid,
-      .layout-2 {
-        grid-template-columns: 1fr 1fr;
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
-    }
 
-    @media (max-width: 720px) {
-      .metric-grid,
       .layout-2 {
         grid-template-columns: 1fr;
       }
 
+      .component-row {
+        grid-template-columns: 140px 1fr 56px;
+      }
+    }
+
+    @media (max-width: 720px) {
       .navbar {
         flex-direction: column;
         align-items: flex-start;
@@ -261,37 +371,35 @@ background:
       .page-title {
         font-size: 1.6rem;
       }
-    }
 
-    .primary-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.2s;
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .score-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .component-row {
+        grid-template-columns: 1fr;
+      }
+
+      .component-score {
+        text-align: left;
+      }
     }
-    .primary-btn:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
-}
-    /* Add this class to make the toast and animations work */
-    .toast.show {
-      opacity: 1 !important;
-      transform: translateY(0) !important;
-    }
-    
   </style>
+
+  <script src="mock-data.js"></script>
+  <script src="state.js"></script>
 </head>
 <body>
-  <div id="toast" class="toast" style="position: fixed; top: 18px; right: 18px; z-index: 9999; padding: 14px 16px; border-radius: 12px; color: white; opacity: 0; transform: translateY(-10px); transition: 0.3s ease; pointer-events: none;"></div>
   <div class="container">
     <nav class="navbar">
       <div class="brand">
         <div class="brand-title">Lifepath AI</div>
-        <div class="brand-subtitle">Financial Wellness Analytics</div>
+        <div class="brand-subtitle">Unified Wealth Wallet</div>
       </div>
       <div class="nav-links">
         <a class="nav-link" href="index.html">Dashboard</a>
@@ -302,226 +410,224 @@ background:
     </nav>
 
     <div class="page-header">
-      <div class="eyebrow">Analytics engine</div>
-      <h1 class="page-title">Your financial health, explained</h1>
+      <div class="eyebrow">Financial wellness analytics</div>
+      <h1 class="page-title">Understand your financial resilience</h1>
       <p class="page-subtitle">
-        These scores combine diversification, liquidity, shock sensitivity, and behavior patterns into one actionable wellness view.
+        See how diversified, liquid, and behaviorally resilient your portfolio is, and get actionable next-best steps.
       </p>
+      <div class="meta-tags">
+        <span class="meta-chip" id="insights-last-updated">⏱ Last updated: Today at 9:00 AM</span>
+        <span class="meta-chip" id="insights-data-source">📡 Data source: Live FMP API</span>
+      </div>
     </div>
 
-    <div class="metric-grid">
-      <div class="card">
-        <div class="card-title">Diversification score <span class="chip-good">Good</span></div>
-        <div class="metric-score metric-good" id="diversification-val">81</div>
-        <div class="card-note">Healthy spread across cash, public markets, crypto, and private assets.</div>
-        <div class="sparkline-box">
-          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
-            <polyline points="0,25 20,22 40,28 60,15 80,18 100,5" stroke="#7ef0a2"></polyline>
-          </svg>
-        </div>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Diversification</div>
+        <div class="metric-value" id="diversification-score">81</div>
+        <div class="metric-note">Measures concentration risk across asset classes and exposure buckets.</div>
       </div>
 
-      <div class="card">
-        <div class="card-title">Liquidity score <span class="chip-watch">Watch</span></div>
-        <div class="metric-score metric-mid" id="liquidity-val">74</div>
-        <div class="card-note">You have a decent emergency buffer, but more accessible cash would improve resilience.</div>
-        <div class="sparkline-box">
-          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
-            <polyline points="0,15 20,25 40,10 60,20 80,15 100,12" stroke="#ffd166"></polyline>
-          </svg>
-        </div>
+      <div class="metric-card">
+        <div class="metric-label">Liquidity Strength</div>
+        <div class="metric-value" id="liquidity-score">74</div>
+        <div class="metric-note">Reflects how much of your wealth can be accessed quickly in a stress event.</div>
       </div>
 
-      <div class="card">
-        <div class="card-title">Fragility score <span class="chip-watch">Watch</span></div>
-        <div class="metric-score metric-mid" id="fragility-val">63</div>
-        <div class="card-note">Private assets and crypto can create stress during sharp market or life shocks.</div>
-        <div class="sparkline-box">
-          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
-            <polyline points="0,20 20,5 40,25 60,10 80,22 100,15" stroke="#ffd166"></polyline>
-          </svg>
-        </div>
+      <div class="metric-card">
+        <div class="metric-label">Fragility Score</div>
+        <div class="metric-value" id="fragility-score">63</div>
+        <div class="metric-note">Higher fragility means your portfolio is more sensitive to downside shocks.</div>
       </div>
 
-      <div class="card">
-        <div class="card-title">Behavior discipline <span class="chip-good">Good</span></div>
-        <div class="metric-score metric-good" id="behavior-val">79</div>
-        <div class="card-note">Your current pattern suggests relatively stable decision-making with room for guardrails.</div>
-        <div class="sparkline-box">
-          <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
-            <polyline points="0,28 20,25 40,20 60,18 80,10 100,8" stroke="#7ef0a2"></polyline>
-          </svg>
-        </div>
-        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255, 255, 255, 0.1); font-size: 0.85rem; line-height: 1.4;">
-          <span style="color: var(--muted);">Your resilience is high—can you handle a 50% Crypto Crash?</span>
-          <a href="simulator.html" style="color: var(--primary); font-weight: 600; display: inline-block; margin-top: 6px; transition: 0.2s; text-decoration: none;">
-            Test it in the Simulator &rarr;
-          </a>
-        </div>
+      <div class="metric-card">
+        <div class="metric-label">Behavior Discipline</div>
+        <div class="metric-value" id="behavior-score">79</div>
+        <div class="metric-note">Estimates resilience against panic selling, overreaction, and poor timing.</div>
       </div>
     </div>
 
     <div class="layout-2">
       <div class="panel">
-        <h2 class="section-title">What these scores are saying</h2>
-        <ul class="insight-list">
-          <li><strong>Diversification:</strong> Well spread; no single bet dominates.</li>
-          <li><strong>Liquidity:</strong> Okay today; add a bit more cash for big shocks.</li>
-          <li><strong>Fragility:</strong> Crypto and private deals can hurt in a downturn.</li>
-        </ul>
+        <div class="score-wrap">
+          <div>
+            <div class="score-label">Wealth Wellness Index</div>
+            <div class="score-value" id="wwi-score">78 / 100</div>
+            <div class="score-subtext">
+              A composite score that summarizes your liquidity, diversification, fragility, and behavior discipline into one financial health view.
+            </div>
+            <div class="score-subtext" id="wwi-explanation" style="margin-top: 10px;">
+              78 indicates strong financial resilience with moderate exposure to volatility.
+            </div>
+            <div class="score-subtext" id="wwi-benchmark" style="margin-top: 10px;">
+              Benchmark: Average balanced investor score is 70. Your score is 78.
+            </div>
+          </div>
+          <div class="score-chip" id="goal-chip">Goal: Retire by 50</div>
+        </div>
+
+        <h3 class="subsection-title">Score component breakdown</h3>
+        <div class="component-list" id="component-list"></div>
+
+        <h3 class="subsection-title">Current portfolio insights</h3>
+        <div class="insight-list" id="insight-list"></div>
       </div>
 
       <div class="panel">
-        <h2 class="section-title">Suggested actions</h2>
-        <ul id="suggested-actions-list" style="list-style: none; padding: 0;"></ul>
-        <button onclick="resetSimulation()" style="margin-top: 15px; padding: 6px 12px; background: transparent; border: 1px solid var(--muted); color: var(--muted); border-radius: 8px; cursor: pointer; font-size: 0.8rem; width: 100%;">
-          Reset Simulation
-        </button>
-      </div>
+        <h2 class="section-title">Suggested next-best actions</h2>
+        <div class="action-list" id="action-list"></div>
 
+        <div class="priority-card">
+          <div class="priority-title">Top priority</div>
+          <div class="priority-text" id="priority-text">
+            Gradually reduce concentration in volatile assets while improving liquid reserves, so your portfolio becomes more resilient under recession and job-loss scenarios.
+          </div>
+        </div>
+
+        <div class="tag-row">
+          <span class="small-tag" id="profile-tag">Balanced profile</span>
+          <span class="small-tag" id="runway-tag">8.3 months cash runway</span>
+          <span class="small-tag" id="wwi-tag">WWI 78 / 100</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <script src="mock-data.js"></script>
-  <script src="state.js"></script>
   <script>
-    // 1. Safe Initialization
-    // 1. Safe Initialization - Now connected to global brain!
-    document.addEventListener('DOMContentLoaded', () => {
-      let analytics = { diversification: 81, liquidity: 74, fragility: 63, behavior: 79 };
-      
-      // Pull saved scores if they exist
-      if (typeof StateManager !== 'undefined') {
+    function getGlobalMeta() {
+      const fallback = {
+        lastUpdated: "Today at 9:00 AM",
+        dataSource: "Live FMP API"
+      };
+
+      if (typeof StateManager !== "undefined") {
         const globalState = StateManager.get();
-        if (globalState) {
-          analytics.diversification = globalState.diversification || analytics.diversification;
-          analytics.liquidity = globalState.liquidityScore || analytics.liquidity; 
-          analytics.fragility = globalState.fragility || analytics.fragility;
-        }
+        return {
+          lastUpdated: globalState.lastUpdated || fallback.lastUpdated,
+          dataSource: globalState.dataSource || fallback.dataSource
+        };
       }
 
-      const divEl = document.getElementById("diversification-val");
-      const liqEl = document.getElementById("liquidity-val");
-      const fragEl = document.getElementById("fragility-val");
-      const behEl = document.getElementById("behavior-val");
-
-      if(divEl) divEl.textContent = analytics.diversification;
-      if(liqEl) liqEl.textContent = analytics.liquidity;
-      if(fragEl) fragEl.textContent = analytics.fragility;
-      if(behEl) behEl.textContent = analytics.behavior;
-
-      renderInsights();
-    });
-
-    // ADDED: "color" properties matching your mock-data.js asset allocation colors
-    const suggestions = [
-      { text: "Reduce crypto allocation to below 10%.", color: "#f59e0b", impact: { diversification: 6, fragility: -5 } }, // Amber
-      { text: "Increase emergency cash buffer by S$8,000.", color: "#818cf8", impact: { liquidity: 10 } }, // Indigo (lightened for dark mode)
-      { text: "Diversify private-asset concentration into ETFs.", color: "#10b981", impact: { diversification: 4, fragility: -7 } } // Green
-    ];
-
-    function resetSimulation() {
-      const analytics = (window.mockPortfolio && window.mockPortfolio.analytics) ? window.mockPortfolio.analytics : { diversification: 81, liquidity: 74, fragility: 63, behavior: 79 };
-
-      // Reset the text
-      document.getElementById("diversification-val").textContent = analytics.diversification;
-      document.getElementById("liquidity-val").textContent = analytics.liquidity;
-      document.getElementById("fragility-val").textContent = analytics.fragility;
-
-      // Reset colors to original CSS classes by removing inline styles
-      document.getElementById("diversification-val").style.color = "";
-      document.getElementById("liquidity-val").style.color = "";
-      document.getElementById("fragility-val").style.color = "";
-
-      // Re-render the buttons so they are clickable again
-      renderInsights();
+      return fallback;
     }
 
-    function renderInsights() {
-      const actionsList = document.getElementById("suggested-actions-list");
-      if (!actionsList) return;
-      
-      actionsList.innerHTML = suggestions.map((action, index) => `
-        <li style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--line); border-left: 4px solid ${action.color};">
-          <span style="font-size: 0.9rem; color: ${action.color}; font-weight: 600;">${action.text}</span>
-          <button class="primary-btn" style="font-size: 0.75rem; padding: 6px 12px; white-space: nowrap; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);" 
-                  onclick='simulateFix(this, ${JSON.stringify(action.impact)})'>
-            Simulate Fix
-          </button>
-        </li>
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function getScoreClass(score) {
+      if (score >= 80) return "score-good";
+      if (score >= 60) return "score-medium";
+      return "score-low";
+    }
+
+    function renderInsightsPage() {
+      const meta = getGlobalMeta();
+      const analytics = window.mockPortfolio.analytics || {};
+      const summary = window.mockPortfolio.summary || {};
+      const user = window.mockPortfolio.user || {};
+      const insights = window.mockPortfolio.insights || [];
+
+      setText("insights-last-updated", `⏱ Last updated: ${meta.lastUpdated}`);
+      setText("insights-data-source", `📡 Data source: ${meta.dataSource}`);
+
+      const diversification = analytics.diversification ?? 81;
+      const liquidity = analytics.liquidity ?? 74;
+      const fragility = analytics.fragility ?? 63;
+      const behavior = analytics.behavior ?? 79;
+      const wwi = summary.wealthWellnessScore ?? 78;
+
+      const diversificationEl = document.getElementById("diversification-score");
+      const liquidityEl = document.getElementById("liquidity-score");
+      const fragilityEl = document.getElementById("fragility-score");
+      const behaviorEl = document.getElementById("behavior-score");
+      const wwiEl = document.getElementById("wwi-score");
+
+      diversificationEl.textContent = diversification;
+      liquidityEl.textContent = liquidity;
+      fragilityEl.textContent = fragility;
+      behaviorEl.textContent = behavior;
+      wwiEl.textContent = `${wwi} / 100`;
+
+      diversificationEl.className = `metric-value ${getScoreClass(diversification)}`;
+      liquidityEl.className = `metric-value ${getScoreClass(liquidity)}`;
+      fragilityEl.className = `metric-value ${getScoreClass(fragility)}`;
+      behaviorEl.className = `metric-value ${getScoreClass(behavior)}`;
+      wwiEl.className = `score-value ${getScoreClass(wwi)}`;
+
+      const wwiExplanationEl = document.getElementById("wwi-explanation");
+      let wwiExplanation = "";
+
+      if (wwi >= 80) {
+        wwiExplanation = `${wwi} indicates strong financial resilience with good diversification and a healthy liquidity position.`;
+      } else if (wwi >= 60) {
+        wwiExplanation = `${wwi} indicates solid financial health with some moderate exposure to volatility and liquidity stress.`;
+      } else {
+        wwiExplanation = `${wwi} indicates elevated financial fragility and a need for stronger liquidity and risk controls.`;
+      }
+
+      if (wwiExplanationEl) {
+        wwiExplanationEl.textContent = wwiExplanation;
+      }
+
+      const benchmarkEl = document.getElementById("wwi-benchmark");
+      const benchmarkScore = 70;
+      if (benchmarkEl) {
+        benchmarkEl.textContent = `Benchmark: Average balanced investor score is ${benchmarkScore}. Your score is ${wwi}.`;
+      }
+
+      setText("goal-chip", `Goal: ${user.goal || "Retire by 50"}`);
+      setText("profile-tag", `${user.profile || "Balanced"} profile`);
+      setText("runway-tag", `${summary.emergencyMonths ?? 8.3} months cash runway`);
+      setText("wwi-tag", `WWI ${wwi} / 100`);
+
+      const componentList = document.getElementById("component-list");
+      const components = [
+        { name: "Diversification", score: diversification },
+        { name: "Liquidity Strength", score: liquidity },
+        { name: "Fragility Score", score: fragility },
+        { name: "Behavior Discipline", score: behavior }
+      ];
+
+      componentList.innerHTML = components.map(item => `
+        <div class="component-row">
+          <div class="component-name">${item.name}</div>
+          <div class="bar-track">
+            <div class="bar-fill" data-width="${Math.max(0, Math.min(100, item.score))}%"></div>
+          </div>
+          <div class="component-score">${item.score}</div>
+        </div>
       `).join("");
-    }
-
-    function simulateFix(btn, impact) {
-      btn.disabled = true;
-      btn.innerText = "Applied";
-      btn.style.opacity = "0.5";
-      btn.style.background = "#34d399";
-
-      const toast = document.getElementById("toast");
-      if (toast) {
-        toast.textContent = "Simulating portfolio adjustment...";
-        toast.style.background = "var(--primary)";
-        toast.classList.add("show");
-      }
-
-      // Read current state to do accurate math
-      let currentState = { diversification: 81, liquidity: 74, fragility: 63 };
-      if (typeof StateManager !== 'undefined' && StateManager.get()) {
-        currentState = { ...currentState, ...StateManager.get() };
-      }
 
       setTimeout(() => {
-        let updates = {};
+        document.querySelectorAll(".bar-fill").forEach(bar => {
+          bar.style.width = bar.dataset.width;
+        });
+      }, 100);
 
-        if (impact.diversification) {
-          const el = document.getElementById("diversification-val");
-          const current = parseInt(el.innerText) || 81;
-          const newScore = current + impact.diversification;
-          updateScoreVisual("diversification-val", current, newScore);
-          updates.diversification = newScore;
-        }
-        if (impact.liquidity) {
-          const el = document.getElementById("liquidity-val");
-          const current = parseInt(el.innerText) || 74;
-          const newScore = current + impact.liquidity;
-          updateScoreVisual("liquidity-val", current, newScore);
-          updates.liquidityScore = newScore; // Save to global state
-        }
-        if (impact.fragility) {
-          const el = document.getElementById("fragility-val");
-          const current = parseInt(el.innerText) || 63;
-          const newScore = current + impact.fragility;
-          updateScoreVisual("fragility-val", current, newScore, true);
-          updates.fragility = newScore;
-        }
+      const insightList = document.getElementById("insight-list");
+      insightList.innerHTML = insights.map(item => `
+        <div class="insight-item">${item}</div>
+      `).join("");
 
-        // WRITE TO THE GLOBAL BRAIN
-        if (typeof StateManager !== 'undefined') {
-          StateManager.update(updates);
-        }
+      const actionList = document.getElementById("action-list");
+      const actions = analytics.suggestedActions || [];
+      actionList.innerHTML = actions.map((item, index) => `
+        <div class="action-item">
+          <strong>Action ${index + 1}:</strong> ${item}
+        </div>
+      `).join("");
 
-        if (toast) {
-          toast.textContent = "✅ Wealth Resilience Improved!";
-          setTimeout(() => toast.classList.remove("show"), 2000);
-        }
-      }, 400); 
+      const topPriority = actions[0]
+        ? actions[0]
+        : "Strengthen liquidity and reduce concentration in volatile assets to improve portfolio resilience.";
+      setText("priority-text", topPriority);
     }
 
-    function updateScoreVisual(id, oldScore, newScore, isInverse = false) {
-      const el = document.getElementById(id);
-      if (!el) return;
-
-      el.style.transition = "all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-      el.style.transform = "scale(1.3)";
-      const isGoodChange = isInverse ? (newScore < oldScore) : (newScore > oldScore);
-      el.style.color = isGoodChange ? "#34d399" : "#ff4c4c";
-      el.innerText = newScore;
-
-      setTimeout(() => { el.style.transform = "scale(1)"; }, 600);
-    }
-
-
+    document.addEventListener("DOMContentLoaded", () => {
+      renderInsightsPage();
+    });
   </script>
 </body>
 </html>

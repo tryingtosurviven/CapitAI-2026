@@ -835,10 +835,20 @@ async function fetchLivePortfolio() {
       }
 
       // 5) Re-render dashboard on this page
+            // 5) Save shared metadata globally
+      if (typeof StateManager !== "undefined") {
+        StateManager.update({
+          netWorth: window.mockPortfolio.summary.netWorth,
+          wellnessScore: window.mockPortfolio.summary.wealthWellnessScore,
+          lastUpdated: "Today at 9:00 AM",
+          dataSource: "Live FMP API"
+        });
+      }
+
+      // 6) Re-render dashboard on this page
       renderDashboard();
 
-
-      // 6) Label for judges
+      // 7) Label for judges
       label.textContent =
         "Data source: Live API snapshot (falls back to LifePath wellness dataset if APIs fail)";
     } else {
@@ -848,6 +858,13 @@ async function fetchLivePortfolio() {
   } catch (e) {
     console.log("Live refresh failed:", e);
     // On failure, do NOT touch window.mockPortfolio; just update label
+        if (typeof StateManager !== "undefined") {
+      StateManager.update({
+        lastUpdated: "Today at 9:00 AM",
+        dataSource: "Simulated LifePath dataset"
+      });
+    }
+
     label.textContent = "Live feed unavailable, using simulated LifePath dataset";
   }
 }
