@@ -6,18 +6,20 @@
   <title>Lifepath AI | Wealth Wellness Hub</title>
   <style>
     :root {
-      --bg: #081120;
-      --panel: #101a2e;
-      --line: #223150;
-      --text: #edf2ff;
-      --muted: #a8b3cf;
-      --primary: #6d7cff;
-      --cyan: #39c6e9;
-      --green: #22c55e;
+      /* Premium Fintech Palette */
+      --bg: #050a15; 
+      --panel: #0f172a;
+      --panel-hover: #1e293b;
+      --line: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --primary: #0ea5e9; /* Tickrs Cyan */
+      --secondary: #6366f1; /* Muted Indigo */
+      --green: #10b981;
       --amber: #f59e0b;
-      --red: #ef4444;
-      --shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
-      --radius: 20px;
+      --red: #f43f5e;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --radius: 12px;
     }
 
     * {
@@ -27,10 +29,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background:
-        radial-gradient(circle at top right, rgba(109, 124, 255, 0.12), transparent 28%),
-        radial-gradient(circle at top left, rgba(57, 198, 233, 0.08), transparent 22%),
-        var(--bg);
+      background: var(--bg); /* Clean, professional solid background */
       color: var(--text);
     }
 
@@ -104,21 +103,20 @@
       margin-bottom: 18px;
     }
 
-    .panel,
-    .card {
-      background: linear-gradient(180deg, rgba(21,33,58,0.98), rgba(16,26,46,0.98));
+    .panel, .card {
+      background: var(--panel);
       border: 1px solid var(--line);
       border-radius: var(--radius);
+      transition: all 0.2s ease-in-out;
       box-shadow: var(--shadow);
+      padding: 24px; /* Standardized padding for Tickrs-style look */
     }
 
-    .panel {
-      padding: 22px;
+    .panel:hover {
+      border-color: var(--primary);
+      background: var(--panel-hover);
     }
-
-    .card {
-      padding: 18px;
-    }
+    
 
     .eyebrow {
       color: #95a4ff;
@@ -478,6 +476,15 @@
         <a class="nav-link" href="simulator.html">Simulator</a>
       </div>
     </nav>
+
+    <div style="display: flex; gap: 12px; margin-bottom: 24px; padding: 0 4px;">
+      <span style="font-size: 0.7rem; padding: 4px 10px; background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid var(--green); border-radius: 6px; font-weight: 700;">
+        ● LIVE API SYNC ACTIVE
+      </span>
+      <span style="font-size: 0.7rem; padding: 4px 10px; background: rgba(148, 163, 184, 0.1); color: var(--muted); border: 1px solid var(--line); border-radius: 6px; font-weight: 700;">
+        INSTITUTIONAL DATASET
+      </span>
+    </div>
 
     <section class="hero">
       <div class="panel">
