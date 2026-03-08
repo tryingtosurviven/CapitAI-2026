@@ -617,6 +617,8 @@
   </div>
 
   <script src="mock-data.js"></script>
+  <script src="state.js"></script>
+  
   <script>
     let currentCurrency = "SGD";
     let allocationChart;
@@ -649,13 +651,33 @@
 
     function renderDashboard() {
       const portfolio = window.mockPortfolio;
+      
+      // NEW: Pull the latest global state from the brain!
+      let globalState = null;
+      if (typeof StateManager !== 'undefined') {
+        globalState = StateManager.get();
+      }
+      
+      // Use the global state if it exists, otherwise fall back to the mock data
+      const displayNetWorth = globalState ? globalState.netWorth : portfolio.summary.netWorth;
+      const displayScore = globalState ? globalState.wellnessScore : portfolio.summary.wealthWellnessScore;
+      const displayLiquidity = globalState ? globalState.liquidityMonths : portfolio.summary.emergencyMonths;
 
-      const netWorthValue = convertFromSGD(portfolio.summary.netWorth);
+      const netWorthValue = convertFromSGD(displayNetWorth);
 
+      // Inject the connected numbers into the HTML
       document.getElementById("net-worth").textContent = formatMoney(netWorthValue);
-      document.getElementById("wellness-score").textContent = `${portfolio.summary.wealthWellnessScore}/100`;
-      document.getElementById("liquidity-buffer").textContent = `${portfolio.summary.emergencyMonths} months`;
+      document.getElementById("wellness-score").textContent = `${displayScore}/100`;
+      document.getElementById("liquidity-buffer").textContent = `${displayLiquidity} months`;
       document.getElementById("user-goal").textContent = portfolio.user.goal;
+
+      // Add a small warning label if a scenario is active
+      if (globalState && globalState.activeScenario !== "Base case" && globalState.activeScenario !== "None") {
+        document.getElementById("data-mode-label").innerHTML = 
+          `<span style="color: #ff4c4c;">⚠️ ACTIVE SCENARIO: ${globalState.activeScenario}</span>`;
+      } else {
+        document.getElementById("data-mode-label").innerHTML = "Simulated LifePath dataset (safe for demo)";
+      }
 
       document.getElementById("quick-insights").innerHTML = portfolio.insights
         .map(item => `<li>${item}</li>`)

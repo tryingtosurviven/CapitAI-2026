@@ -383,13 +383,23 @@ background:
   </div>
 
   <script src="mock-data.js"></script>
+  <script src="state.js"></script>
   <script>
     // 1. Safe Initialization
+    // 1. Safe Initialization - Now connected to global brain!
     document.addEventListener('DOMContentLoaded', () => {
-      const defaultData = { diversification: 81, liquidity: 74, fragility: 63, behavior: 79 };
-      const analytics = (window.mockPortfolio && window.mockPortfolio.analytics) ? window.mockPortfolio.analytics : defaultData;
+      let analytics = { diversification: 81, liquidity: 74, fragility: 63, behavior: 79 };
+      
+      // Pull saved scores if they exist
+      if (typeof StateManager !== 'undefined') {
+        const globalState = StateManager.get();
+        if (globalState) {
+          analytics.diversification = globalState.diversification || analytics.diversification;
+          analytics.liquidity = globalState.liquidityScore || analytics.liquidity; 
+          analytics.fragility = globalState.fragility || analytics.fragility;
+        }
+      }
 
-      // Use IDs that match your cards
       const divEl = document.getElementById("diversification-val");
       const liqEl = document.getElementById("liquidity-val");
       const fragEl = document.getElementById("fragility-val");
@@ -455,28 +465,47 @@ background:
         toast.classList.add("show");
       }
 
+      // Read current state to do accurate math
+      let currentState = { diversification: 81, liquidity: 74, fragility: 63 };
+      if (typeof StateManager !== 'undefined' && StateManager.get()) {
+        currentState = { ...currentState, ...StateManager.get() };
+      }
+
       setTimeout(() => {
+        let updates = {};
+
         if (impact.diversification) {
           const el = document.getElementById("diversification-val");
           const current = parseInt(el.innerText) || 81;
-          updateScoreVisual("diversification-val", current, current + impact.diversification);
+          const newScore = current + impact.diversification;
+          updateScoreVisual("diversification-val", current, newScore);
+          updates.diversification = newScore;
         }
         if (impact.liquidity) {
           const el = document.getElementById("liquidity-val");
           const current = parseInt(el.innerText) || 74;
-          updateScoreVisual("liquidity-val", current, current + impact.liquidity);
+          const newScore = current + impact.liquidity;
+          updateScoreVisual("liquidity-val", current, newScore);
+          updates.liquidityScore = newScore; // Save to global state
         }
         if (impact.fragility) {
           const el = document.getElementById("fragility-val");
           const current = parseInt(el.innerText) || 63;
-          updateScoreVisual("fragility-val", current, current + impact.fragility, true);
+          const newScore = current + impact.fragility;
+          updateScoreVisual("fragility-val", current, newScore, true);
+          updates.fragility = newScore;
+        }
+
+        // WRITE TO THE GLOBAL BRAIN
+        if (typeof StateManager !== 'undefined') {
+          StateManager.update(updates);
         }
 
         if (toast) {
           toast.textContent = "✅ Wealth Resilience Improved!";
           setTimeout(() => toast.classList.remove("show"), 2000);
         }
-      }, 400); // Shorter delay for better demo feel
+      }, 400); 
     }
 
     function updateScoreVisual(id, oldScore, newScore, isInverse = false) {

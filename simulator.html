@@ -454,6 +454,7 @@ a {
 
 </style>
   <script src="mock-data.js"></script>
+  <script src="state.js"></script>
 </head>
 <body>
   <div class="container">
@@ -614,7 +615,19 @@ a {
         scenario.changeText || "This is your current baseline before any shock is applied.";
 
       // 6. Save new state and remove color flash after 1 second
+      // 6. Save new state globally to localStorage!
       currentData = { ...scenario };
+      
+      if (typeof StateManager !== 'undefined') {
+        StateManager.update({
+          netWorth: scenario.netWorth,
+          wellnessScore: scenario.wellnessScore,
+          liquidityMonths: scenario.liquidityMonths,
+          retirementProbability: scenario.retirementProbability,
+          activeScenario: titles[key]
+        });
+      }
+
       setTimeout(() => {
         [nwEl, wsEl, rpEl, lmEl].forEach(el => el.classList.remove('val-drop', 'val-recover'));
       }, 1000);
