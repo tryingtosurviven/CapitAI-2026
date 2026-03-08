@@ -140,26 +140,6 @@ a { color: inherit; text-decoration: none; }
       </p>
     </div>
 
-    <div class="panel">
-      <h2 class="section-title">Banks</h2>
-      <div class="connector-grid" id="banks-grid"></div>
-    </div>
-
-    <div class="panel">
-      <h2 class="section-title">Investments</h2>
-      <div class="connector-grid" id="investments-grid"></div>
-    </div>
-
-    <div class="panel">
-      <h2 class="section-title">Crypto</h2>
-      <div class="connector-grid" id="crypto-grid"></div>
-    </div>
-
-    <div class="panel">
-      <h2 class="section-title">Other Assets</h2>
-      <div class="connector-grid" id="other-grid"></div>
-    </div>
-
     <div class="layout-2">
       <div class="panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -225,7 +205,8 @@ a { color: inherit; text-decoration: none; }
     </div>
   </div> <script src="mock-data.js"></script>
   <script src="connectors.js"></script>
-  <script>
+
+<script>
     function formatMoney(value) {
       return new Intl.NumberFormat("en-SG", {
         style: "currency",
@@ -234,19 +215,71 @@ a { color: inherit; text-decoration: none; }
       }).format(value);
     }
 
+    // 1. Define it once
+    function renderConnectors() {
+      const providers = [
+        { id: 'banks-grid', name: 'DBS / POSB', sub: 'Traditional Banking', badge: 'Popular' },
+        { id: 'investments-grid', name: 'Tiger Brokers', sub: 'Equities & ETFs', badge: 'Fast Link' },
+        { id: 'crypto-grid', name: 'MetaMask', sub: 'Web3 Wallet', badge: 'DeFi' },
+        { id: 'other-grid', name: '3D Printer', sub: 'Physical Asset', badge: 'Manual' }
+      ];
+
+      providers.forEach(p => {
+        const grid = document.getElementById(p.id);
+        if (grid) {
+          grid.innerHTML = `
+            <div class="connector-card" onclick="mockConnect('${p.name}')">
+              <div class="connector-top">
+                <span class="connector-name">${p.name}</span>
+                <span class="connector-badge">${p.badge}</span>
+              </div>
+              <div class="connector-subtitle">${p.sub}</div>
+            </div>
+          `;
+        }
+      });
+    }
+
+    // 2. Keep this focused only on the tables
+    function getBadgeStyle(category) {
+      switch(category) {
+        case 'Bank': return 'background: rgba(79, 70, 229, 0.15); color: #818cf8; border: 1px solid rgba(79, 70, 229, 0.4);';
+        case 'Investment': return 'background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);';
+        case 'Crypto': return 'background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);';
+        case 'Private Asset': return 'background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);';
+        default: return 'background: rgba(255, 255, 255, 0.05); color: #a8b3cf;';
+      }
+    }
+
     function renderTables() {
       const linkedBody = document.getElementById("linked-table-body");
-      const assetBody = document.getElementById("asset-breakdown-body"); // Added this line
+      const assetBody = document.getElementById("asset-breakdown-body");
 
-      // Renders the Linked Accounts table with Disconnect buttons
+      // Helper to map the summary asset names to their categories for coloring
+      const getCategoryFromAsset = (asset) => {
+        if (asset.includes("Cash")) return "Bank";
+        if (asset.includes("ETF") || asset.includes("Equity")) return "Investment";
+        if (asset.includes("Crypto")) return "Crypto";
+        if (asset.includes("Equipment") || asset.includes("Private")) return "Private Asset";
+        return "";
+      };
+
       linkedBody.innerHTML = window.mockPortfolio.linkedAccounts.map((item, index) => `
         <tr id="row-${index}">
-          <td>${item.name}</td>
-          <td>${item.category}</td>
-          <td>${formatMoney(item.balance)}</td>
-          <td>${item.status}</td>
+          <td style="font-weight: 600;">${item.name}</td>
           <td>
-            <button class="mini-btn" style="color: #ff4c4c; border-color: rgba(255, 76, 76, 0.3);" 
+            <span style="padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; ${getBadgeStyle(item.category)}">
+              ${item.category}
+            </span>
+          </td>
+          <td style="font-family: monospace; font-size: 1rem;">${formatMoney(item.balance)}</td>
+          <td>
+            <span style="color: ${item.status === 'Connected' ? '#34d399' : '#a8b3cf'}; font-size: 0.85rem;">
+              ● ${item.status}
+            </span>
+          </td>
+          <td>
+            <button class="mini-btn" style="color: #ff4c4c; border-color: rgba(255, 76, 76, 0.3); background: none; cursor: pointer;" 
                     onclick="disconnectAccount(${index}, '${item.name}')">
               Disconnect
             </button>
@@ -254,74 +287,73 @@ a { color: inherit; text-decoration: none; }
         </tr>
       `).join("");
 
-      // Renders the Asset Type breakdown table
+      // Updated: This part now uses the same badge styling as the left table
       assetBody.innerHTML = window.mockPortfolio.assetBreakdown.map(item => `
         <tr>
-          <td>${item.asset}</td>
-          <td>${item.type}</td>
-          <td>${formatMoney(item.value)}</td>
+          <td>
+            <span style="padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; ${getBadgeStyle(getCategoryFromAsset(item.asset))}">
+              ${item.asset}
+            </span>
+          </td>
+          <td><em style="color: var(--muted);">${item.type}</em></td>
+          <td style="font-family: monospace; font-size: 1rem; font-weight: 600;">${formatMoney(item.value)}</td>
         </tr>
       `).join("");
     }
 
-    function openConnectModal() {
-      document.getElementById('connect-modal').style.display = 'flex';
-    }
-
-    function closeConnectModal() {
-      document.getElementById('connect-modal').style.display = 'none';
-    }
-
-    // ... existing openConnectModal and closeConnectModal functions ...
+    function openConnectModal() { document.getElementById('connect-modal').style.display = 'flex'; }
+    function closeConnectModal() { document.getElementById('connect-modal').style.display = 'none'; }
 
     function mockConnect(provider) {
       const toast = document.getElementById("toast");
       toast.textContent = `Linking ${provider} to your Lifepath...`;
+      toast.style.background = "var(--primary)";
       toast.classList.add("show");
       closeConnectModal();
-      setTimeout(() => { toast.classList.remove("show"); }, 3000);
+
+      let balance = 0;
+      let category = "";
+      if (provider === 'DBS / POSB') { balance = 22000; category = "Bank"; }
+      else if (provider === 'Tiger Brokers') { balance = 42000; category = "Investment"; }
+      else if (provider === 'Syfe') { balance = 38500; category = "Investment"; }
+      else if (provider === 'MetaMask') { balance = 25500; category = "Crypto"; }
+
+      window.mockPortfolio.linkedAccounts.push({ name: provider, category: category, balance: balance, status: "Connected" });
+
+      setTimeout(() => {
+        renderTables();
+        toast.classList.remove("show");
+      }, 2500);
     }
 
-    // PASTE THE NEW DISCONNECT LOGIC HERE:
     function disconnectAccount(index, name) {
-      // Demo Guardrail: Only allow disconnecting specific demo accounts
       const allowList = ['DBS / POSB', 'Tiger Brokers', 'Syfe', 'MetaMask'];
-      
       if (!allowList.includes(name)) {
         const toast = document.getElementById("toast");
         toast.textContent = `⚠️ Action Restricted: ${name} is a core demo asset.`;
-        toast.style.background = "#f59e0b"; // Amber warning color
+        toast.style.background = "#f59e0b";
         toast.classList.add("show");
         setTimeout(() => toast.classList.remove("show"), 3000);
-        return; // Stop here
+        return;
       }
-
-      // Functional Disconnect
-      if (confirm(`Are you sure you want to disconnect ${name}? This will revoke Lifepath AI's access to this data.`)) {
+      if (confirm(`Are you sure you want to disconnect ${name}?`)) {
         const toast = document.getElementById("toast");
         toast.textContent = `✅ Successfully disconnected ${name}.`;
-        toast.style.background = "#22c55e"; // Green success color
+        toast.style.background = "#22c55e";
         toast.classList.add("show");
-        
-        // Physically remove the row from the UI
         const row = document.getElementById(`row-${index}`);
         if (row) {
           row.style.transition = "all 0.4s ease";
           row.style.transform = "translateX(20px)";
           row.style.opacity = "0";
-          
-          // Wait for animation to finish before removing from DOM
-          setTimeout(() => {
-            row.remove();
-          }, 4000);
+          setTimeout(() => row.remove(), 400);
         }
-        
-        setTimeout(() => {
-          toast.classList.remove("show");
-        }, 3000);
+        setTimeout(() => toast.classList.remove("show"), 3000);
       }
     }
 
+    // 3. START EVERYTHING
+    renderConnectors();
     renderTables();
   </script>
 </body>
