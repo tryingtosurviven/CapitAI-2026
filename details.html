@@ -50,8 +50,10 @@
         style: 'currency', currency: 'SGD', maximumFractionDigits: 0 
       }).format(val);
 
-      document.getElementById('detail-title').textContent = category + " Breakdown";
-      
+      const displayTitle = category === "Bank" ? "Cash" : 
+                           category === "Investment" ? "Investment" : category;
+      document.getElementById('detail-title').textContent = displayTitle + " Breakdown";
+
       if (data) {
         document.getElementById('detail-body').innerHTML = data.map(item => `
             <tr style="border-bottom: 1px solid #223150;">

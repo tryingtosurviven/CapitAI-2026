@@ -15,14 +15,14 @@ window.mockPortfolio = {
   // One clean version of Detailed Accounts
   detailedAccounts: {
     Bank: [
-      { name: "POSB Savings", accNo: "123-45678-9", balance: 15000, status: "Connected" },
-      { name: "DBS Multiplier", accNo: "987-65432-1", balance: 12000, status: "Connected" },
-      { name: "OCBC 360", accNo: "555-00012-3", balance: 10000, status: "Connected" }
+      { coin: "Savings Account", symbol: "POSB", wallet: "POSB Digibank", balance: 15000, valueUsd: 11070 },
+      { coin: "Multiplier Account", symbol: "DBS", wallet: "DBS iWealth", balance: 12000, valueUsd: 8856 },
+      { coin: "360 Account", symbol: "OCBC", wallet: "OCBC Digital", balance: 10000, valueUsd: 7380 }
     ],
     Investment: [
-      { name: "Tiger Brokers", accNo: "TR-88291", balance: 42000, status: "Connected" },
-      { name: "Syfe (REIT+)", accNo: "SY-11022", balance: 38500, status: "Connected" },
-      { name: "Endowus", accNo: "EN-55410", balance: 29000, status: "Connected" }
+      { coin: "S&P 500 ETF", symbol: "VOO", wallet: "Tiger Brokers", balance: 42000, valueUsd: 30996 },
+      { coin: "REIT+ Portfolio", symbol: "REIT", wallet: "Syfe", balance: 38500, valueUsd: 28413 },
+      { coin: "Core Equity", symbol: "CASH+", wallet: "Endowus", balance: 29000, valueUsd: 21402 }
     ],
     // Inside detailedAccounts in mock-data.js
     // Inside detailedAccounts in mock-data.js
@@ -35,7 +35,7 @@ window.mockPortfolio = {
     ],
 
     "Private Asset": [
-      { name: "3D Printer Cluster", accNo: "Business-ID-01", balance: 100000, status: "Owned" } //
+      { coin: "3D Printer Cluster", symbol: "BIZ", wallet: "Physical Assets", balance: 100000, valueUsd: 73800 }
     ]
   },
 
