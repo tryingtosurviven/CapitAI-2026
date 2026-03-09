@@ -458,29 +458,16 @@ a {
 </head>
 <body>
   <div class="container">
-    <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px;">
+    <nav class="navbar">
       <div class="brand">
         <div class="brand-title">Lifepath AI</div>
-        <div class="brand-subtitle">Unified Wealth Wallet</div>
+        <div class="brand-subtitle">Future Shock Simulator</div>
       </div>
-
-      <div class="global-money-bar" style="display: flex; gap: 20px; background: rgba(255,255,255,0.05); padding: 8px 18px; border-radius: 12px; border: 1px solid var(--line);">
-        <div style="text-align: right;">
-          <div style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase;">Total Net Worth</div>
-          <div id="nav-sgd" style="font-weight: 700; color: #fff;">S$ 286,500</div>
-        </div>
-        <div style="width: 1px; background: var(--line); margin: 4px 0;"></div>
-        <div style="text-align: right;">
-          <div style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase;">USD Equivalent</div>
-          <div id="nav-usd" style="font-weight: 700; color: var(--primary);">$ 211,437</div>
-        </div>
-      </div>
-
       <div class="nav-links">
         <a class="nav-link" href="index.html">Dashboard</a>
         <a class="nav-link" href="assets.html">Assets</a>
         <a class="nav-link" href="insights.html">Insights</a>
-        <a class="nav-link" href="simulator.html">Simulator</a>
+        <a class="nav-link active" href="simulator.html">Simulator</a>
       </div>
     </nav>
 
@@ -553,11 +540,23 @@ a {
     };
 
     // Store current values to animate FROM
+        const initialState =
+      (typeof StateManager !== "undefined" && StateManager.get)
+        ? StateManager.get()
+        : {
+            netWorth: 286500,
+            wellnessScore: 78,
+            retirementProbability: 74,
+            liquidityMonths: 8.3,
+            activeScenarioKey: "base",
+            activeScenario: "Base case"
+          };
+
     let currentData = {
-      netWorth: 286500,
-      wellnessScore: 78,
-      retirementProbability: 74,
-      liquidityMonths: 8.3
+      netWorth: initialState.netWorth,
+      wellnessScore: initialState.wellnessScore,
+      retirementProbability: initialState.retirementProbability,
+      liquidityMonths: initialState.liquidityMonths
     };
 
     // Number counter animation function
@@ -591,16 +590,18 @@ a {
     }
 
     function applyScenario(key, btnElement = null) {
-      const scenario = window.mockPortfolio.scenarios[key];
+            const portfolio =
+        (typeof StateManager !== "undefined" && StateManager.getPortfolio)
+          ? StateManager.getPortfolio()
+          : window.mockPortfolio;
+
+      const scenario = portfolio.scenarios[key];
       if (!scenario) return;
 
       // 1. Update Active Button Style
       document.querySelectorAll('.scenario-btn, .secondary-btn').forEach(b => b.classList.remove('active'));
       if (btnElement) {
         btnElement.classList.add('active');
-
-      syncGlobalNavbar();
-      
       }
 
       // 2. Determine if things got better or worse (for color flashing)
@@ -634,13 +635,14 @@ a {
       // 6. Save new state globally to localStorage!
       currentData = { ...scenario };
       
-      if (typeof StateManager !== 'undefined') {
+            if (typeof StateManager !== 'undefined') {
         StateManager.update({
           netWorth: scenario.netWorth,
           wellnessScore: scenario.wellnessScore,
           liquidityMonths: scenario.liquidityMonths,
           retirementProbability: scenario.retirementProbability,
-          activeScenario: titles[key]
+          activeScenario: titles[key],
+          activeScenarioKey: key
         });
       }
 
@@ -650,24 +652,16 @@ a {
     }
 
     // Initialize the page on the Base Case
-    applyScenario("base");
+        // Initialize using the currently saved scenario
+    const savedScenarioKey =
+      (typeof StateManager !== "undefined" && StateManager.get)
+        ? (StateManager.get().activeScenarioKey || "base")
+        : "base";
 
-    function syncGlobalNavbar() {
-      const sgdEl = document.getElementById('nav-sgd');
-      const usdEl = document.getElementById('nav-usd');
-      
-      // Use the scenario-adjusted data from currentData
-      const totalSgd = currentData.netWorth;
-      const fxRate = 0.738; // Matches your simulated exchange rate [cite: 2026-02-13]
+    const initialButton = Array.from(document.querySelectorAll(".scenario-btn"))
+      .find(btn => btn.getAttribute("onclick")?.includes(`'${savedScenarioKey}'`));
 
-      sgdEl.textContent = new Intl.NumberFormat("en-SG", {
-        style: "currency", currency: "SGD", maximumFractionDigits: 0
-      }).format(totalSgd);
-
-      usdEl.textContent = new Intl.NumberFormat("en-US", {
-        style: "currency", currency: "USD", maximumFractionDigits: 0
-      }).format(totalSgd * fxRate);
-    }
+    applyScenario(savedScenarioKey, initialButton || null);
   </script>
 </body>
 </html>

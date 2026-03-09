@@ -238,9 +238,10 @@
       return window.mockPortfolio;
     }
 
-    function getSharedState() {
-      if (typeof StateManager !== "undefined" && StateManager.getState) {
-        return StateManager.getState();
+        function getSharedState() {
+      if (typeof StateManager !== "undefined") {
+        if (StateManager.getState) return StateManager.getState();
+        if (StateManager.get) return StateManager.get();
       }
       return null;
     }
@@ -262,29 +263,27 @@
     }
 
     function renderInsightsPage() {
-      const portfolio = getSharedPortfolio();
-      const globalState = getSharedState();
+            const portfolio = getSharedPortfolio();
+      const summary = portfolio?.summary ?? {};
+      const analytics = portfolio?.analytics ?? {};
 
-      const analytics = portfolio.analytics || {};
-      const user = portfolio.user || {};
-      const summary = portfolio.summary || {};
+      const activeScenario =
+        summary.activeScenarioLabel ||
+        portfolio?.activeScenarioLabel ||
+        "Base case";
 
-      const activeScenario = globalState?.activeScenario ?? "Base case";
-      const scenarioActive = activeScenario !== "None" && activeScenario !== "Base case";
-
-      const diversification = scenarioActive
-        ? (analytics.diversification ?? globalState?.diversification ?? 81)
-        : (globalState?.diversification ?? analytics.diversification ?? 81);
-
+      const diversification = analytics.diversification ?? 81;
       const liquidity = analytics.liquidity ?? 74;
-
-      const fragility = scenarioActive
-        ? (analytics.fragility ?? globalState?.fragility ?? 63)
-        : (globalState?.fragility ?? analytics.fragility ?? 63);
-
+      const fragility = analytics.fragility ?? 63;
       const behavior = analytics.behavior ?? 79;
-      const wwi = globalState?.wellnessScore ?? summary.wealthWellnessScore ?? 78;
-      const liquidityMonths = globalState?.liquidityMonths ?? summary.emergencyMonths ?? 8.3;
+      const wwi = summary.wealthWellnessScore ?? 78;
+      const liquidityMonths = summary.emergencyMonths ?? 8.3;
+      const totalNetWorth = summary.netWorth ?? 0;
+      const usdEquivalent = Math.round(totalNetWorth * 0.738);
+            document.getElementById("nav-sgd").textContent =
+        `S$ ${totalNetWorth.toLocaleString()}`;
+      document.getElementById("nav-usd").textContent =
+        `$ ${usdEquivalent.toLocaleString()}`;
 
       setMetric("diversification", diversification);
       setMetric("liquidity", liquidity);
