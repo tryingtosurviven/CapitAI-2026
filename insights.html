@@ -157,22 +157,22 @@
 
     <div class="metric-grid">
       <div class="card">
-        <div class="card-title">Diversification <span id="metric-diversification-badge" style="float:right; color:var(--green);">81</span></div>
+        <div class="card-title">Diversification</div>
         <div class="metric-score" id="metric-diversification" style="color:var(--green);">81</div>
         <div class="card-note">Measures concentration risk across asset classes and exposure buckets.</div>
       </div>
       <div class="card">
-        <div class="card-title">Liquidity Strength <span id="metric-liquidity-badge" style="float:right; color:var(--amber);">74</span></div>
+        <div class="card-title">Liquidity Strength</div>
         <div class="metric-score" id="metric-liquidity" style="color:var(--amber);">74</div>
         <div class="card-note">Reflects how much of your wealth can be accessed quickly in a stress event.</div>
       </div>
       <div class="card">
-        <div class="card-title">Fragility Score <span id="metric-fragility-badge" style="float:right; color:var(--amber);">63</span></div>
+        <div class="card-title">Fragility Score</div>
         <div class="metric-score" id="metric-fragility" style="color:var(--amber);">63</div>
         <div class="card-note">Higher fragility means your portfolio is more sensitive to downside shocks.</div>
       </div>
       <div class="card">
-        <div class="card-title">Behavior Discipline <span id="metric-behavior-badge" style="float:right; color:var(--green);">79</span></div>
+        <div class="card-title">Behavior Discipline</div>
         <div class="metric-score" id="metric-behavior" style="color:var(--green);">79</div>
         <div class="card-note">Estimates resilience against panic selling, overreaction, and poor timing.</div>
       </div>
@@ -256,8 +256,6 @@
 
       document.getElementById(`metric-${idBase}`).textContent = value;
       document.getElementById(`metric-${idBase}`).style.color = color;
-      document.getElementById(`metric-${idBase}-badge`).textContent = value;
-      document.getElementById(`metric-${idBase}-badge`).style.color = color;
 
       document.getElementById(`bar-${idBase}`).style.width = `${value}%`;
       document.getElementById(`bar-${idBase}-label`).textContent = value;
