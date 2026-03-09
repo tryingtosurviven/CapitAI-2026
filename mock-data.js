@@ -6,10 +6,31 @@ window.mockPortfolio = {
   },
 
   summary: {
-    netWorth: 286500,
-    wealthWellnessScore: 78,
+    netWorth: 286500, //
+    wealthWellnessScore: 78, //
     monthlyExpenses: 4200,
-    emergencyMonths: 8.3
+    emergencyMonths: 8.3 //
+  },
+
+  // One clean version of Detailed Accounts
+  detailedAccounts: {
+    Bank: [
+      { name: "POSB Savings", accNo: "123-45678-9", balance: 15000, status: "Connected" },
+      { name: "DBS Multiplier", accNo: "987-65432-1", balance: 12000, status: "Connected" },
+      { name: "OCBC 360", accNo: "555-00012-3", balance: 10000, status: "Connected" }
+    ],
+    Investment: [
+      { name: "Tiger Brokers", accNo: "TR-88291", balance: 42000, status: "Connected" },
+      { name: "Syfe (REIT+)", accNo: "SY-11022", balance: 38500, status: "Connected" },
+      { name: "Endowus", accNo: "EN-55410", balance: 29000, status: "Connected" }
+    ],
+    Crypto: [
+      { name: "MetaMask (Mainnet)", accNo: "0x71C...34f", balance: 25500, status: "Connected" },
+      { name: "Crypto.com App", accNo: "cc-wallet-01", balance: 14500, status: "Connected" }
+    ],
+    "Private Asset": [
+      { name: "3D Printer Cluster", accNo: "Business-ID-01", balance: 100000, status: "Owned" } //
+    ]
   },
 
   allocation: [
@@ -26,14 +47,10 @@ window.mockPortfolio = {
   ],
 
   linkedAccounts: [
-    { name: "DBS / POSB", category: "Bank", balance: 22000, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
-    { name: "OCBC", category: "Bank", balance: 15000, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
-    { name: "Syfe", category: "Investment", balance: 38500, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
-    { name: "Endowus", category: "Investment", balance: 29000, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
-    { name: "Tiger Brokers", category: "Investment", balance: 42000, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
-    { name: "Crypto.com", category: "Crypto", balance: 14500, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
-    { name: "MetaMask", category: "Crypto", balance: 25500, status: "Connected", source: "Live FMP API", updatedAt: "Today at 9:00 AM" },
-    { name: "3D Printing Equipment", category: "Private Asset", balance: 100000, status: "Manual", source: "Manual Entry", updatedAt: "Today at 9:00 AM" }
+    { name: "CASH ACCOUNTS", category: "Bank", balance: 37000, status: "Connected" },
+    { name: "ETF / EQUITY PORTFOLIO", category: "Investment", balance: 109500, status: "Connected" },
+    { name: "CRYPTO WALLETS", category: "Crypto", balance: 40000, status: "Connected" },
+    { name: "PRIVATE EQUIPMENT", category: "Private Asset", balance: 100000, status: "Owned" }
   ],
 
   assetBreakdown: [
@@ -57,46 +74,11 @@ window.mockPortfolio = {
   },
 
   scenarios: {
-    base: {
-      netWorth: 286500,
-      wellnessScore: 78,
-      retirementProbability: 74,
-      liquidityMonths: 8.3
-    },
-    recession: {
-      netWorth: 248000,
-      wellnessScore: 67,
-      retirementProbability: 61,
-      liquidityMonths: 7.8,
-      changeText: "Global equities weaken, private assets slow down, and risk appetite falls."
-    },
-    cryptoCrash: {
-      netWorth: 262500,
-      wellnessScore: 70,
-      retirementProbability: 66,
-      liquidityMonths: 8.1,
-      changeText: "Digital asset prices fall sharply and drag down your total portfolio value."
-    },
-    rateHike: {
-      netWorth: 274200,
-      wellnessScore: 72,
-      retirementProbability: 69,
-      liquidityMonths: 7.4,
-      changeText: "Higher interest rates reduce asset valuations and increase future borrowing stress."
-    },
-    jobLoss: {
-      netWorth: 281000,
-      wellnessScore: 64,
-      retirementProbability: 65,
-      liquidityMonths: 5.2,
-      changeText: "Income stops temporarily, increasing pressure on liquidity and emergency reserves."
-    },
-    medicalEmergency: {
-      netWorth: 270000,
-      wellnessScore: 68,
-      retirementProbability: 67,
-      liquidityMonths: 6.0,
-      changeText: "Unexpected healthcare costs reduce your cash buffer and short-term resilience."
-    }
+    base: { netWorth: 286500, wellnessScore: 78, retirementProbability: 74, liquidityMonths: 8.3 },
+    recession: { netWorth: 248000, wellnessScore: 67, retirementProbability: 61, liquidityMonths: 7.8, changeText: "Global equities weaken, private assets slow down, and risk appetite falls." },
+    cryptoCrash: { netWorth: 262500, wellnessScore: 70, retirementProbability: 66, liquidityMonths: 8.1, changeText: "Digital asset prices fall sharply and drag down your total portfolio value." },
+    rateHike: { netWorth: 274200, wellnessScore: 72, retirementProbability: 69, liquidityMonths: 7.4, changeText: "Higher interest rates reduce asset valuations and increase future borrowing stress." },
+    jobLoss: { netWorth: 281000, wellnessScore: 64, retirementProbability: 65, liquidityMonths: 5.2, changeText: "Income stops temporarily, increasing pressure on liquidity and emergency reserves." },
+    medicalEmergency: { netWorth: 270000, wellnessScore: 68, retirementProbability: 67, liquidityMonths: 6.0, changeText: "Unexpected healthcare costs reduce your cash buffer and short-term resilience." }
   }
 };

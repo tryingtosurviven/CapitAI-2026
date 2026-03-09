@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Details | Lifepath AI</title>
+  <style>
+    :root { --bg: #081120; --panel: #101a2e; --line: #223150; --text: #edf2ff; --primary: #6d7cff; }
+    body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: var(--text); }
+    .container { width: min(800px, calc(100% - 32px)); margin: 40px auto; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 24px; }
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .data-table th { text-align: left; color: #a8b3cf; font-size: 0.8rem; text-transform: uppercase; padding: 12px; border-bottom: 1px solid var(--line); }
+    .data-table td { padding: 16px 12px; border-bottom: 1px solid var(--line); }
+    .back-link { display: inline-block; margin-top: 24px; color: var(--primary); text-decoration: none; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1 id="detail-title">Category Details</h1>
+      <p style="color: #a8b3cf;">Individual account breakdown for your Digital Twin.</p>
+    </div>
+
+    <div class="panel">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Account</th>
+            <th>Account Number</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody id="detail-body"></tbody>
+      </table>
+    </div>
+
+    <a href="assets.html" class="back-link">← Back to Assets</a>
+  </div>
+
+  <script src="mock-data.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const category = localStorage.getItem('selectedCategory') || 'Bank';
+      const portfolio = window.mockPortfolio;
+      const data = portfolio.detailedAccounts[category];
+      
+      const formatMoney = (val) => new Intl.NumberFormat('en-SG', { 
+        style: 'currency', currency: 'SGD', maximumFractionDigits: 0 
+      }).format(val);
+
+      document.getElementById('detail-title').textContent = category + " Breakdown";
+      
+      if (data) {
+        document.getElementById('detail-body').innerHTML = data.map(acc => `
+          <tr>
+            <td style="font-weight: bold;">${acc.name}</td>
+            <td style="font-family: monospace; color: #a8b3cf;">${acc.accNo}</td>
+            <td style="font-weight: bold; color: #39c6e9;">${formatMoney(acc.balance)}</td>
+          </tr>
+        `).join('');
+      }
+    });
+  </script>
+</body>
+</html>
