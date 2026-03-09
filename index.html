@@ -464,14 +464,27 @@
   </div>
 
   <div class="container">
-    <nav class="navbar">
+    <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px;">
       <div class="brand">
         <div class="brand-title">Lifepath AI</div>
-        <div class="brand-subtitle">Your Financial Digital Twin</div>
+        <div class="brand-subtitle">Unified Wealth Wallet</div>
       </div>
+
+      <div class="global-money-bar" style="display: flex; gap: 20px; background: rgba(255,255,255,0.05); padding: 8px 18px; border-radius: 12px; border: 1px solid var(--line);">
+        <div style="text-align: right;">
+          <div style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase;">Total Net Worth</div>
+          <div id="nav-sgd" style="font-weight: 700; color: #fff;">S$ 286,500</div>
+        </div>
+        <div style="width: 1px; background: var(--line); margin: 4px 0;"></div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase;">USD Equivalent</div>
+          <div id="nav-usd" style="font-weight: 700; color: var(--primary);">$ 211,437</div>
+        </div>
+      </div>
+
       <div class="nav-links">
-        <a class="nav-link active" href="index.html">Dashboard</a>
-        <a class="nav-link" href="assets.html">Assets</a>
+        <a class="nav-link" href="index.html">Dashboard</a>
+        <a class="nav-link active" href="assets.html">Assets</a>
         <a class="nav-link" href="insights.html">Insights</a>
         <a class="nav-link" href="simulator.html">Simulator</a>
       </div>
@@ -699,6 +712,7 @@
       renderRebalanceCard(portfolio);
       renderToastIfNeeded(portfolio);
       renderChart(portfolio);
+      syncGlobalNavbar();
     }
 
     function renderRebalanceCard(portfolio) {
@@ -914,6 +928,24 @@
     });
 
     renderDashboard();
+    function syncGlobalNavbar() {
+      const sgdEl = document.getElementById('nav-sgd');
+      const usdEl = document.getElementById('nav-usd');
+      const portfolio = getSharedPortfolio();
+      
+      if (portfolio && portfolio.summary) {
+        const totalSgd = portfolio.summary.netWorth;
+        const fxRate = 0.738; // Matches your simulated exchange rate
+
+        sgdEl.textContent = new Intl.NumberFormat("en-SG", {
+          style: "currency", currency: "SGD", maximumFractionDigits: 0
+        }).format(totalSgd);
+
+        usdEl.textContent = new Intl.NumberFormat("en-US", {
+          style: "currency", currency: "USD", maximumFractionDigits: 0
+        }).format(totalSgd * fxRate);
+      }
+    }
   </script>
 </body>
 </html>

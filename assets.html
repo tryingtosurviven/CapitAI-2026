@@ -138,14 +138,27 @@
   <div class="toast" id="toast"></div>
 
   <div class="container">
-    <nav class="navbar">
+    <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px;">
       <div class="brand">
         <div class="brand-title">Lifepath AI</div>
         <div class="brand-subtitle">Unified Wealth Wallet</div>
       </div>
+
+      <div class="global-money-bar" style="display: flex; gap: 20px; background: rgba(255,255,255,0.05); padding: 8px 18px; border-radius: 12px; border: 1px solid var(--line);">
+        <div style="text-align: right;">
+          <div style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase;">Total Net Worth</div>
+          <div id="nav-sgd" style="font-weight: 700; color: #fff;">S$ 286,500</div>
+        </div>
+        <div style="width: 1px; background: var(--line); margin: 4px 0;"></div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase;">USD Equivalent</div>
+          <div id="nav-usd" style="font-weight: 700; color: var(--primary);">$ 211,437</div>
+        </div>
+      </div>
+
       <div class="nav-links">
         <a class="nav-link" href="index.html">Dashboard</a>
-        <a class="nav-link active" href="assets.html">Assets</a>
+        <a class="nav-link" href="assets.html">Assets</a>
         <a class="nav-link" href="insights.html">Insights</a>
         <a class="nav-link" href="simulator.html">Simulator</a>
       </div>
@@ -264,107 +277,10 @@
     };
   }
 
-<<<<<<< HEAD
-    function renderTables() {
-      const linkedBody = document.getElementById("linked-table-body");
-      const assetBody = document.getElementById("asset-breakdown-body");
-      
-      const ladderContainer = document.getElementById("liquidity-ladder");
-      ladderContainer.innerHTML = window.mockPortfolio.assetBreakdown.map(item => `
-        <div class="ladder-row">
-          <div class="tier-badge">${item.liquidityTier}</div>
-          <div class="ladder-info">
-            <div class="ladder-title">${item.asset} — ${formatMoney(item.value)}</div>
-            <div class="ladder-note">${item.ladderNote}</div>
-          </div>
-        </div>
-      `).join("");
-
-      // Helper to map the summary asset names to their categories for coloring
-      const getCategoryFromAsset = (asset) => {
-        if (asset.includes("Cash")) return "Bank";
-        if (asset.includes("ETF") || asset.includes("Equity")) return "Investment";
-        if (asset.includes("Crypto")) return "Crypto";
-        if (asset.includes("Equipment") || asset.includes("Private")) return "Private Asset";
-        return "";
-      
-      };
-
-      linkedBody.innerHTML = window.mockPortfolio.linkedAccounts.map((item, index) => `
-        <tr id="row-${index}">
-          <td style="font-weight: 600;">${item.name}</td>
-          <td>
-            <span style="padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; ${getBadgeStyle(item.category)}">
-              ${item.category}
-            </span>
-          </td>
-          <td style="font-family: monospace; font-size: 1rem;">${formatMoney(item.balance)}</td>
-          <td>
-            <span style="color: ${item.status === 'Connected' ? '#34d399' : '#a8b3cf'}; font-size: 0.85rem;">
-              ● ${item.status}
-            </span>
-          </td>
-          <td>
-            <button class="mini-btn" style="color: #ff4c4c; border-color: rgba(255, 76, 76, 0.3); background: none; cursor: pointer; padding: 4px 10px; border-radius: 8px; font-size: 0.72rem;" 
-                    onclick="disconnectAccount(${index}, '${item.name}')">
-              Disconnect
-            </button>
-          </td>
-        </tr>
-      `).join("");
-
-      assetBody.innerHTML = window.mockPortfolio.assetBreakdown.map(item => `
-        <tr>
-          <td>
-            <span style="padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; ${getBadgeStyle(getCategoryFromAsset(item.asset))}">
-              ${item.asset}
-            </span>
-          </td>
-          <td><em style="color: var(--muted);">${item.type}</em></td>
-          <td style="font-family: monospace; font-size: 1rem; font-weight: 600;">${formatMoney(item.value)}</td>
-        </tr>
-      `).join("");
-    }
-
-    function openConnectModal() { document.getElementById('connect-modal').style.display = 'flex'; }
-    function closeConnectModal() { document.getElementById('connect-modal').style.display = 'none'; }
-
-    function mockConnect(provider) {
-      const toast = document.getElementById("toast");
-      toast.textContent = `Linking ${provider} to your Lifepath...`;
-      toast.style.background = "var(--primary)";
-      toast.classList.add("show");
-      closeConnectModal();
-
-      let balance = 0;
-      let category = "";
-      if (provider === 'DBS / POSB') { balance = 22000; category = "Bank"; }
-      else if (provider === 'Tiger Brokers') { balance = 42000; category = "Investment"; }
-      else if (provider === 'Syfe') { balance = 38500; category = "Investment"; }
-      else if (provider === 'MetaMask') { balance = 25500; category = "Crypto"; }
-
-      window.mockPortfolio.linkedAccounts.push({ name: provider, category: category, balance: balance, status: "Connected" });
-
-      setTimeout(() => {
-        renderTables();
-        toast.classList.remove("show");
-      }, 2500);
-    }
-
-    function disconnectAccount(index, name) {
-      const allowList = ['DBS / POSB', 'Tiger Brokers', 'Syfe', 'MetaMask'];
-      if (!allowList.includes(name)) {
-        const toast = document.getElementById("toast");
-        toast.textContent = `⚠️ Action Restricted: ${name} is a core demo asset.`;
-        toast.style.background = "#f59e0b";
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 3000);
-=======
   function saveSharedPortfolio(portfolio) {
     try {
       if (typeof StateManager !== "undefined" && StateManager.setPortfolio) {
         StateManager.setPortfolio(portfolio);
->>>>>>> 44741e41fd834a2e58a921d26c083b1f07afa153
         return;
       }
     } catch (e) {}
@@ -387,6 +303,20 @@
 
     const linkedAccounts = Array.isArray(portfolio.linkedAccounts) ? portfolio.linkedAccounts : [];
     const assetBreakdown = Array.isArray(portfolio.assetBreakdown) ? portfolio.assetBreakdown : [];
+    
+    const ladderContainer = document.getElementById("liquidity-ladder");  
+    // Fill the Liquidity Ladder with data from mock-data.js
+    if (ladderContainer && Array.isArray(portfolio.assetBreakdown)) {
+      ladderContainer.innerHTML = portfolio.assetBreakdown.map(item => `
+        <div class="ladder-row">
+          <div class="tier-badge">${item.liquidityTier || "T+?"}</div>
+          <div class="ladder-info">
+            <div class="ladder-title">${item.asset} — ${formatMoney(item.value)}</div>
+            <div class="ladder-note">${item.ladderNote || ""}</div>
+          </div>
+        </div>
+      `).join("");
+    }
 
     linkedBody.innerHTML = linkedAccounts.map((item, index) => `
       <tr id="row-${index}">
@@ -567,6 +497,29 @@
       renderScenarioBanner();
     }
   });
+
+  // Sync the global navbar money display
+  function syncGlobalNavbar() {
+      const portfolio = getSharedPortfolio();
+      const sgdEl = document.getElementById('nav-sgd');
+      const usdEl = document.getElementById('nav-usd');
+      
+      if (portfolio && portfolio.summary && sgdEl && usdEl) {
+          const totalSgd = portfolio.summary.netWorth;
+          const fxRate = 0.738; // Matches your simulated exchange rate
+
+          sgdEl.textContent = new Intl.NumberFormat("en-SG", {
+              style: "currency", currency: "SGD", maximumFractionDigits: 0
+          }).format(totalSgd);
+
+          usdEl.textContent = new Intl.NumberFormat("en-US", {
+              style: "currency", currency: "USD", maximumFractionDigits: 0
+          }).format(totalSgd * fxRate);
+      }
+  }
+
+  // Ensure the navbar updates on load
+  document.addEventListener('DOMContentLoaded', syncGlobalNavbar);
 </script>
 </body>
 </html>
