@@ -114,6 +114,19 @@
       background: var(--primary); color: white; border: none;
       padding: 8px 16px; border-radius: 12px; cursor: pointer; font-weight: 600;
     }
+
+    .ladder-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+    .ladder-row {
+      display: grid; grid-template-columns: 80px 1fr; gap: 16px; align-items: center;
+      padding: 14px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--line);
+    }
+    .tier-badge {
+      font-size: 0.75rem; font-weight: 800; padding: 6px; text-align: center;
+      border-radius: 8px; background: var(--primary); color: white;
+    }
+    .ladder-info { display: flex; flex-direction: column; gap: 4px; }
+    .ladder-title { font-weight: 700; font-size: 0.95rem; }
+    .ladder-note { font-size: 0.82rem; color: var(--muted); }
   </style>
 
   <script src="mock-data.js"></script>
@@ -146,6 +159,8 @@
 
     <div class="layout-2">
       <div class="panel">
+        <h2 class="section-title">Liquidity Ladder (Time-to-Cash)</h2>
+        <div class="ladder-container" id="liquidity-ladder"></div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
           <h2 class="section-title" style="margin: 0;">Linked accounts</h2>
           <button class="primary-btn" onclick="openConnectModal()">+ Connect New Account</button>
@@ -231,6 +246,17 @@
     function renderTables() {
       const linkedBody = document.getElementById("linked-table-body");
       const assetBody = document.getElementById("asset-breakdown-body");
+      
+      const ladderContainer = document.getElementById("liquidity-ladder");
+      ladderContainer.innerHTML = window.mockPortfolio.assetBreakdown.map(item => `
+        <div class="ladder-row">
+          <div class="tier-badge">${item.liquidityTier}</div>
+          <div class="ladder-info">
+            <div class="ladder-title">${item.asset} — ${formatMoney(item.value)}</div>
+            <div class="ladder-note">${item.ladderNote}</div>
+          </div>
+        </div>
+      `).join("");
 
       // Helper to map the summary asset names to their categories for coloring
       const getCategoryFromAsset = (asset) => {
@@ -239,6 +265,7 @@
         if (asset.includes("Crypto")) return "Crypto";
         if (asset.includes("Equipment") || asset.includes("Private")) return "Private Asset";
         return "";
+      
       };
 
       linkedBody.innerHTML = window.mockPortfolio.linkedAccounts.map((item, index) => `
