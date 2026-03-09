@@ -24,10 +24,16 @@ window.mockPortfolio = {
       { name: "Syfe (REIT+)", accNo: "SY-11022", balance: 38500, status: "Connected" },
       { name: "Endowus", accNo: "EN-55410", balance: 29000, status: "Connected" }
     ],
+    // Inside detailedAccounts in mock-data.js
+    // Inside detailedAccounts in mock-data.js
     Crypto: [
-      { name: "MetaMask (Mainnet)", accNo: "0x71C...34f", balance: 25500, status: "Connected" },
-      { name: "Crypto.com App", accNo: "cc-wallet-01", balance: 14500, status: "Connected" }
+      { coin: "Bitcoin", symbol: "BTC", wallet: "Crypto.com App", balance: 10000, valueUsd: 7380 },
+      { coin: "Ethereum", symbol: "ETH", wallet: "MetaMask (Mainnet)", balance: 15000, valueUsd: 11070 },
+      { coin: "Solana", symbol: "SOL", wallet: "Crypto.com App", balance: 4500, valueUsd: 3321 },
+      { coin: "Chainlink", symbol: "LINK", wallet: "MetaMask (Mainnet)", balance: 6000, valueUsd: 4428 },
+      { coin: "Polygon", symbol: "MATIC", wallet: "MetaMask (Mainnet)", balance: 4500, valueUsd: 3321 }
     ],
+
     "Private Asset": [
       { name: "3D Printer Cluster", accNo: "Business-ID-01", balance: 100000, status: "Owned" } //
     ]

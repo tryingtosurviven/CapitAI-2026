@@ -25,11 +25,12 @@
     <div class="panel">
       <table class="data-table">
         <thead>
-          <tr>
-            <th>Account</th>
-            <th>Account Number</th>
-            <th>Balance</th>
-          </tr>
+            <tr style="color: #9fb0db; text-transform: uppercase; font-size: 0.8rem; border-bottom: 1px solid #223150;">
+                <th style="padding: 15px;">Asset / Coin</th>
+                <th style="padding: 15px;">Stored In (Wallet)</th>
+                <th style="padding: 15px;">Allocation (SGD)</th>
+                <th style="padding: 15px;">Est. USD</th>
+            </tr>
         </thead>
         <tbody id="detail-body"></tbody>
       </table>
@@ -52,12 +53,18 @@
       document.getElementById('detail-title').textContent = category + " Breakdown";
       
       if (data) {
-        document.getElementById('detail-body').innerHTML = data.map(acc => `
-          <tr>
-            <td style="font-weight: bold;">${acc.name}</td>
-            <td style="font-family: monospace; color: #a8b3cf;">${acc.accNo}</td>
-            <td style="font-weight: bold; color: #39c6e9;">${formatMoney(acc.balance)}</td>
-          </tr>
+        document.getElementById('detail-body').innerHTML = data.map(item => `
+            <tr style="border-bottom: 1px solid #223150;">
+                <td style="padding: 15px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-weight: bold;">${item.coin}</span>
+                    <span style="font-size: 0.7rem; color: #a8b3cf; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">${item.symbol}</span>
+                </div>
+                </td>
+                <td style="padding: 15px; color: #a8b3cf; font-size: 0.9rem;">${item.wallet}</td>
+                <td style="padding: 15px; font-weight: bold; color: #39c6e9;">${formatMoney(item.balance)}</td>
+                <td style="padding: 15px; color: #6d7cff; font-family: monospace;">$${item.valueUsd.toLocaleString()}</td>
+            </tr>
         `).join('');
       }
     });
