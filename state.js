@@ -425,6 +425,41 @@ const StateManager = {
     });
   },
 
+    updateDetailedAccountsForTargets(detailedAccounts, targets) {
+    const groups = this.clone(detailedAccounts || {});
+    const categoryMap = {
+      Bank: "cash",
+      Investment: "investments",
+      Crypto: "crypto",
+      "Private Asset": "private"
+    };
+
+    Object.keys(groups).forEach((category) => {
+      const items = Array.isArray(groups[category]) ? groups[category] : [];
+      const key = categoryMap[category];
+      if (!key) return;
+
+      const baseTotal = items.reduce((sum, item) => sum + Number(item.balance || 0), 0);
+      const targetTotal = Number(targets[key] || 0);
+
+      groups[category] = items.map((item) => {
+        let newBalance = Number(item.balance || 0);
+
+        if (baseTotal > 0) {
+          newBalance = (Number(item.balance || 0) / baseTotal) * targetTotal;
+        }
+
+        return {
+          ...item,
+          balance: Math.round(newBalance),
+          valueUsd: Math.round(newBalance * 0.738)
+        };
+      });
+    });
+
+    return groups;
+  },
+
   applyScenarioToPortfolio(portfolio, scenarioKey) {
     const basePortfolio = this.enrichPortfolio(this.mergeDeep(this.getDefaultPortfolio(), portfolio || {}));
 
@@ -465,8 +500,9 @@ const StateManager = {
       { label: "Private Assets", value: targets.private, color: "#10b981" }
     ];
 
-    stressed.assetBreakdown = this.updateAssetBreakdownForTargets(stressed.assetBreakdown, targets);
+        stressed.assetBreakdown = this.updateAssetBreakdownForTargets(stressed.assetBreakdown, targets);
     stressed.linkedAccounts = this.updateLinkedAccountsForTargets(stressed.linkedAccounts, targets);
+    stressed.detailedAccounts = this.updateDetailedAccountsForTargets(stressed.detailedAccounts, targets);
 
     const scenarioAdjusted = this.enrichPortfolio(stressed);
 
@@ -562,7 +598,7 @@ const StateManager = {
     this.syncSummaryWithPortfolio(portfolio);
   },
 
-  get() {
+    get() {
     const raw = localStorage.getItem(this.summaryKey);
     try {
       return raw ? JSON.parse(raw) : this.getDefaultSummary();
@@ -571,6 +607,10 @@ const StateManager = {
       localStorage.setItem(this.summaryKey, JSON.stringify(fallback));
       return fallback;
     }
+  },
+
+  getState() {
+    return this.get();
   },
 
   update(newValues) {

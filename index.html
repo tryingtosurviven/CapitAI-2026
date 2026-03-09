@@ -641,7 +641,7 @@
   <script>
     let currentCurrency = "SGD";
     let allocationChart;
-    const FX_RATE = 0.74;
+    const FX_RATE = 0.738;
 
     function getSharedPortfolio() {
       if (typeof StateManager !== "undefined") {
@@ -687,9 +687,9 @@
         globalState = StateManager.get();
       }
 
-      const displayNetWorth = globalState ? globalState.netWorth : portfolio.summary.netWorth;
-      const displayScore = globalState ? globalState.wellnessScore : portfolio.summary.wealthWellnessScore;
-      const displayLiquidity = globalState ? globalState.liquidityMonths : portfolio.summary.emergencyMonths;
+            const displayNetWorth = portfolio.summary.netWorth;
+      const displayScore = portfolio.summary.wealthWellnessScore;
+      const displayLiquidity = portfolio.summary.emergencyMonths;
 
       const netWorthValue = convertFromSGD(displayNetWorth);
 

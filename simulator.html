@@ -98,13 +98,6 @@ a {
   border-color: rgba(109, 124, 255, 0.5);
 }
 
-.hero {
-  display: grid;
-  grid-template-columns: 1.25fr 0.9fr;
-  gap: 18px;
-  margin-bottom: 18px;
-}
-
 .panel,
 .card {
   background: linear-gradient(180deg, rgba(21,33,58,0.98), rgba(16,26,46,0.98));
@@ -125,183 +118,25 @@ a {
   margin-bottom: 10px;
 }
 
-.hero h1,
 .page-title {
   margin: 0 0 10px;
   font-size: 2rem;
 }
 
-.hero p,
 .page-subtitle {
   color: var(--muted);
   line-height: 1.6;
   margin: 0;
 }
 
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+.page-header {
   margin-bottom: 18px;
-}
-
-.card {
-  padding: 18px;
-}
-
-.card-title {
-  color: #98a8d3;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 10px;
-}
-
-.card-value {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.card-note {
-  color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.5;
-}
-
-.score-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: rgba(34, 197, 94, 0.14);
-  color: #9ef0b5;
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  font-size: 0.88rem;
-}
-
-.layout-2 {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 18px;
-}
-
-.chart-wrap {
-  height: 360px;
 }
 
 .section-title {
   margin: 0 0 14px;
   font-size: 1.1rem;
 }
-
-.insight-list,
-.action-list {
-  margin: 0;
-  padding-left: 20px;
-  color: var(--muted);
-  line-height: 1.8;
-}
-
-.page-header {
-  margin-bottom: 18px;
-}
-
-.connector-section {
-  margin-bottom: 22px;
-}
-
-.connector-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-}
-
-.connector-card {
-  width: 100%;
-  text-align: left;
-  padding: 16px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  color: white;
-  cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
-}
-
-.connector-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(109, 124, 255, 0.55);
-  background: rgba(109, 124, 255, 0.08);
-}
-
-.connector-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.connector-name {
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.connector-subtitle {
-  color: var(--muted);
-  font-size: 0.9rem;
-  line-height: 1.45;
-}
-
-.connector-badge {
-  font-size: 0.76rem;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: rgba(57, 198, 233, 0.12);
-  color: #92ebff;
-  border: 1px solid rgba(57, 198, 233, 0.3);
-}
-
-.table-wrap {
-  overflow-x: auto;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.data-table th,
-.data-table td {
-  padding: 14px 10px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-}
-
-.data-table th {
-  color: #9fb0db;
-  font-size: 0.82rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.metric-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 18px;
-}
-
-.metric-score {
-  font-size: 2.2rem;
-  font-weight: 700;
-}
-
-.metric-good { color: #7ef0a2; }
-.metric-mid { color: #ffd166; }
-.metric-low { color: #ff8e8e; }
 
 .button-row {
   display: flex;
@@ -311,7 +146,6 @@ a {
 }
 
 .scenario-btn,
-.primary-btn,
 .secondary-btn {
   border: none;
   border-radius: 14px;
@@ -325,14 +159,12 @@ a {
   text-decoration: none;
 }
 
-.scenario-btn,
-.primary-btn {
+.scenario-btn {
   background: var(--primary);
   color: white;
 }
 
-.scenario-btn:hover,
-.primary-btn:hover {
+.scenario-btn:hover {
   filter: brightness(1.08);
 }
 
@@ -374,49 +206,36 @@ a {
   line-height: 1.7;
 }
 
-.toast {
-  position: fixed;
-  top: 18px;
-  right: 18px;
-  background: #111c31;
-  color: white;
-  border: 1px solid rgba(109, 124, 255, 0.45);
-  border-radius: 14px;
-  padding: 14px 16px;
-  box-shadow: var(--shadow);
-  opacity: 0;
-  transform: translateY(-10px);
-  pointer-events: none;
-  transition: 0.2s ease;
-  z-index: 999;
+.scenario-btn.active,
+.secondary-btn.active {
+  background: white;
+  color: var(--bg);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
 }
 
-.toast.show {
-  opacity: 1;
-  transform: translateY(0);
+.val-transition {
+  transition: color 0.4s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+.val-drop {
+  color: #ff8e8e !important;
+  transform: scale(1.08);
+}
+
+.val-recover {
+  color: #7ef0a2 !important;
+  transform: scale(1.08);
 }
 
 @media (max-width: 1024px) {
-  .hero,
-  .layout-2,
-  .stat-grid,
-  .metric-grid,
   .result-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .connector-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (max-width: 720px) {
-  .hero,
-  .layout-2,
-  .stat-grid,
-  .metric-grid,
-  .result-grid,
-  .connector-grid {
+  .result-grid {
     grid-template-columns: 1fr;
   }
 
@@ -425,54 +244,31 @@ a {
     align-items: flex-start;
   }
 
-  .page-title,
-  .hero h1 {
+  .page-title {
     font-size: 1.6rem;
   }
 }
-
-/* Active Scenario Button */
-    .scenario-btn.active {
-      background: white;
-      color: var(--bg);
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-    }
-
-    /* Number Animation Classes */
-    .val-transition {
-      transition: color 0.4s ease, transform 0.2s ease;
-      display: inline-block;
-    }
-    .val-drop {
-      color: #ff8e8e !important;
-      transform: scale(1.08);
-    }
-    .val-recover {
-      color: #7ef0a2 !important;
-      transform: scale(1.08);
-    }
-
 </style>
   <script src="mock-data.js"></script>
   <script src="state.js"></script>
 </head>
 <body>
   <div class="container">
-    <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px;">
+    <nav class="navbar">
       <div class="brand">
         <div class="brand-title">Lifepath AI</div>
-        <div class="brand-subtitle">Unified Wealth Wallet</div>
+        <div class="brand-subtitle">Future Shock Simulator</div>
       </div>
 
       <div class="global-money-bar" style="display: flex; gap: 20px; background: rgba(255,255,255,0.05); padding: 8px 18px; border-radius: 12px; border: 1px solid var(--line);">
         <div style="text-align: right;">
           <div style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase;">Total Net Worth</div>
-          <div id="nav-sgd" style="font-weight: 700; color: #fff;">S$ 286,500</div>
+          <div id="nav-sgd" style="font-weight: 700; color: #fff;">S$ 0</div>
         </div>
         <div style="width: 1px; background: var(--line); margin: 4px 0;"></div>
         <div style="text-align: right;">
           <div style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase;">USD Equivalent</div>
-          <div id="nav-usd" style="font-weight: 700; color: var(--primary);">$ 211,437</div>
+          <div id="nav-usd" style="font-weight: 700; color: var(--primary);">$ 0</div>
         </div>
       </div>
 
@@ -480,7 +276,7 @@ a {
         <a class="nav-link" href="index.html">Dashboard</a>
         <a class="nav-link" href="assets.html">Assets</a>
         <a class="nav-link" href="insights.html">Insights</a>
-        <a class="nav-link" href="simulator.html">Simulator</a>
+        <a class="nav-link active" href="simulator.html">Simulator</a>
       </div>
     </nav>
 
@@ -505,22 +301,22 @@ a {
       <div class="result-grid">
         <div class="result-box">
           <div class="result-label">Net worth</div>
-          <div class="result-value" id="sim-networth"></div>
+          <div class="result-value" id="sim-networth">S$ 0</div>
         </div>
 
         <div class="result-box">
           <div class="result-label">Wellness score</div>
-          <div class="result-value" id="sim-score"></div>
+          <div class="result-value" id="sim-score">0/100</div>
         </div>
 
         <div class="result-box">
           <div class="result-label">Retirement probability</div>
-          <div class="result-value" id="sim-retire"></div>
+          <div class="result-value" id="sim-retire">0%</div>
         </div>
 
         <div class="result-box">
           <div class="result-label">Liquidity months</div>
-          <div class="result-value" id="sim-liquidity"></div>
+          <div class="result-value" id="sim-liquidity">0.0 months</div>
         </div>
       </div>
 
@@ -534,13 +330,12 @@ a {
   </div>
 
   <script>
-    // Formatter for currency
     function formatMoney(value) {
       return new Intl.NumberFormat("en-SG", {
         style: "currency",
         currency: "SGD",
         maximumFractionDigits: 0
-      }).format(value);
+      }).format(Number(value || 0));
     }
 
     const titles = {
@@ -552,122 +347,160 @@ a {
       medicalEmergency: "Medical emergency scenario"
     };
 
-    // Store current values to animate FROM
+    function getBasePortfolio() {
+      if (typeof StateManager !== "undefined" && StateManager.getPortfolio) {
+        return StateManager.getPortfolio();
+      }
+      return window.mockPortfolio;
+    }
+
+    function getAdjustedSummary() {
+      if (typeof StateManager !== "undefined" && StateManager.getScenarioAdjustedPortfolio) {
+        const adjustedPortfolio = StateManager.getScenarioAdjustedPortfolio();
+        return adjustedPortfolio?.summary ?? {};
+      }
+      return window.mockPortfolio?.summary ?? {};
+    }
+
     let currentData = {
-      netWorth: 286500,
-      wellnessScore: 78,
-      retirementProbability: 74,
-      liquidityMonths: 8.3
+      netWorth: 0,
+      wellnessScore: 0,
+      retirementProbability: 0,
+      liquidityMonths: 0
     };
 
-    // Number counter animation function
     function animateValue(obj, start, end, duration, isCurrency = false, suffix = "") {
       let startTimestamp = null;
+
       const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-        
-        // Calculate current frame value
-        const currentVal = (progress * (end - start) + start);
-        
+        const currentVal = (progress * (end - start)) + start;
+
         if (isCurrency) {
           obj.textContent = formatMoney(currentVal);
         } else if (suffix === " months") {
-          obj.textContent = currentVal.toFixed(1) + suffix; // Keep 1 decimal for months
+          obj.textContent = currentVal.toFixed(1) + suffix;
         } else {
           obj.textContent = Math.floor(currentVal) + suffix;
         }
-        
+
         if (progress < 1) {
           window.requestAnimationFrame(step);
         } else {
-          // Ensure exact final value
           if (isCurrency) obj.textContent = formatMoney(end);
           else if (suffix === " months") obj.textContent = end.toFixed(1) + suffix;
           else obj.textContent = end + suffix;
         }
       };
+
       window.requestAnimationFrame(step);
     }
 
-    function applyScenario(key, btnElement = null) {
-      const scenario = window.mockPortfolio.scenarios[key];
-      if (!scenario) return;
-
-      // 1. Update Active Button Style
-      document.querySelectorAll('.scenario-btn, .secondary-btn').forEach(b => b.classList.remove('active'));
-      if (btnElement) {
-        btnElement.classList.add('active');
-
-      syncGlobalNavbar();
-      
-      }
-
-      // 2. Determine if things got better or worse (for color flashing)
-      const isWorse = scenario.netWorth < currentData.netWorth;
-      const isBetter = scenario.netWorth > currentData.netWorth;
-      const colorClass = isWorse ? 'val-drop' : (isBetter ? 'val-recover' : '');
-
-      // 3. Grab the elements and apply base transition class
+    function renderScenarioValues(nextData, animate = true) {
       const nwEl = document.getElementById("sim-networth");
       const wsEl = document.getElementById("sim-score");
       const rpEl = document.getElementById("sim-retire");
       const lmEl = document.getElementById("sim-liquidity");
+      const navSgd = document.getElementById("nav-sgd");
+      const navUsd = document.getElementById("nav-usd");
+
+      const usdEquivalent = Math.round(Number(nextData.netWorth || 0) * 0.738);
+
+      navSgd.textContent = `S$ ${Number(nextData.netWorth || 0).toLocaleString()}`;
+      navUsd.textContent = `$ ${usdEquivalent.toLocaleString()}`;
+
+      const isWorse = nextData.netWorth < currentData.netWorth;
+      const isBetter = nextData.netWorth > currentData.netWorth;
+      const colorClass = isWorse ? "val-drop" : (isBetter ? "val-recover" : "");
 
       [nwEl, wsEl, rpEl, lmEl].forEach(el => {
-        el.className = "result-value val-transition"; // Reset classes
-        if (colorClass) el.classList.add(colorClass); // Add red/green
+        el.className = "result-value val-transition";
+        if (colorClass) el.classList.add(colorClass);
       });
 
-      // 4. Animate the numbers (800ms duration)
-      animateValue(nwEl, currentData.netWorth, scenario.netWorth, 800, true);
-      animateValue(wsEl, currentData.wellnessScore, scenario.wellnessScore, 800, false, "/100");
-      animateValue(rpEl, currentData.retirementProbability, scenario.retirementProbability, 800, false, "%");
-      animateValue(lmEl, currentData.liquidityMonths, scenario.liquidityMonths, 800, false, " months");
-
-      // 5. Update text context
-      document.getElementById("scenario-title").textContent = titles[key];
-      document.getElementById("scenario-description").textContent = 
-        scenario.changeText || "This is your current baseline before any shock is applied.";
-
-      // 6. Save new state and remove color flash after 1 second
-      // 6. Save new state globally to localStorage!
-      currentData = { ...scenario };
-      
-      if (typeof StateManager !== 'undefined') {
-        StateManager.update({
-          netWorth: scenario.netWorth,
-          wellnessScore: scenario.wellnessScore,
-          liquidityMonths: scenario.liquidityMonths,
-          retirementProbability: scenario.retirementProbability,
-          activeScenario: titles[key]
-        });
+      if (animate) {
+        animateValue(nwEl, currentData.netWorth, nextData.netWorth, 800, true);
+        animateValue(wsEl, currentData.wellnessScore, nextData.wellnessScore, 800, false, "/100");
+        animateValue(rpEl, currentData.retirementProbability, nextData.retirementProbability, 800, false, "%");
+        animateValue(lmEl, currentData.liquidityMonths, nextData.liquidityMonths, 800, false, " months");
+      } else {
+        nwEl.textContent = formatMoney(nextData.netWorth);
+        wsEl.textContent = `${nextData.wellnessScore}/100`;
+        rpEl.textContent = `${nextData.retirementProbability}%`;
+        lmEl.textContent = `${Number(nextData.liquidityMonths || 0).toFixed(1)} months`;
       }
 
       setTimeout(() => {
-        [nwEl, wsEl, rpEl, lmEl].forEach(el => el.classList.remove('val-drop', 'val-recover'));
+        [nwEl, wsEl, rpEl, lmEl].forEach(el => el.classList.remove("val-drop", "val-recover"));
       }, 1000);
+
+      currentData = { ...nextData };
     }
 
-    // Initialize the page on the Base Case
-    applyScenario("base");
+    function applyScenario(key, btnElement = null) {
+      const portfolio = getBasePortfolio();
+      const scenario = portfolio?.scenarios?.[key];
 
-    function syncGlobalNavbar() {
-      const sgdEl = document.getElementById('nav-sgd');
-      const usdEl = document.getElementById('nav-usd');
-      
-      // Use the scenario-adjusted data from currentData
-      const totalSgd = currentData.netWorth;
-      const fxRate = 0.738; // Matches your simulated exchange rate [cite: 2026-02-13]
+      if (key !== "base" && !scenario) return;
 
-      sgdEl.textContent = new Intl.NumberFormat("en-SG", {
-        style: "currency", currency: "SGD", maximumFractionDigits: 0
-      }).format(totalSgd);
+      document.querySelectorAll(".scenario-btn, .secondary-btn").forEach(b => b.classList.remove("active"));
+      if (btnElement) btnElement.classList.add("active");
 
-      usdEl.textContent = new Intl.NumberFormat("en-US", {
-        style: "currency", currency: "USD", maximumFractionDigits: 0
-      }).format(totalSgd * fxRate);
+      if (typeof StateManager !== "undefined" && StateManager.update) {
+        StateManager.update({
+          activeScenario: titles[key] || "Base case",
+          activeScenarioKey: key
+        });
+      }
+
+      const adjustedSummary = getAdjustedSummary();
+
+      const nextData = {
+        netWorth: Number(adjustedSummary.netWorth ?? portfolio?.summary?.netWorth ?? 0),
+        wellnessScore: Number(adjustedSummary.wealthWellnessScore ?? portfolio?.summary?.wealthWellnessScore ?? 0),
+        retirementProbability: Number(adjustedSummary.retirementProbability ?? portfolio?.summary?.retirementProbability ?? 0),
+        liquidityMonths: Number(adjustedSummary.emergencyMonths ?? portfolio?.summary?.emergencyMonths ?? 0)
+      };
+
+      renderScenarioValues(nextData, true);
+
+      document.getElementById("scenario-title").textContent = titles[key] || "Base case";
+      document.getElementById("scenario-description").textContent =
+        scenario?.changeText || "This is your current baseline before any shock is applied.";
+
+      if (typeof StateManager !== "undefined" && StateManager.update) {
+        StateManager.update({
+          netWorth: nextData.netWorth,
+          wellnessScore: nextData.wellnessScore,
+          liquidityMonths: nextData.liquidityMonths,
+          retirementProbability: nextData.retirementProbability,
+          activeScenario: titles[key] || "Base case",
+          activeScenarioKey: key
+        });
+      }
     }
+
+    function initialiseSimulator() {
+      const savedScenarioKey =
+        (typeof StateManager !== "undefined" && StateManager.get)
+          ? (StateManager.get().activeScenarioKey || "base")
+          : "base";
+
+      const initialButton = Array.from(
+        document.querySelectorAll(".scenario-btn, .secondary-btn")
+      ).find(btn => btn.getAttribute("onclick")?.includes(`'${savedScenarioKey}'`));
+
+      applyScenario(savedScenarioKey, initialButton || null);
+    }
+
+    initialiseSimulator();
+
+    window.addEventListener("storage", (event) => {
+      if (event.key === "lifepath_data" || event.key === "lifepath_portfolio") {
+        initialiseSimulator();
+      }
+    });
   </script>
 </body>
 </html>

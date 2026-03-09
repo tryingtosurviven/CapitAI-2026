@@ -119,6 +119,15 @@
         default: return "background: rgba(255, 255, 255, 0.05); color: #a8b3cf;";
       }
     }
+    function getSharedPortfolio() {
+    if (typeof StateManager !== "undefined") {
+      if (StateManager.getScenarioAdjustedPortfolio) {
+        return StateManager.getScenarioAdjustedPortfolio();
+      }
+      return StateManager.getPortfolio();
+    }
+    return window.mockPortfolio;
+  }
 
     function getSharedPortfolio() {
       return (typeof StateManager !== "undefined") ? StateManager.getPortfolio() : window.mockPortfolio;
@@ -213,7 +222,24 @@
       }
     }
 
-    document.addEventListener("DOMContentLoaded", () => { renderTables(); syncGlobalNavbar(); });
+      document.addEventListener("DOMContentLoaded", () => {
+    renderTables();
+    syncGlobalNavbar();
+  });
+
+  window.addEventListener("storage", (event) => {
+    if (event.key === "lifepath_data" || event.key === "lifepath_portfolio") {
+      renderTables();
+      syncGlobalNavbar();
+    }
+  });
+
+  window.addEventListener("storage", (event) => {
+    if (event.key === "lifepath_data" || event.key === "lifepath_portfolio") {
+      renderTables();
+      syncGlobalNavbar();
+    }
+  });
   </script>
 </body>
 </html>
