@@ -13,6 +13,8 @@
       --primary: #6d7cff;
       --shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
       --radius: 20px;
+      --panel: #101a2e;
+      --panel-2: #15213a;
     }
     * { box-sizing: border-box; }
     body {
@@ -155,6 +157,8 @@
       <p class="page-subtitle">
         Bring together bank cash, investment platforms, crypto wallets, and private assets into one clean investor view.
       </p>
+
+      <div id="scenario-asset-banner" style="display:none; margin-top:14px; padding:12px 14px; border-radius:12px; background:rgba(245, 158, 11, 0.08); border:1px solid rgba(245, 158, 11, 0.35); color:#fbbf24; font-size:0.9rem;"></div>
     </div>
 
     <div class="layout-2">
@@ -225,24 +229,42 @@
   </div> 
 
   <script>
-    function formatMoney(value) {
-      return new Intl.NumberFormat("en-SG", {
-        style: "currency",
-        currency: "SGD",
-        maximumFractionDigits: 0
-      }).format(value);
-    }
+  function formatMoney(value) {
+    return new Intl.NumberFormat("en-SG", {
+      style: "currency",
+      currency: "SGD",
+      maximumFractionDigits: 0
+    }).format(Number(value || 0));
+  }
 
-    function getBadgeStyle(category) {
-      switch(category) {
-        case 'Bank': return 'background: rgba(79, 70, 229, 0.15); color: #818cf8; border: 1px solid rgba(79, 70, 229, 0.4);';
-        case 'Investment': return 'background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);';
-        case 'Crypto': return 'background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);';
-        case 'Private Asset': return 'background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);';
-        default: return 'background: rgba(255, 255, 255, 0.05); color: #a8b3cf;';
+  function getBadgeStyle(category) {
+    switch(category) {
+      case "Bank": return "background: rgba(79, 70, 229, 0.15); color: #818cf8; border: 1px solid rgba(79, 70, 229, 0.4);";
+      case "Investment": return "background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);";
+      case "Crypto": return "background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);";
+      case "Private Asset": return "background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);";
+      default: return "background: rgba(255, 255, 255, 0.05); color: #a8b3cf;";
+    }
+  }
+
+  function getSharedPortfolio() {
+    try {
+      if (typeof StateManager !== "undefined") {
+        if (StateManager.getScenarioAdjustedPortfolio) {
+          return StateManager.getScenarioAdjustedPortfolio();
+        }
+        if (StateManager.getPortfolio) {
+          return StateManager.getPortfolio();
+        }
       }
-    }
+    } catch (e) {}
+    return window.mockPortfolio || {
+      linkedAccounts: [],
+      assetBreakdown: []
+    };
+  }
 
+<<<<<<< HEAD
     function renderTables() {
       const linkedBody = document.getElementById("linked-table-body");
       const assetBody = document.getElementById("asset-breakdown-body");
@@ -337,28 +359,214 @@
         toast.style.background = "#f59e0b";
         toast.classList.add("show");
         setTimeout(() => toast.classList.remove("show"), 3000);
+=======
+  function saveSharedPortfolio(portfolio) {
+    try {
+      if (typeof StateManager !== "undefined" && StateManager.setPortfolio) {
+        StateManager.setPortfolio(portfolio);
+>>>>>>> 44741e41fd834a2e58a921d26c083b1f07afa153
         return;
       }
-      if (confirm(`Are you sure you want to disconnect ${name}?`)) {
-        const toast = document.getElementById("toast");
-        toast.textContent = `✅ Successfully disconnected ${name}.`;
-        toast.style.background = "#22c55e";
-        toast.classList.add("show");
-        const row = document.getElementById(`row-${index}`);
-        if (row) {
-          row.style.transition = "all 0.4s ease";
-          row.style.transform = "translateX(20px)";
-          row.style.opacity = "0";
-          setTimeout(() => row.remove(), 400);
-        }
-        setTimeout(() => toast.classList.remove("show"), 3000);
-      }
+    } catch (e) {}
+    window.mockPortfolio = portfolio;
+  }
+
+  function getCategoryFromAsset(asset) {
+    if (!asset) return "";
+    if (asset.includes("Cash")) return "Bank";
+    if (asset.includes("ETF") || asset.includes("Equity")) return "Investment";
+    if (asset.includes("Crypto")) return "Crypto";
+    if (asset.includes("Equipment") || asset.includes("Private")) return "Private Asset";
+    return "";
+  }
+
+  function renderTables() {
+    const portfolio = getSharedPortfolio();
+    const linkedBody = document.getElementById("linked-table-body");
+    const assetBody = document.getElementById("asset-breakdown-body");
+
+    const linkedAccounts = Array.isArray(portfolio.linkedAccounts) ? portfolio.linkedAccounts : [];
+    const assetBreakdown = Array.isArray(portfolio.assetBreakdown) ? portfolio.assetBreakdown : [];
+
+    linkedBody.innerHTML = linkedAccounts.map((item, index) => `
+      <tr id="row-${index}">
+        <td style="font-weight: 600;">${item.name || "-"}</td>
+        <td>
+          <span style="padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; ${getBadgeStyle(item.category)}">
+            ${item.category || "-"}
+          </span>
+        </td>
+        <td style="font-family: monospace; font-size: 1rem;">${formatMoney(item.balance)}</td>
+        <td>
+          <span style="color: ${item.status === "Connected" ? "#34d399" : "#a8b3cf"}; font-size: 0.85rem;">
+            ● ${item.status || "Unknown"}
+          </span>
+        </td>
+        <td>
+          <button
+            class="mini-btn"
+            style="color: #ff4c4c; border-color: rgba(255, 76, 76, 0.3); background: none; cursor: pointer; padding: 4px 10px; border-radius: 8px; font-size: 0.72rem;"
+            onclick="disconnectAccount(${index}, ${JSON.stringify(item.name || "")})"
+          >
+            Disconnect
+          </button>
+        </td>
+      </tr>
+    `).join("");
+
+    assetBody.innerHTML = assetBreakdown.map(item => `
+      <tr>
+        <td>
+          <span style="padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; ${getBadgeStyle(getCategoryFromAsset(item.asset))}">
+            ${item.asset || "-"}
+          </span>
+        </td>
+        <td><em style="color: var(--muted);">${item.type || "-"}</em></td>
+        <td style="font-family: monospace; font-size: 1rem; font-weight: 600;">${formatMoney(item.value)}</td>
+      </tr>
+    `).join("");
+  }
+
+  function openConnectModal() {
+    document.getElementById("connect-modal").style.display = "flex";
+  }
+
+  function closeConnectModal() {
+    document.getElementById("connect-modal").style.display = "none";
+  }
+
+  function mockConnect(provider) {
+    const toast = document.getElementById("toast");
+    toast.textContent = `Linking ${provider} to your Lifepath...`;
+    toast.style.background = "var(--primary)";
+    toast.classList.add("show");
+    closeConnectModal();
+
+    let balance = 0;
+    let category = "";
+
+    if (provider === "DBS / POSB") {
+      balance = 22000;
+      category = "Bank";
+    } else if (provider === "Tiger Brokers") {
+      balance = 42000;
+      category = "Investment";
+    } else if (provider === "Syfe") {
+      balance = 38500;
+      category = "Investment";
+    } else if (provider === "MetaMask") {
+      balance = 25500;
+      category = "Crypto";
     }
 
-    // START EVERYTHING
-    document.addEventListener('DOMContentLoaded', () => {
+    const portfolio = getSharedPortfolio();
+    if (!Array.isArray(portfolio.linkedAccounts)) portfolio.linkedAccounts = [];
+
+    const alreadyExists = portfolio.linkedAccounts.some(item => item.name === provider);
+
+    if (!alreadyExists) {
+      portfolio.linkedAccounts.push({
+        name: provider,
+        category,
+        balance,
+        status: "Connected",
+        source: "Live FMP API",
+        updatedAt: "Today at 9:00 AM"
+      });
+      saveSharedPortfolio(portfolio);
+    }
+
+    setTimeout(() => {
+      renderTables();
+      renderScenarioBanner();
+      toast.classList.remove("show");
+    }, 1200);
+  }
+
+  function disconnectAccount(index, name) {
+    const allowList = ["DBS / POSB", "Tiger Brokers", "Syfe", "MetaMask"];
+
+    if (!allowList.includes(name)) {
+      const toast = document.getElementById("toast");
+      toast.textContent = `⚠️ Action Restricted: ${name} is a core demo asset.`;
+      toast.style.background = "#f59e0b";
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3000);
+      return;
+    }
+
+    if (confirm(`Are you sure you want to disconnect ${name}?`)) {
+      const portfolio = getSharedPortfolio();
+      if (!Array.isArray(portfolio.linkedAccounts)) portfolio.linkedAccounts = [];
+
+      portfolio.linkedAccounts.splice(index, 1);
+      saveSharedPortfolio(portfolio);
+
+      const toast = document.getElementById("toast");
+      toast.textContent = `✅ Successfully disconnected ${name}.`;
+      toast.style.background = "#22c55e";
+      toast.classList.add("show");
+
+      const row = document.getElementById(`row-${index}`);
+      if (row) {
+        row.style.transition = "all 0.4s ease";
+        row.style.transform = "translateX(20px)";
+        row.style.opacity = "0";
+        setTimeout(() => {
+          renderTables();
+          renderScenarioBanner();
+        }, 400);
+      } else {
         renderTables();
-    });
-  </script>
+        renderScenarioBanner();
+      }
+
+      setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+  }
+
+  function renderScenarioBanner() {
+    const banner = document.getElementById("scenario-asset-banner");
+    if (!banner) return;
+
+    if (typeof StateManager === "undefined" || !StateManager.getScenarioContext) {
+      banner.style.display = "none";
+      return;
+    }
+
+    const context = StateManager.getScenarioContext();
+
+    if (!context.isActive) {
+      banner.style.display = "none";
+      return;
+    }
+
+    const portfolio = getSharedPortfolio();
+    const cashAsset = (portfolio.assetBreakdown || []).find(item =>
+      String(item.asset || "").toLowerCase().includes("cash")
+    );
+
+    const cashValue = Number(cashAsset?.value || 0);
+
+    banner.style.display = "block";
+    banner.innerHTML = `
+      <strong>Active scenario:</strong> ${context.title}. 
+      Asset values below are scenario-adjusted for this stress event. 
+      Estimated immediately accessible liquidity: <strong>S$${cashValue.toLocaleString("en-SG")}</strong>.
+    `;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    renderTables();
+    renderScenarioBanner();
+  });
+
+  window.addEventListener("storage", (event) => {
+    if (event.key === "lifepath_portfolio" || event.key === "lifepath_data") {
+      renderTables();
+      renderScenarioBanner();
+    }
+  });
+</script>
 </body>
 </html>
