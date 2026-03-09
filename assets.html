@@ -145,22 +145,24 @@
         newItem = { coin: "New Portfolio", symbol: "INV", wallet: "Tiger Brokers", balance: 10000, valueUsd: 7380 };
       } else if (provider === "Coinbase") {
         category = "Crypto";
-        newItem = { coin: "New Wallet", symbol: "BTC", wallet: "Coinbase", balance: 2000, valueUsd: 1476 };
+        newItem = { coin: "Coinbase Wallet", symbol: "CB", wallet: "Coinbase App", balance: 2000, valueUsd: 1476 };
       }
 
-      // Logic to push data into structure [cite: 2026-02-13]
       if (category && window.mockPortfolio.detailedAccounts[category]) {
         window.mockPortfolio.detailedAccounts[category].push(newItem);
         const summaryMap = { "Bank": "Cash Accounts", "Investment": "ETF / Equity Portfolio", "Crypto": "Crypto Wallets" };
         const summaryItem = window.mockPortfolio.assetBreakdown.find(a => a.asset === summaryMap[category]);
         if (summaryItem) summaryItem.value += newItem.balance;
         window.mockPortfolio.summary.netWorth += newItem.balance;
+
+        // --- ADD THESE TWO LINES ---
+        localStorage.setItem('savedPortfolio', JSON.stringify(window.mockPortfolio));
+        localStorage.setItem('selectedCategory', category);
       }
 
       setTimeout(() => {
-        renderTables();
-        syncGlobalNavbar();
-        toast.style.opacity = "0";
+        // --- CHANGE THIS TO REDIRECT ---
+        window.location.href = 'details.html';
       }, 1200);
     }
 

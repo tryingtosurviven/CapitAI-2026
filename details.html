@@ -30,7 +30,7 @@
                 <th style="padding: 15px;">Stored In (Wallet)</th>
                 <th style="padding: 15px;">Allocation (SGD)</th>
                 <th style="padding: 15px;">Est. USD</th>
-            </tr>
+                <th style="padding: 15px; text-align: right;">Action</th> </tr>
         </thead>
         <tbody id="detail-body"></tbody>
       </table>
@@ -41,35 +41,77 @@
 
   <script src="mock-data.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const category = localStorage.getItem('selectedCategory') || 'Bank';
-      const portfolio = window.mockPortfolio;
-      const data = portfolio.detailedAccounts[category];
-      
-      const formatMoney = (val) => new Intl.NumberFormat('en-SG', { 
+    function formatMoney(val) {
+      return new Intl.NumberFormat('en-SG', { 
         style: 'currency', currency: 'SGD', maximumFractionDigits: 0 
       }).format(val);
+    }
+
+    // --- NEW: Disconnect Logic ---
+    function disconnectAccount(index) {
+      const category = localStorage.getItem('selectedCategory') || 'Bank';
+      const savedData = localStorage.getItem('savedPortfolio');
+      const portfolio = savedData ? JSON.parse(savedData) : window.mockPortfolio;
+
+      // 1. Get the account we are removing
+      const removedAccount = portfolio.detailedAccounts[category][index];
+      
+      // 2. Remove it from the detailed list
+      portfolio.detailedAccounts[category].splice(index, 1);
+
+      // 3. Update the Main Summary Totals
+      const summaryMap = { "Bank": "Cash Accounts", "Investment": "ETF / Equity Portfolio", "Crypto": "Crypto Wallets" };
+      const summaryItem = portfolio.assetBreakdown.find(a => a.asset === summaryMap[category]);
+      
+      if (summaryItem) summaryItem.value -= removedAccount.balance;
+      portfolio.summary.netWorth -= removedAccount.balance;
+
+      // 4. Save to Browser Brain and Reload
+      localStorage.setItem('savedPortfolio', JSON.stringify(portfolio));
+      location.reload(); 
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const category = localStorage.getItem('selectedCategory') || 'Bank';
+      const savedData = localStorage.getItem('savedPortfolio');
+      const portfolio = savedData ? JSON.parse(savedData) : window.mockPortfolio;
+      const data = portfolio.detailedAccounts[category];
 
       const displayTitle = category === "Bank" ? "Cash" : 
                            category === "Investment" ? "Investment" : category;
       document.getElementById('detail-title').textContent = displayTitle + " Breakdown";
 
-      if (data) {
-        document.getElementById('detail-body').innerHTML = data.map(item => `
+      if (data && data.length > 0) {
+        document.getElementById('detail-body').innerHTML = data.map((item, index) => {
+            const assetName = item.coin || item.name || "Unknown Asset";
+            const walletName = item.wallet || item.accNo || "Linked Account";
+            const symbol = item.symbol || "";
+            const usdValue = item.valueUsd ? item.valueUsd.toLocaleString() : "0";
+
+            return `
             <tr style="border-bottom: 1px solid #223150;">
                 <td style="padding: 15px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-weight: bold;">${item.coin}</span>
-                    <span style="font-size: 0.7rem; color: #a8b3cf; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">${item.symbol}</span>
-                </div>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                      <span style="font-weight: bold;">${assetName}</span>
+                      ${symbol ? `<span style="font-size: 0.7rem; color: #a8b3cf; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">${symbol}</span>` : ''}
+                  </div>
                 </td>
-                <td style="padding: 15px; color: #a8b3cf; font-size: 0.9rem;">${item.wallet}</td>
+                <td style="padding: 15px; color: #a8b3cf; font-size: 0.9rem;">${walletName}</td>
                 <td style="padding: 15px; font-weight: bold; color: #39c6e9;">${formatMoney(item.balance)}</td>
-                <td style="padding: 15px; color: #6d7cff; font-family: monospace;">$${item.valueUsd.toLocaleString()}</td>
+                <td style="padding: 15px; color: #6d7cff; font-family: monospace;">$${usdValue}</td>
+                <td style="padding: 15px; text-align: right;">
+                    <button onclick="disconnectAccount(${index})" style="background: rgba(255, 109, 109, 0.1); color: #ff6d6d; border: 1px solid rgba(255, 109, 109, 0.3); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem;">
+                      Disconnect
+                    </button>
+                </td>
             </tr>
-        `).join('');
+            `;
+        }).join('');
+      } else {
+        document.getElementById('detail-body').innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px; color:#a8b3cf;">No accounts linked.</td></tr>';
       }
     });
   </script>
+  
 </body>
 </html>
