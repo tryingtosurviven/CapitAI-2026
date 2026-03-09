@@ -6,7 +6,7 @@
   <title>Insights | Lifepath AI</title>
   <style>
     :root {
-      --bg: #050a15; 
+      --bg: #050a15;
       --panel: #0f172a;
       --line: #334155;
       --text: #f8fafc;
@@ -34,10 +34,25 @@
       background: rgba(16, 26, 46, 0.8); border: 1px solid var(--line); border-radius: 18px;
     }
 
-    .nav-link { color: var(--muted); text-decoration: none; margin-left: 15px; padding: 8px 16px; border-radius: 20px; border: 1px solid var(--line); }
+    .brand { display: flex; flex-direction: column; gap: 4px; }
+    .brand-title { font-size: 1.25rem; font-weight: 700; }
+    .brand-subtitle { color: var(--muted); font-size: 0.9rem; }
+
+    .nav-links { display: flex; flex-wrap: wrap; gap: 10px; }
+    .nav-link {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+    }
     .nav-link.active { color: white; background: rgba(14, 165, 233, 0.2); border-color: var(--primary); }
 
-    /* Fix for the "Wordy" look: Metric Grid */
+    .page-header { margin-bottom: 20px; }
+    .eyebrow { color: #95a4ff; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.74rem; margin-bottom: 10px; }
+    .page-title { margin: 0 0 10px; font-size: 2rem; }
+    .page-subtitle { color: var(--muted); line-height: 1.6; margin: 0; }
+
     .metric-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -45,19 +60,25 @@
       margin-bottom: 26px;
     }
 
-    .metric-card {
-      background: var(--panel);
-      padding: 20px;
-      border-radius: var(--radius);
-      border: 1px solid var(--line);
-    }
-
     .card, .panel {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       padding: 18px;
-      transition: all 0.2s ease-in-out;
+    }
+
+    .card-title {
+      color: #98a8d3;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .card-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
     }
 
     .metric-score {
@@ -66,18 +87,38 @@
       margin-bottom: 8px;
     }
 
-    .metric-label { color: var(--muted); text-transform: uppercase; font-size: 0.7rem; margin-bottom: 8px; }
-    .metric-value { font-size: 2.2rem; font-weight: 800; margin-bottom: 4px; }
-    .score-good { color: var(--green); }
-    .score-medium { color: var(--amber); }
-
     .layout-2 { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; }
-    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
-    
+
+    .section-title { margin: 0 0 14px; font-size: 1.1rem; }
+
     .bar-track { height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; margin: 10px 0; overflow: hidden; }
     .bar-fill { height: 100%; background: var(--primary); transition: width 1s ease-in-out; }
 
-    .action-card { border-left: 4px solid var(--primary); background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; margin-bottom: 12px; }
+    .component-row {
+      display: grid;
+      grid-template-columns: 140px 1fr 40px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .action-card {
+      border-left: 4px solid var(--primary);
+      background: rgba(255,255,255,0.03);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 1024px) {
+      .metric-grid { grid-template-columns: 1fr 1fr; }
+      .layout-2 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .metric-grid { grid-template-columns: 1fr; }
+      .navbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .page-title { font-size: 1.6rem; }
+    }
   </style>
 </head>
 <body>
@@ -103,23 +144,23 @@
 
     <div class="metric-grid">
       <div class="card">
-        <div class="card-title">Diversification <span style="float:right; color:var(--green);">81</span></div>
-        <div class="metric-score" style="color:var(--green);">81</div>
+        <div class="card-title">Diversification <span id="metric-diversification-badge" style="float:right; color:var(--green);">81</span></div>
+        <div class="metric-score" id="metric-diversification" style="color:var(--green);">81</div>
         <div class="card-note">Measures concentration risk across asset classes and exposure buckets.</div>
       </div>
       <div class="card">
-        <div class="card-title">Liquidity Strength <span style="float:right; color:var(--amber);">74</span></div>
-        <div class="metric-score" style="color:var(--amber);">74</div>
+        <div class="card-title">Liquidity Strength <span id="metric-liquidity-badge" style="float:right; color:var(--amber);">74</span></div>
+        <div class="metric-score" id="metric-liquidity" style="color:var(--amber);">74</div>
         <div class="card-note">Reflects how much of your wealth can be accessed quickly in a stress event.</div>
       </div>
       <div class="card">
-        <div class="card-title">Fragility Score <span style="float:right; color:var(--amber);">63</span></div>
-        <div class="metric-score" style="color:var(--amber);">63</div>
+        <div class="card-title">Fragility Score <span id="metric-fragility-badge" style="float:right; color:var(--amber);">63</span></div>
+        <div class="metric-score" id="metric-fragility" style="color:var(--amber);">63</div>
         <div class="card-note">Higher fragility means your portfolio is more sensitive to downside shocks.</div>
       </div>
       <div class="card">
-        <div class="card-title">Behavior Discipline <span style="float:right; color:var(--green);">79</span></div>
-        <div class="metric-score" style="color:var(--green);">79</div>
+        <div class="card-title">Behavior Discipline <span id="metric-behavior-badge" style="float:right; color:var(--green);">79</span></div>
+        <div class="metric-score" id="metric-behavior" style="color:var(--green);">79</div>
         <div class="card-note">Estimates resilience against panic selling, overreaction, and poor timing.</div>
       </div>
     </div>
@@ -129,66 +170,161 @@
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
           <div>
             <div class="card-title">Wealth Wellness Index</div>
-            <div style="font-size:3rem; font-weight:800; color:var(--primary);">78 / 100</div>
+            <div id="wwi-score" style="font-size:3rem; font-weight:800; color:var(--primary);">78 / 100</div>
           </div>
-          <div style="padding:8px 12px; background:rgba(109,124,255,0.1); border-radius:8px; font-size:0.8rem; border:1px solid var(--primary);">Goal: Retire by 50</div>
+          <div id="goal-label" style="padding:8px 12px; background:rgba(109,124,255,0.1); border-radius:8px; font-size:0.8rem; border:1px solid var(--primary);">Goal: Retire by 50</div>
         </div>
-        
-        <p class="card-note" style="margin-bottom:20px;">78 indicates solid financial health with some moderate exposure to volatility and liquidity stress. Benchmark: Average balanced investor score is 70.</p>
+
+        <p class="card-note" id="wwi-summary-text" style="margin-bottom:20px;">78 indicates solid financial health with some moderate exposure to volatility and liquidity stress. Benchmark: Average balanced investor score is 70.</p>
 
         <h3 class="section-title">Score component breakdown</h3>
         <div style="display:grid; gap:15px; margin-bottom:30px;">
-          <div class="component-row"><span>Diversification</span><div class="bar-track"><div class="bar-fill" style="width:81%;"></div></div><span>81</span></div>
-          <div class="component-row"><span>Liquidity Strength</span><div class="bar-track"><div class="bar-fill" style="width:74%;"></div></div><span>74</span></div>
-          <div class="component-row"><span>Fragility Score</span><div class="bar-track"><div class="bar-fill" style="width:63%;"></div></div><span>63</span></div>
-          <div class="component-row"><span>Behavior Discipline</span><div class="bar-track"><div class="bar-fill" style="width:79%;"></div></div><span>79</span></div>
+          <div class="component-row"><span>Diversification</span><div class="bar-track"><div class="bar-fill" id="bar-diversification" style="width:81%;"></div></div><span id="bar-diversification-label">81</span></div>
+          <div class="component-row"><span>Liquidity Strength</span><div class="bar-track"><div class="bar-fill" id="bar-liquidity" style="width:74%;"></div></div><span id="bar-liquidity-label">74</span></div>
+          <div class="component-row"><span>Fragility Score</span><div class="bar-track"><div class="bar-fill" id="bar-fragility" style="width:63%;"></div></div><span id="bar-fragility-label">63</span></div>
+          <div class="component-row"><span>Behavior Discipline</span><div class="bar-track"><div class="bar-fill" id="bar-behavior" style="width:79%;"></div></div><span id="bar-behavior-label">79</span></div>
         </div>
 
         <h3 class="section-title">Current portfolio insights</h3>
-        <div style="display:grid; gap:10px;">
-          <div class="card" style="padding:15px; background:rgba(255,255,255,0.03); font-size:0.9rem; color:var(--muted);">You have around 8 months of essential expenses in cash, which is a healthy liquidity buffer.</div>
-          <div class="card" style="padding:15px; background:rgba(255,255,255,0.03); font-size:0.9rem; color:var(--muted);">Crypto is slightly above your target range. Gradual de-risking can reduce future stress.</div>
-        </div>
+        <div id="portfolio-insights-list" style="display:grid; gap:10px;"></div>
       </div>
 
       <div class="panel">
         <h2 class="section-title">Suggested next-best actions</h2>
-        <div id="suggested-actions-list">
-          <div class="action-card">
-            <strong>Action 1:</strong> Dial crypto down from 14% toward 8–10% over the next 3–6 months, using scheduled rebalancing instead of panic selling.
-          </div>
-          <div class="action-card">
-            <strong>Action 2:</strong> Top up your emergency cash by about S$8,000 so you always have at least 9–12 months of expenses in liquid form.
-          </div>
-          <div class="action-card">
-            <strong>Action 3:</strong> Create a simple rule: wait 24 hours before reacting to big market drops. This reduces emotional, regret-driven trades.
-          </div>
-          <div class="action-card">
-            <strong>Action 4:</strong> Gradually shift a small slice of your private-asset value into diversified ETFs so more of your wealth is liquid and flexible.
-          </div>
+        <div id="suggested-actions-list"></div>
 
-          </div>
-        
         <div style="margin-top:20px; padding:20px; background:rgba(109,124,255,0.05); border:1px solid var(--primary); border-radius:12px;">
           <div class="card-title" style="color:var(--primary);">Top Priority</div>
-          <p style="font-size:0.95rem; line-height:1.5;">Dial crypto down from 14% toward 8-10% over the next 3-6 months using scheduled rebalancing.</p>
+          <p id="top-priority-text" style="font-size:0.95rem; line-height:1.5;">Dial crypto down from 14% toward 8-10% over the next 3-6 months using scheduled rebalancing.</p>
         </div>
       </div>
     </div>
 
-    <div class="card" style="padding:15px; background:rgba(255,255,255,0.03); font-size:0.9rem; color:var(--muted);">
+    <div id="bottom-insight-card" class="card" style="padding:15px; background:rgba(255,255,255,0.03); font-size:0.9rem; color:var(--muted); margin-top:20px;">
       Private assets like your 3D printing business are valuable but illiquid. They should not be your first line of defence in an emergency.
     </div>
 
-    <div style="display: flex; gap: 8px; margin-top: 15px;">
-      <span style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">Balanced profile</span>
-      <span style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">8.3 months cash runway</span>
-      <span style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">WWI 78 / 100</span>
+    <div style="display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap;">
+      <span id="tag-profile" style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">Balanced profile</span>
+      <span id="tag-liquidity" style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">8.3 months cash runway</span>
+      <span id="tag-wwi" style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">WWI 78 / 100</span>
+      <span id="tag-scenario" style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">Base case</span>
     </div>
   </div>
 
   <script src="mock-data.js"></script>
   <script src="state.js"></script>
-  
+  <script>
+    function getSharedPortfolio() {
+      if (typeof StateManager !== "undefined") {
+        if (StateManager.getScenarioAdjustedPortfolio) {
+          return StateManager.getScenarioAdjustedPortfolio();
+        }
+        return StateManager.getPortfolio() || window.mockPortfolio;
+      }
+      return window.mockPortfolio;
+    }
+
+    function getSharedState() {
+      if (typeof StateManager !== "undefined" && StateManager.getState) {
+        return StateManager.getState();
+      }
+      return null;
+    }
+
+    function getScoreColor(score) {
+      if (score >= 80) return "var(--green)";
+      if (score >= 60) return "var(--amber)";
+      return "#ef4444";
+    }
+
+    function setMetric(idBase, value) {
+      const color = getScoreColor(value);
+
+      document.getElementById(`metric-${idBase}`).textContent = value;
+      document.getElementById(`metric-${idBase}`).style.color = color;
+      document.getElementById(`metric-${idBase}-badge`).textContent = value;
+      document.getElementById(`metric-${idBase}-badge`).style.color = color;
+
+      document.getElementById(`bar-${idBase}`).style.width = `${value}%`;
+      document.getElementById(`bar-${idBase}-label`).textContent = value;
+    }
+
+    function renderInsightsPage() {
+      const portfolio = getSharedPortfolio();
+      const globalState = getSharedState();
+
+      const analytics = portfolio.analytics || {};
+      const user = portfolio.user || {};
+      const summary = portfolio.summary || {};
+
+      const activeScenario = globalState?.activeScenario ?? "Base case";
+      const scenarioActive = activeScenario !== "None" && activeScenario !== "Base case";
+
+      const diversification = scenarioActive
+        ? (analytics.diversification ?? globalState?.diversification ?? 81)
+        : (globalState?.diversification ?? analytics.diversification ?? 81);
+
+      const liquidity = analytics.liquidity ?? 74;
+
+      const fragility = scenarioActive
+        ? (analytics.fragility ?? globalState?.fragility ?? 63)
+        : (globalState?.fragility ?? analytics.fragility ?? 63);
+
+      const behavior = analytics.behavior ?? 79;
+      const wwi = globalState?.wellnessScore ?? summary.wealthWellnessScore ?? 78;
+      const liquidityMonths = globalState?.liquidityMonths ?? summary.emergencyMonths ?? 8.3;
+
+      setMetric("diversification", diversification);
+      setMetric("liquidity", liquidity);
+      setMetric("fragility", fragility);
+      setMetric("behavior", behavior);
+
+      document.getElementById("wwi-score").textContent = `${wwi} / 100`;
+      document.getElementById("goal-label").textContent = `Goal: ${user.goal || "Retire by 50"}`;
+
+      let summaryText = `${wwi} indicates solid financial health with some moderate exposure to volatility and liquidity stress. Benchmark: Average balanced investor score is 70.`;
+      if (activeScenario && activeScenario !== "None" && activeScenario !== "Base case") {
+        summaryText = `${wwi} reflects your portfolio under the active ${activeScenario} scenario. This view is scenario-adjusted rather than base case.`;
+      }
+      document.getElementById("wwi-summary-text").textContent = summaryText;
+
+      const insightsList = document.getElementById("portfolio-insights-list");
+      const insights = portfolio.insights || [];
+      insightsList.innerHTML = insights.map(item => `
+        <div class="card" style="padding:15px; background:rgba(255,255,255,0.03); font-size:0.9rem; color:var(--muted);">${item}</div>
+      `).join("");
+
+      const actionsList = document.getElementById("suggested-actions-list");
+      const actions = analytics.suggestedActions || [];
+      actionsList.innerHTML = actions.map((action, index) => `
+        <div class="action-card">
+          <strong>Action ${index + 1}:</strong> ${action}
+        </div>
+      `).join("");
+
+      document.getElementById("top-priority-text").textContent =
+        actions[0] || "Maintain your current allocation and continue monitoring liquidity resilience.";
+
+      document.getElementById("bottom-insight-card").textContent =
+        insights[2] || "Private assets add long-term value, but they should not be treated as immediate emergency liquidity.";
+
+      document.getElementById("tag-profile").textContent = `${user.profile || "Balanced"} profile`;
+      document.getElementById("tag-liquidity").textContent = `${liquidityMonths} months cash runway`;
+      document.getElementById("tag-wwi").textContent = `WWI ${wwi} / 100`;
+      document.getElementById("tag-scenario").textContent =
+        activeScenario && activeScenario !== "None" ? activeScenario : "Base case";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderInsightsPage();
+    });
+
+    window.addEventListener("storage", (event) => {
+      if (event.key === "lifepath_data" || event.key === "lifepath_portfolio") {
+        renderInsightsPage();
+      }
+    });
+  </script>
 </body>
 </html>

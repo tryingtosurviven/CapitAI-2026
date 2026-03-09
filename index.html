@@ -494,7 +494,7 @@
           Lifepath AI unifies traditional and digital assets, measures financial resilience,
           and gives scenario-tested guidance you can actually act on.
         </p>
-                <div style="margin-top:18px; font-size:0.9rem; color:var(--muted);">
+        <div style="margin-top:18px; font-size:0.9rem; color:var(--muted);">
           Data source:
           <strong id="data-mode-label">Simulated LifePath dataset (safe for demo)</strong>
           <button
@@ -505,7 +505,6 @@
             Try live data (beta)
           </button>
         </div>
-
       </div>
 
       <div class="panel">
@@ -625,12 +624,23 @@
 
   <script src="mock-data.js"></script>
   <script src="state.js"></script>
-  
+
   <script>
     let currentCurrency = "SGD";
     let allocationChart;
+    const FX_RATE = 0.74;
 
-    const FX_RATE = 0.74; // 1 SGD ≈ 0.74 USD (demo rate)
+    function getSharedPortfolio() {
+      if (typeof StateManager !== "undefined") {
+        if (StateManager.getScenarioAdjustedPortfolio) {
+          return StateManager.getScenarioAdjustedPortfolio();
+        }
+        if (StateManager.getPortfolio) {
+          return StateManager.getPortfolio();
+        }
+      }
+      return window.mockPortfolio;
+    }
 
     function formatMoney(value) {
       return new Intl.NumberFormat("en-SG", {
@@ -657,36 +667,32 @@
     }
 
     function renderDashboard() {
-      const portfolio = window.mockPortfolio;
-      
-      // NEW: Pull the latest global state from the brain!
+      const portfolio = getSharedPortfolio();
+
       let globalState = null;
-      if (typeof StateManager !== 'undefined') {
+      if (typeof StateManager !== "undefined") {
         globalState = StateManager.get();
       }
-      
-      // Use the global state if it exists, otherwise fall back to the mock data
+
       const displayNetWorth = globalState ? globalState.netWorth : portfolio.summary.netWorth;
       const displayScore = globalState ? globalState.wellnessScore : portfolio.summary.wealthWellnessScore;
       const displayLiquidity = globalState ? globalState.liquidityMonths : portfolio.summary.emergencyMonths;
 
       const netWorthValue = convertFromSGD(displayNetWorth);
 
-      // Inject the connected numbers into the HTML
       document.getElementById("net-worth").textContent = formatMoney(netWorthValue);
       document.getElementById("wellness-score").textContent = `${displayScore}/100`;
       document.getElementById("liquidity-buffer").textContent = `${displayLiquidity} months`;
       document.getElementById("user-goal").textContent = portfolio.user.goal;
 
-      // Add a small warning label if a scenario is active
+      const dataModeLabel = document.getElementById("data-mode-label");
       if (globalState && globalState.activeScenario !== "Base case" && globalState.activeScenario !== "None") {
-        document.getElementById("data-mode-label").innerHTML = 
-          `<span style="color: #ff4c4c;">⚠️ ACTIVE SCENARIO: ${globalState.activeScenario}</span>`;
+        dataModeLabel.innerHTML = `<span style="color: #ff4c4c;">⚠️ ACTIVE SCENARIO: ${globalState.activeScenario}</span>`;
       } else {
-        document.getElementById("data-mode-label").innerHTML = "Simulated LifePath dataset (safe for demo)";
+        dataModeLabel.textContent = globalState?.dataSource || "Simulated LifePath dataset (safe for demo)";
       }
 
-      document.getElementById("quick-insights").innerHTML = portfolio.insights
+      document.getElementById("quick-insights").innerHTML = (portfolio.insights || [])
         .map(item => `<li>${item}</li>`)
         .join("");
 
@@ -696,8 +702,9 @@
     }
 
     function renderRebalanceCard(portfolio) {
-      const cryptoItem = portfolio.allocation.find(item => item.label === "Crypto");
-      const total = portfolio.allocation.reduce((sum, item) => sum + item.value, 0);
+      const allocation = Array.isArray(portfolio.allocation) ? portfolio.allocation : [];
+      const cryptoItem = allocation.find(item => item.label === "Crypto") || { value: 0 };
+      const total = allocation.reduce((sum, item) => sum + (item.value || 0), 0);
       const cryptoPct = total > 0 ? (cryptoItem.value / total) * 100 : 0;
 
       const rebalanceCard = document.getElementById("rebalance-card");
@@ -705,7 +712,7 @@
 
       if (cryptoPct > 20) {
         const excessPct = cryptoPct - 10;
-        const shiftAmount = portfolio.summary.netWorth * (excessPct / 100);
+        const shiftAmount = (portfolio.summary?.netWorth || 0) * (excessPct / 100);
         const shiftedDisplay = formatMoney(convertFromSGD(shiftAmount));
 
         rebalanceCard.style.display = "block";
@@ -715,15 +722,15 @@
       }
     }
 
-    function renderToastIfNeeded(portfolio) {
-      // Guardrail toast disabled for demo
+    function renderToastIfNeeded() {
       const toast = document.getElementById("guardrail-toast");
       toast.classList.remove("show");
     }
 
-
     function renderChart(portfolio) {
       const ctx = document.getElementById("allocationChart");
+
+      const allocation = Array.isArray(portfolio.allocation) ? portfolio.allocation : [];
 
       if (allocationChart) {
         allocationChart.destroy();
@@ -732,10 +739,10 @@
       allocationChart = new Chart(ctx, {
         type: "doughnut",
         data: {
-          labels: portfolio.allocation.map(item => item.label),
+          labels: allocation.map(item => item.label),
           datasets: [{
-            data: portfolio.allocation.map(item => convertFromSGD(item.value)),
-            backgroundColor: portfolio.allocation.map(item => item.color),
+            data: allocation.map(item => convertFromSGD(item.value || 0)),
+            backgroundColor: allocation.map(item => item.color),
             borderWidth: 0
           }]
         },
@@ -798,85 +805,113 @@
         askAI();
       }
     });
-async function fetchLivePortfolio() {
-  const label = document.getElementById("data-mode-label");
-  label.textContent = "Attempting live refresh…";
 
-  try {
-    const res = await fetch("/api/portfolio");
-    if (!res.ok) throw new Error("API error " + res.status);
-    const data = await res.json();
+    async function fetchLivePortfolio() {
+      const label = document.getElementById("data-mode-label");
+      label.textContent = "Attempting live refresh…";
 
-    if (data.metrics && data.portfolio) {
-      const { metrics } = data;
+      try {
+        const res = await fetch("/api/portfolio");
+        if (!res.ok) throw new Error("API error " + res.status);
+        const data = await res.json();
 
-      // 1) One-time backup of curated story
-      if (!window.curatedPortfolio) {
-        window.curatedPortfolio = JSON.parse(JSON.stringify(window.mockPortfolio));
-      }
+        if (data.metrics) {
+          const portfolio = getSharedPortfolio();
+          const { metrics } = data;
 
-      // 2) Summary from live metrics
-      if (typeof metrics.netWorth === "number") {
-        window.mockPortfolio.summary.netWorth = metrics.netWorth;
-      }
-      if (typeof metrics.wellnessScore === "number") {
-        window.mockPortfolio.summary.wealthWellnessScore = metrics.wellnessScore;
-      }
+          if (typeof metrics.netWorth === "number") {
+            portfolio.summary.netWorth = metrics.netWorth;
+          }
 
-      // 3) Allocation from live metrics
-      if (metrics.allocation) {
-        window.mockPortfolio.allocation = [
-          { label: "Cash", value: metrics.allocation.cash, color: "#4f46e5" },
-          { label: "Investments", value: metrics.allocation.securities, color: "#06b6d4" },
-          { label: "Crypto", value: metrics.allocation.crypto, color: "#f59e0b" },
-          { label: "Private Assets", value: metrics.allocation.private, color: "#10b981" }
-        ];
-      }
+          if (typeof metrics.wellnessScore === "number") {
+            portfolio.summary.wealthWellnessScore = metrics.wellnessScore;
+          }
 
-      // 4) Full analytics & scenarios if backend sends them
-      if (data.analytics) {
-        window.mockPortfolio.analytics = data.analytics;
-      }
-      if (data.scenarios) {
-        window.mockPortfolio.scenarios = data.scenarios;
-      }
+          if (metrics.allocation) {
+            portfolio.allocation = [
+              { label: "Cash", value: metrics.allocation.cash || 0, color: "#4f46e5" },
+              { label: "Investments", value: metrics.allocation.securities || 0, color: "#06b6d4" },
+              { label: "Crypto", value: metrics.allocation.crypto || 0, color: "#f59e0b" },
+              { label: "Private Assets", value: metrics.allocation.private || 0, color: "#10b981" }
+            ];
 
-      // 5) Re-render dashboard on this page
-            // 5) Save shared metadata globally
-      if (typeof StateManager !== "undefined") {
-        StateManager.update({
-          netWorth: window.mockPortfolio.summary.netWorth,
-          wellnessScore: window.mockPortfolio.summary.wealthWellnessScore,
-          lastUpdated: "Today at 9:00 AM",
-          dataSource: "Live FMP API"
-        });
-      }
+            // IMPORTANT: also sync asset breakdown so Assets page matches Dashboard
+            portfolio.assetBreakdown = [
+              {
+                asset: "Cash Accounts",
+                type: "Liquid",
+                value: metrics.allocation.cash || 0,
+                liquidityTier: "T+0",
+                ladderNote: "Immediately accessible for expenses and emergencies."
+              },
+              {
+                asset: "ETF / Equity Portfolio",
+                type: "Market",
+                value: metrics.allocation.securities || 0,
+                liquidityTier: "T+2",
+                ladderNote: "Can usually be sold and settled within 2 trading days."
+              },
+              {
+                asset: "Crypto Wallets",
+                type: "Volatile",
+                value: metrics.allocation.crypto || 0,
+                liquidityTier: "T+0 to T+1",
+                ladderNote: "Fast to access, but highly volatile under stress scenarios."
+              },
+              {
+                asset: "Private Equipment",
+                type: "Illiquid",
+                value: metrics.allocation.private || 0,
+                liquidityTier: "T+30+",
+                ladderNote: "High value but slower to monetize in an emergency."
+              }
+            ];
+          }
 
-      // 6) Re-render dashboard on this page
-      renderDashboard();
+          if (data.analytics) {
+            portfolio.analytics = data.analytics;
+          }
 
-      // 7) Label for judges
-      label.textContent =
-        "Data source: Live API snapshot (falls back to LifePath wellness dataset if APIs fail)";
-    } else {
-      // Live response incomplete: keep curated story
-      label.textContent = "Live response incomplete, staying on simulated LifePath dataset";
-    }
-  } catch (e) {
-    console.log("Live refresh failed:", e);
-    // On failure, do NOT touch window.mockPortfolio; just update label
+          if (data.scenarios) {
+            portfolio.scenarios = data.scenarios;
+          }
+
+          if (typeof StateManager !== "undefined") {
+            StateManager.setPortfolio(portfolio);
+            StateManager.update({
+              lastUpdated: "Today at 9:00 AM",
+              dataSource: "Live API snapshot"
+            });
+          } else {
+            window.mockPortfolio = portfolio;
+          }
+
+          renderDashboard();
+
+          label.textContent =
+            "Data source: Live API snapshot (falls back to LifePath wellness dataset if APIs fail)";
+        } else {
+          label.textContent = "Live response incomplete, staying on simulated LifePath dataset";
+        }
+      } catch (e) {
+        console.log("Live refresh failed:", e);
+
         if (typeof StateManager !== "undefined") {
-      StateManager.update({
-        lastUpdated: "Today at 9:00 AM",
-        dataSource: "Simulated LifePath dataset"
-      });
+          StateManager.update({
+            lastUpdated: "Today at 9:00 AM",
+            dataSource: "Simulated LifePath dataset"
+          });
+        }
+
+        label.textContent = "Live feed unavailable, using simulated LifePath dataset";
+      }
     }
 
-    label.textContent = "Live feed unavailable, using simulated LifePath dataset";
-  }
-}
-
-
+    window.addEventListener("storage", (event) => {
+      if (event.key === "lifepath_portfolio" || event.key === "lifepath_data") {
+        renderDashboard();
+      }
+    });
 
     renderDashboard();
   </script>
