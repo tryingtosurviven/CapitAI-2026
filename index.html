@@ -624,261 +624,258 @@
   </div>
 
   <script src="mock-data.js"></script>
-  <script src="state.js"></script>
-  
-  <script>
-    let currentCurrency = "SGD";
-    let allocationChart;
+<script src="state.js"></script>
 
-    const FX_RATE = 0.74; // 1 SGD ≈ 0.74 USD (demo rate)
+<script>
+  let currentCurrency = "SGD";
+  let allocationChart;
 
-    function formatMoney(value) {
-      return new Intl.NumberFormat("en-SG", {
-        style: "currency",
-        currency: currentCurrency,
-        maximumFractionDigits: 0
-      }).format(value);
+  const FX_RATE = 0.74; // 1 SGD ≈ 0.74 USD (demo rate)
+
+  function getSharedPortfolio() {
+    if (typeof StateManager !== "undefined" && StateManager.getPortfolio) {
+      return StateManager.getPortfolio();
     }
-
-    function convertFromSGD(value) {
-      if (currentCurrency === "USD") {
-        return value * FX_RATE;
-      }
-      return value;
-    }
-
-    function setCurrency(currency) {
-      currentCurrency = currency;
-
-      document.getElementById("btn-sgd").classList.toggle("active", currency === "SGD");
-      document.getElementById("btn-usd").classList.toggle("active", currency === "USD");
-
-      renderDashboard();
-    }
-
-    function renderDashboard() {
-      const portfolio = window.mockPortfolio;
-      
-      // NEW: Pull the latest global state from the brain!
-      let globalState = null;
-      if (typeof StateManager !== 'undefined') {
-        globalState = StateManager.get();
-      }
-      
-      // Use the global state if it exists, otherwise fall back to the mock data
-      const displayNetWorth = globalState ? globalState.netWorth : portfolio.summary.netWorth;
-      const displayScore = globalState ? globalState.wellnessScore : portfolio.summary.wealthWellnessScore;
-      const displayLiquidity = globalState ? globalState.liquidityMonths : portfolio.summary.emergencyMonths;
-
-      const netWorthValue = convertFromSGD(displayNetWorth);
-
-      // Inject the connected numbers into the HTML
-      document.getElementById("net-worth").textContent = formatMoney(netWorthValue);
-      document.getElementById("wellness-score").textContent = `${displayScore}/100`;
-      document.getElementById("liquidity-buffer").textContent = `${displayLiquidity} months`;
-      document.getElementById("user-goal").textContent = portfolio.user.goal;
-
-      // Add a small warning label if a scenario is active
-      if (globalState && globalState.activeScenario !== "Base case" && globalState.activeScenario !== "None") {
-        document.getElementById("data-mode-label").innerHTML = 
-          `<span style="color: #ff4c4c;">⚠️ ACTIVE SCENARIO: ${globalState.activeScenario}</span>`;
-      } else {
-        document.getElementById("data-mode-label").innerHTML = "Simulated LifePath dataset (safe for demo)";
-      }
-
-      document.getElementById("quick-insights").innerHTML = portfolio.insights
-        .map(item => `<li>${item}</li>`)
-        .join("");
-
-      renderRebalanceCard(portfolio);
-      renderToastIfNeeded(portfolio);
-      renderChart(portfolio);
-    }
-
-    function renderRebalanceCard(portfolio) {
-      const cryptoItem = portfolio.allocation.find(item => item.label === "Crypto");
-      const total = portfolio.allocation.reduce((sum, item) => sum + item.value, 0);
-      const cryptoPct = total > 0 ? (cryptoItem.value / total) * 100 : 0;
-
-      const rebalanceCard = document.getElementById("rebalance-card");
-      const rebalanceText = document.getElementById("rebalance-text");
-
-      if (cryptoPct > 20) {
-        const excessPct = cryptoPct - 10;
-        const shiftAmount = portfolio.summary.netWorth * (excessPct / 100);
-        const shiftedDisplay = formatMoney(convertFromSGD(shiftAmount));
-
-        rebalanceCard.style.display = "block";
-        rebalanceText.innerHTML = `Reduce crypto exposure by approximately <strong>${shiftedDisplay}</strong> and reallocate to liquid diversified assets to improve shock resilience.`;
-      } else {
-        rebalanceCard.style.display = "none";
-      }
-    }
-
-    function renderToastIfNeeded(portfolio) {
-      // Guardrail toast disabled for demo
-      const toast = document.getElementById("guardrail-toast");
-      toast.classList.remove("show");
-    }
-
-
-    function renderChart(portfolio) {
-      const ctx = document.getElementById("allocationChart");
-
-      if (allocationChart) {
-        allocationChart.destroy();
-      }
-
-      allocationChart = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-          labels: portfolio.allocation.map(item => item.label),
-          datasets: [{
-            data: portfolio.allocation.map(item => convertFromSGD(item.value)),
-            backgroundColor: portfolio.allocation.map(item => item.color),
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              labels: { color: "#edf2ff" }
-            }
-          }
-        }
-      });
-    }
-
-    async function askAI() {
-      const input = document.getElementById("chat-input");
-      const output = document.getElementById("chat-output");
-      const question = input.value.trim();
-
-      if (!question) return;
-
-      output.textContent = "Processing LifePath scenarios...";
-
-      const netWorthText = document.getElementById("net-worth").textContent;
-      const netWorthNumber = parseFloat(netWorthText.replace(/[^0-9.-]+/g, "")) || 0;
-
-      try {
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            prompt: question,
-            portfolioContext: {
-              netWorth: netWorthNumber,
-              currency: currentCurrency
-            }
-          })
-        });
-
-        const data = await res.json();
-        output.textContent = data.response || "No response received.";
-      } catch (e) {
-        output.textContent = "System connection error. Please ensure your local server is running on Port 3000.";
-      }
-
-      document.getElementById("audit-id").textContent =
-        "REF: " + Math.random().toString(36).substring(2, 8).toUpperCase();
-
-      input.value = "";
-    }
-
-    function quickAsk(text) {
-      document.getElementById("chat-input").value = text;
-      askAI();
-    }
-
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Enter" && document.activeElement.id === "chat-input") {
-        askAI();
-      }
-    });
-async function fetchLivePortfolio() {
-  const label = document.getElementById("data-mode-label");
-  label.textContent = "Attempting live refresh…";
-
-  try {
-    const res = await fetch("/api/portfolio");
-    if (!res.ok) throw new Error("API error " + res.status);
-    const data = await res.json();
-
-    if (data.metrics && data.portfolio) {
-      const { metrics } = data;
-
-      // 1) One-time backup of curated story
-      if (!window.curatedPortfolio) {
-        window.curatedPortfolio = JSON.parse(JSON.stringify(window.mockPortfolio));
-      }
-
-      // 2) Summary from live metrics
-      if (typeof metrics.netWorth === "number") {
-        window.mockPortfolio.summary.netWorth = metrics.netWorth;
-      }
-      if (typeof metrics.wellnessScore === "number") {
-        window.mockPortfolio.summary.wealthWellnessScore = metrics.wellnessScore;
-      }
-
-      // 3) Allocation from live metrics
-      if (metrics.allocation) {
-        window.mockPortfolio.allocation = [
-          { label: "Cash", value: metrics.allocation.cash, color: "#4f46e5" },
-          { label: "Investments", value: metrics.allocation.securities, color: "#06b6d4" },
-          { label: "Crypto", value: metrics.allocation.crypto, color: "#f59e0b" },
-          { label: "Private Assets", value: metrics.allocation.private, color: "#10b981" }
-        ];
-      }
-
-      // 4) Full analytics & scenarios if backend sends them
-      if (data.analytics) {
-        window.mockPortfolio.analytics = data.analytics;
-      }
-      if (data.scenarios) {
-        window.mockPortfolio.scenarios = data.scenarios;
-      }
-
-      // 5) Re-render dashboard on this page
-            // 5) Save shared metadata globally
-      if (typeof StateManager !== "undefined") {
-        StateManager.update({
-          netWorth: window.mockPortfolio.summary.netWorth,
-          wellnessScore: window.mockPortfolio.summary.wealthWellnessScore,
-          lastUpdated: "Today at 9:00 AM",
-          dataSource: "Live FMP API"
-        });
-      }
-
-      // 6) Re-render dashboard on this page
-      renderDashboard();
-
-      // 7) Label for judges
-      label.textContent =
-        "Data source: Live API snapshot (falls back to LifePath wellness dataset if APIs fail)";
-    } else {
-      // Live response incomplete: keep curated story
-      label.textContent = "Live response incomplete, staying on simulated LifePath dataset";
-    }
-  } catch (e) {
-    console.log("Live refresh failed:", e);
-    // On failure, do NOT touch window.mockPortfolio; just update label
-        if (typeof StateManager !== "undefined") {
-      StateManager.update({
-        lastUpdated: "Today at 9:00 AM",
-        dataSource: "Simulated LifePath dataset"
-      });
-    }
-
-    label.textContent = "Live feed unavailable, using simulated LifePath dataset";
+    return window.mockPortfolio;
   }
-}
 
+  function formatMoney(value) {
+    return new Intl.NumberFormat("en-SG", {
+      style: "currency",
+      currency: currentCurrency,
+      maximumFractionDigits: 0
+    }).format(value);
+  }
 
+  function convertFromSGD(value) {
+    if (currentCurrency === "USD") {
+      return value * FX_RATE;
+    }
+    return value;
+  }
+
+  function setCurrency(currency) {
+    currentCurrency = currency;
+
+    document.getElementById("btn-sgd").classList.toggle("active", currency === "SGD");
+    document.getElementById("btn-usd").classList.toggle("active", currency === "USD");
 
     renderDashboard();
-  </script>
+  }
+
+  function renderDashboard() {
+    const portfolio = getSharedPortfolio();
+
+    let globalState = null;
+    if (typeof StateManager !== "undefined") {
+      globalState = StateManager.get();
+    }
+
+    const displayNetWorth = globalState ? globalState.netWorth : portfolio.summary.netWorth;
+    const displayScore = globalState ? globalState.wellnessScore : portfolio.summary.wealthWellnessScore;
+    const displayLiquidity = globalState ? globalState.liquidityMonths : portfolio.summary.emergencyMonths;
+
+    const netWorthValue = convertFromSGD(displayNetWorth);
+
+    document.getElementById("net-worth").textContent = formatMoney(netWorthValue);
+    document.getElementById("wellness-score").textContent = `${displayScore}/100`;
+    document.getElementById("liquidity-buffer").textContent = `${displayLiquidity} months`;
+    document.getElementById("user-goal").textContent = portfolio.user.goal;
+
+    const dataModeLabel = document.getElementById("data-mode-label");
+    if (globalState && globalState.activeScenario !== "Base case" && globalState.activeScenario !== "None") {
+      dataModeLabel.innerHTML = `<span style="color: #ff4c4c;">⚠️ ACTIVE SCENARIO: ${globalState.activeScenario}</span>`;
+    } else {
+      dataModeLabel.textContent = globalState?.dataSource || "Simulated LifePath dataset (safe for demo)";
+    }
+
+    document.getElementById("quick-insights").innerHTML = (portfolio.insights || [])
+      .map(item => `<li>${item}</li>`)
+      .join("");
+
+    renderRebalanceCard(portfolio);
+    renderToastIfNeeded(portfolio);
+    renderChart(portfolio);
+  }
+
+  function renderRebalanceCard(portfolio) {
+    const allocation = Array.isArray(portfolio.allocation) ? portfolio.allocation : [];
+    const cryptoItem = allocation.find(item => item.label === "Crypto") || { value: 0 };
+    const total = allocation.reduce((sum, item) => sum + (item.value || 0), 0);
+    const cryptoPct = total > 0 ? (cryptoItem.value / total) * 100 : 0;
+
+    const rebalanceCard = document.getElementById("rebalance-card");
+    const rebalanceText = document.getElementById("rebalance-text");
+
+    if (cryptoPct > 20) {
+      const excessPct = cryptoPct - 10;
+      const shiftAmount = (portfolio.summary?.netWorth || 0) * (excessPct / 100);
+      const shiftedDisplay = formatMoney(convertFromSGD(shiftAmount));
+
+      rebalanceCard.style.display = "block";
+      rebalanceText.innerHTML = `Reduce crypto exposure by approximately <strong>${shiftedDisplay}</strong> and reallocate to liquid diversified assets to improve shock resilience.`;
+    } else {
+      rebalanceCard.style.display = "none";
+    }
+  }
+
+  function renderToastIfNeeded() {
+    const toast = document.getElementById("guardrail-toast");
+    toast.classList.remove("show");
+  }
+
+  function renderChart(portfolio) {
+    const ctx = document.getElementById("allocationChart");
+
+    const allocation = Array.isArray(portfolio.allocation) ? portfolio.allocation : [];
+
+    if (allocationChart) {
+      allocationChart.destroy();
+    }
+
+    allocationChart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: allocation.map(item => item.label),
+        datasets: [{
+          data: allocation.map(item => convertFromSGD(item.value || 0)),
+          backgroundColor: allocation.map(item => item.color),
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: "#edf2ff" }
+          }
+        }
+      }
+    });
+  }
+
+  async function askAI() {
+    const input = document.getElementById("chat-input");
+    const output = document.getElementById("chat-output");
+    const question = input.value.trim();
+
+    if (!question) return;
+
+    output.textContent = "Processing LifePath scenarios...";
+
+    const netWorthText = document.getElementById("net-worth").textContent;
+    const netWorthNumber = parseFloat(netWorthText.replace(/[^0-9.-]+/g, "")) || 0;
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: question,
+          portfolioContext: {
+            netWorth: netWorthNumber,
+            currency: currentCurrency
+          }
+        })
+      });
+
+      const data = await res.json();
+      output.textContent = data.response || "No response received.";
+    } catch (e) {
+      output.textContent = "System connection error. Please ensure your local server is running on Port 3000.";
+    }
+
+    document.getElementById("audit-id").textContent =
+      "REF: " + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    input.value = "";
+  }
+
+  function quickAsk(text) {
+    document.getElementById("chat-input").value = text;
+    askAI();
+  }
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Enter" && document.activeElement.id === "chat-input") {
+      askAI();
+    }
+  });
+
+  async function fetchLivePortfolio() {
+    const label = document.getElementById("data-mode-label");
+    label.textContent = "Attempting live refresh…";
+
+    try {
+      const res = await fetch("/api/portfolio");
+      if (!res.ok) throw new Error("API error " + res.status);
+      const data = await res.json();
+
+      if (data.metrics && data.portfolio) {
+        const portfolio = getSharedPortfolio();
+        const { metrics } = data;
+
+        if (typeof metrics.netWorth === "number") {
+          portfolio.summary.netWorth = metrics.netWorth;
+        }
+        if (typeof metrics.wellnessScore === "number") {
+          portfolio.summary.wealthWellnessScore = metrics.wellnessScore;
+        }
+
+        if (metrics.allocation) {
+          portfolio.allocation = [
+            { label: "Cash", value: metrics.allocation.cash, color: "#4f46e5" },
+            { label: "Investments", value: metrics.allocation.securities, color: "#06b6d4" },
+            { label: "Crypto", value: metrics.allocation.crypto, color: "#f59e0b" },
+            { label: "Private Assets", value: metrics.allocation.private, color: "#10b981" }
+          ];
+        }
+
+        if (data.analytics) {
+          portfolio.analytics = data.analytics;
+        }
+        if (data.scenarios) {
+          portfolio.scenarios = data.scenarios;
+        }
+
+        if (typeof StateManager !== "undefined") {
+          StateManager.setPortfolio(portfolio);
+          StateManager.update({
+            netWorth: portfolio.summary.netWorth,
+            wellnessScore: portfolio.summary.wealthWellnessScore,
+            liquidityMonths: portfolio.summary.emergencyMonths || 8.3,
+            lastUpdated: "Today at 9:00 AM",
+            dataSource: "Live API snapshot"
+          });
+        }
+
+        renderDashboard();
+        label.textContent = "Data source: Live API snapshot (falls back to LifePath wellness dataset if APIs fail)";
+      } else {
+        label.textContent = "Live response incomplete, staying on simulated LifePath dataset";
+      }
+    } catch (e) {
+      console.log("Live refresh failed:", e);
+
+      if (typeof StateManager !== "undefined") {
+        StateManager.update({
+          lastUpdated: "Today at 9:00 AM",
+          dataSource: "Simulated LifePath dataset"
+        });
+      }
+
+      label.textContent = "Live feed unavailable, using simulated LifePath dataset";
+    }
+  }
+
+  window.addEventListener("storage", (event) => {
+    if (event.key === "lifepath_portfolio" || event.key === "lifepath_data") {
+      renderDashboard();
+    }
+  });
+
+  renderDashboard();
+</script>
 </body>
 </html>
