@@ -47,26 +47,40 @@
       }).format(val);
     }
 
-    // --- NEW: Disconnect Logic ---
+    // --- UPDATED: Disconnect Logic with Guard ---
     function disconnectAccount(index) {
       const category = localStorage.getItem('selectedCategory') || 'Bank';
       const savedData = localStorage.getItem('savedPortfolio');
       const portfolio = savedData ? JSON.parse(savedData) : window.mockPortfolio;
 
-      // 1. Get the account we are removing
-      const removedAccount = portfolio.detailedAccounts[category][index];
-      
-      // 2. Remove it from the detailed list
+      // 1. Get the account info
+      const account = portfolio.detailedAccounts[category][index];
+      const accountName = (account.coin || account.name || "").toLowerCase();
+
+      // 2. DEMO GUARD: Only allow these specific keywords
+      const allowed = ["posb", "dbs", "coinbase", "tiger"];
+      const isAllowed = allowed.some(keyword => accountName.includes(keyword));
+
+      if (!isAllowed) {
+        alert("Action Restricted: Only POSB/DBS, Tiger Brokers, or Coinbase accounts can be disconnected in this demo.");
+        return; 
+      }
+
+      // 3. If allowed, remove and update totals
       portfolio.detailedAccounts[category].splice(index, 1);
 
-      // 3. Update the Main Summary Totals
-      const summaryMap = { "Bank": "Cash Accounts", "Investment": "ETF / Equity Portfolio", "Crypto": "Crypto Wallets" };
-      const summaryItem = portfolio.assetBreakdown.find(a => a.asset === summaryMap[category]);
+      const summaryMap = { 
+        "Bank": "Cash Accounts", 
+        "Investment": "ETF / Equity Portfolio", 
+        "Crypto": "Crypto Wallets",
+        "Private Asset": "Private Equipment"
+      };
       
-      if (summaryItem) summaryItem.value -= removedAccount.balance;
-      portfolio.summary.netWorth -= removedAccount.balance;
+      const summaryItem = portfolio.assetBreakdown.find(a => a.asset === summaryMap[category]);
+      if (summaryItem) summaryItem.value -= account.balance;
+      portfolio.summary.netWorth -= account.balance;
 
-      // 4. Save to Browser Brain and Reload
+      // 4. Save and Reload
       localStorage.setItem('savedPortfolio', JSON.stringify(portfolio));
       location.reload(); 
     }
@@ -88,6 +102,13 @@
             const symbol = item.symbol || "";
             const usdValue = item.valueUsd ? item.valueUsd.toLocaleString() : "0";
 
+            // --- OPTIONAL: Make the button look disabled if not a demo account ---
+            const lowerName = assetName.toLowerCase();
+            const isDemoAcc = ["posb", "dbs", "coinbase", "tiger"].some(k => lowerName.includes(k));
+            const btnStyle = isDemoAcc 
+              ? "background: rgba(255, 109, 109, 0.1); color: #ff6d6d; border: 1px solid rgba(255, 109, 109, 0.3);" 
+              : "background: rgba(255, 255, 255, 0.05); color: #666; border: 1px solid #333; cursor: not-allowed;";
+
             return `
             <tr style="border-bottom: 1px solid #223150;">
                 <td style="padding: 15px;">
@@ -100,7 +121,7 @@
                 <td style="padding: 15px; font-weight: bold; color: #39c6e9;">${formatMoney(item.balance)}</td>
                 <td style="padding: 15px; color: #6d7cff; font-family: monospace;">$${usdValue}</td>
                 <td style="padding: 15px; text-align: right;">
-                    <button onclick="disconnectAccount(${index})" style="background: rgba(255, 109, 109, 0.1); color: #ff6d6d; border: 1px solid rgba(255, 109, 109, 0.3); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem;">
+                    <button onclick="disconnectAccount(${index})" style="${btnStyle} padding: 6px 12px; border-radius: 8px; font-size: 0.75rem;">
                       Disconnect
                     </button>
                 </td>

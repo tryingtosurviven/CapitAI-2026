@@ -146,32 +146,37 @@
       let category = "";
       let newItem = {};
 
+      // Specific Demo Providers
       if (provider === "DBS / POSB") {
         category = "Bank";
-        newItem = { coin: "New Savings", symbol: "DBS", wallet: "DBS iWealth", balance: 5000, valueUsd: 3690 };
+        newItem = { coin: "POSB Savings", symbol: "SGD", wallet: "POSB Digibank", balance: 5000, valueUsd: 3690 };
       } else if (provider === "Tiger Brokers") {
         category = "Investment";
-        newItem = { coin: "New Portfolio", symbol: "INV", wallet: "Tiger Brokers", balance: 10000, valueUsd: 7380 };
+        newItem = { coin: "Tiger Portfolio", symbol: "TIGER", wallet: "Tiger Brokers", balance: 10000, valueUsd: 7380 };
       } else if (provider === "Coinbase") {
         category = "Crypto";
         newItem = { coin: "Coinbase Wallet", symbol: "CB", wallet: "Coinbase App", balance: 2000, valueUsd: 1476 };
       }
 
       if (category && window.mockPortfolio.detailedAccounts[category]) {
+        // We add it to the list
         window.mockPortfolio.detailedAccounts[category].push(newItem);
+        
+        // Update the Summary Table (The 4 big rows)
         const summaryMap = { "Bank": "Cash Accounts", "Investment": "ETF / Equity Portfolio", "Crypto": "Crypto Wallets" };
         const summaryItem = window.mockPortfolio.assetBreakdown.find(a => a.asset === summaryMap[category]);
         if (summaryItem) summaryItem.value += newItem.balance;
+        
+        // Update Total Net Worth
         window.mockPortfolio.summary.netWorth += newItem.balance;
 
-        // --- ADD THESE TWO LINES ---
+        // Save to browser "brain"
         localStorage.setItem('savedPortfolio', JSON.stringify(window.mockPortfolio));
         localStorage.setItem('selectedCategory', category);
       }
 
       setTimeout(() => {
-        // --- CHANGE THIS TO REDIRECT ---
-        window.location.href = 'details.html';
+        window.location.href = 'details.html'; // Jump to the breakdown
       }, 1200);
     }
 
