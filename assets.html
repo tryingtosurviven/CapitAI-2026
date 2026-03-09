@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Assets | Lifepath AI</title>
   <style>
-    /* ... existing styles ... */
     :root { --bg: #081120; --line: #223150; --text: #edf2ff; --muted: #a8b3cf; --primary: #6d7cff; --shadow: 0 20px 45px rgba(0, 0, 0, 0.28); --radius: 20px; --panel: #101a2e; }
     * { box-sizing: border-box; }
     body { margin: 0; font-family: Arial, sans-serif; background: radial-gradient(circle at top right, rgba(109, 124, 255, 0.12), transparent 28%), radial-gradient(circle at top left, rgba(57, 198, 233, 0.08), transparent 22%), var(--bg); color: var(--text); }
@@ -16,7 +15,7 @@
     .brand-title { font-size: 1.25rem; font-weight: 700; }
     .brand-subtitle { color: var(--muted); font-size: 0.9rem; }
     .nav-links { display: flex; flex-wrap: wrap; gap: 10px; }
-    .nav-link { padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: rgba(255,255,255,0.02); }
+    .nav-link { padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: rgba(255,255,255,0.02); cursor: pointer; }
     .nav-link.active { color: white; background: rgba(109, 124, 255, 0.18); border-color: rgba(109, 124, 255, 0.5); }
     .panel { padding: 22px; margin-bottom: 22px; background: linear-gradient(180deg, rgba(21,33,58,0.98), rgba(16,26,46,0.98)); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
     .section-title { margin: 0 0 14px; font-size: 1.1rem; }
@@ -38,7 +37,7 @@
 </head>
 <body>
   <div class="container">
-    <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px;">
+    <nav class="navbar">
       <div class="brand">
         <div class="brand-title">Lifepath AI</div>
         <div class="brand-subtitle">Unified Wealth Wallet</div>
@@ -73,7 +72,7 @@
       <div class="panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
             <h2 class="section-title" style="margin: 0;">Asset type / value breakdown</h2>
-            <button class="nav-link" style="font-size: 0.7rem; cursor: pointer; color: var(--primary); border-color: var(--primary);">+ Link New Account</button>
+            <button class="nav-link" onclick="openConnectModal()" style="font-size: 0.7rem; color: var(--primary); border-color: var(--primary);">+ Link New Account</button>
         </div>
         <div class="table-wrap">
           <table class="data-table">
@@ -91,69 +90,117 @@
     </div>
   </div>
 
+  <div id="connect-modal" style="display: none; position: fixed; inset: 0; background: rgba(8, 17, 32, 0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+    <div style="width: min(420px, 90%); padding: 28px; background: #101a2e; border: 1px solid #6d7cff; border-radius: 20px; position: relative;">
+      <button onclick="closeConnectModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: #a8b3cf; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      <h2 style="margin: 0 0 10px; font-size: 1.1rem;">Select Provider</h2>
+      <p style="color: #a8b3cf; font-size: 0.9rem; margin-bottom: 20px;">Link an account to your Digital Twin.</p>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <button class="nav-link" style="text-align:left;" onclick="mockConnect('DBS / POSB')">🏦 Bank (DBS / POSB)</button>
+        <button class="nav-link" style="text-align:left;" onclick="mockConnect('Tiger Brokers')">📈 Investment (Tiger Brokers)</button>
+        <button class="nav-link" style="text-align:left;" onclick="mockConnect('Coinbase')">🦊 Crypto (Coinbase)</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" style="position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 12px; background: #6d7cff; color: white; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 3000;"></div>
+
   <script>
-  function formatMoney(value) {
-    return new Intl.NumberFormat("en-SG", { style: "currency", currency: "SGD", maximumFractionDigits: 0 }).format(Number(value || 0));
-  }
-
-  function getBadgeStyle(category) {
-    switch(category) {
-      case "Bank": return "background: rgba(79, 70, 229, 0.15); color: #818cf8; border: 1px solid rgba(79, 70, 229, 0.4);";
-      case "Investment": return "background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);";
-      case "Crypto": return "background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);";
-      case "Private Asset": return "background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);";
-      default: return "background: rgba(255, 255, 255, 0.05); color: #a8b3cf;";
+    function formatMoney(value) {
+      return new Intl.NumberFormat("en-SG", { style: "currency", currency: "SGD", maximumFractionDigits: 0 }).format(Number(value || 0));
     }
-  }
 
-  function getSharedPortfolio() {
-    return (typeof StateManager !== "undefined") ? StateManager.getPortfolio() : window.mockPortfolio;
-  }
+    function getBadgeStyle(category) {
+      switch(category) {
+        case "Bank": return "background: rgba(79, 70, 229, 0.15); color: #818cf8; border: 1px solid rgba(79, 70, 229, 0.4);";
+        case "Investment": return "background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);";
+        case "Crypto": return "background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);";
+        case "Private Asset": return "background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);";
+        default: return "background: rgba(255, 255, 255, 0.05); color: #a8b3cf;";
+      }
+    }
 
-  function renderTables() {
-    const portfolio = getSharedPortfolio();
-    const assetBody = document.getElementById("asset-breakdown-body");
-    const ladderContainer = document.getElementById("liquidity-ladder");
-    const assetBreakdown = Array.isArray(portfolio.assetBreakdown) ? portfolio.assetBreakdown : [];
-    
-    // Fill the Liquidity Ladder
-    if (ladderContainer) {
-      ladderContainer.innerHTML = assetBreakdown.map(item => `
-        <div class="ladder-row">
-          <div class="tier-badge">${item.liquidityTier || "T+?"}</div>
-          <div class="ladder-info">
-            <div class="ladder-title">${item.asset} — ${formatMoney(item.value)}</div>
-            <div class="ladder-note">${item.ladderNote || ""}</div>
+    function getSharedPortfolio() {
+      return (typeof StateManager !== "undefined") ? StateManager.getPortfolio() : window.mockPortfolio;
+    }
+
+    // Modal Control Logic [cite: 2026-02-13]
+    function openConnectModal() { document.getElementById("connect-modal").style.display = "flex"; }
+    function closeConnectModal() { document.getElementById("connect-modal").style.display = "none"; }
+
+    function mockConnect(provider) {
+      const toast = document.getElementById("toast");
+      toast.textContent = `Linking ${provider}...`;
+      toast.style.opacity = "1";
+      closeConnectModal();
+
+      let category = "";
+      let newItem = {};
+
+      if (provider === "DBS / POSB") {
+        category = "Bank";
+        newItem = { coin: "New Savings", symbol: "DBS", wallet: "DBS iWealth", balance: 5000, valueUsd: 3690 };
+      } else if (provider === "Tiger Brokers") {
+        category = "Investment";
+        newItem = { coin: "New Portfolio", symbol: "INV", wallet: "Tiger Brokers", balance: 10000, valueUsd: 7380 };
+      } else if (provider === "Coinbase") {
+        category = "Crypto";
+        newItem = { coin: "New Wallet", symbol: "BTC", wallet: "Coinbase", balance: 2000, valueUsd: 1476 };
+      }
+
+      // Logic to push data into structure [cite: 2026-02-13]
+      if (category && window.mockPortfolio.detailedAccounts[category]) {
+        window.mockPortfolio.detailedAccounts[category].push(newItem);
+        const summaryMap = { "Bank": "Cash Accounts", "Investment": "ETF / Equity Portfolio", "Crypto": "Crypto Wallets" };
+        const summaryItem = window.mockPortfolio.assetBreakdown.find(a => a.asset === summaryMap[category]);
+        if (summaryItem) summaryItem.value += newItem.balance;
+        window.mockPortfolio.summary.netWorth += newItem.balance;
+      }
+
+      setTimeout(() => {
+        renderTables();
+        syncGlobalNavbar();
+        toast.style.opacity = "0";
+      }, 1200);
+    }
+
+    function renderTables() {
+      const portfolio = getSharedPortfolio();
+      const assetBody = document.getElementById("asset-breakdown-body");
+      const ladderContainer = document.getElementById("liquidity-ladder");
+      const assetBreakdown = Array.isArray(portfolio.assetBreakdown) ? portfolio.assetBreakdown : [];
+      
+      if (ladderContainer) {
+        ladderContainer.innerHTML = assetBreakdown.map(item => `
+          <div class="ladder-row">
+            <div class="tier-badge">${item.liquidityTier || "T+?"}</div>
+            <div class="ladder-info">
+              <div class="ladder-title">${item.asset} — ${formatMoney(item.value)}</div>
+              <div class="ladder-note">${item.ladderNote || ""}</div>
+            </div>
           </div>
-        </div>
-      `).join("");
+        `).join("");
+      }
+
+      assetBody.innerHTML = assetBreakdown.map(item => {
+        const categoryMap = { "Cash Accounts": "Bank", "ETF / Equity Portfolio": "Investment", "Crypto Wallets": "Crypto", "Private Equipment": "Private Asset" };
+        const category = categoryMap[item.asset];
+        return `
+          <tr onclick="goToDetails('${category}')" style="cursor:pointer;" onmouseover="this.style.background='rgba(109,124,255,0.05)'" onmouseout="this.style.background='transparent'">
+            <td><span style="padding: 6px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; border: 1px solid currentColor; display: inline-block; min-width: 160px; text-align: center; ${getBadgeStyle(category)}">${item.asset}</span></td>
+            <td><em style="color: var(--muted);">${item.type}</em></td>
+            <td style="font-family: monospace; font-size: 1rem; font-weight: 600;">${formatMoney(item.value)}</td>
+          </tr>
+        `;
+      }).join("");
     }
 
-    // Right table: Only 4 rows, interactive drill-down
-    assetBody.innerHTML = assetBreakdown.map(item => {
-      const categoryMap = { "Cash Accounts": "Bank", "ETF / Equity Portfolio": "Investment", "Crypto Wallets": "Crypto", "Private Equipment": "Private Asset" };
-      const category = categoryMap[item.asset];
+    function goToDetails(category) {
+      localStorage.setItem('selectedCategory', category);
+      window.location.href = 'details.html';
+    }
 
-      return `
-        <tr onclick="goToDetails('${category}')" style="cursor:pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(109,124,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <td>
-            <span style="padding: 6px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; border: 1px solid currentColor; display: inline-block; min-width: 160px; text-align: center; ${getBadgeStyle(category)}">
-              ${item.asset}
-            </span>
-          </td>
-          <td><em style="color: var(--muted);">${item.type}</em></td>
-          <td style="font-family: monospace; font-size: 1rem; font-weight: 600;">${formatMoney(item.value)}</td>
-        </tr>
-      `;
-    }).join("");
-  }
-
-  function goToDetails(category) {
-    localStorage.setItem('selectedCategory', category);
-    window.location.href = 'details.html';
-  }
-
-  function syncGlobalNavbar() {
+    function syncGlobalNavbar() {
       const portfolio = getSharedPortfolio();
       const sgdEl = document.getElementById('nav-sgd');
       const usdEl = document.getElementById('nav-usd');
@@ -162,9 +209,9 @@
           sgdEl.textContent = formatMoney(totalSgd);
           usdEl.textContent = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(totalSgd * 0.738);
       }
-  }
+    }
 
-  document.addEventListener("DOMContentLoaded", () => { renderTables(); syncGlobalNavbar(); });
+    document.addEventListener("DOMContentLoaded", () => { renderTables(); syncGlobalNavbar(); });
   </script>
 </body>
 </html>
