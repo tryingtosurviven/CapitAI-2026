@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Details | Lifepath AI</title>
+  <style>
+    :root { --bg: #081120; --panel: #101a2e; --line: #223150; --text: #edf2ff; --primary: #6d7cff; }
+    body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: var(--text); }
+    .container { width: min(800px, calc(100% - 32px)); margin: 40px auto; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 24px; }
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .data-table th { text-align: left; color: #a8b3cf; font-size: 0.8rem; text-transform: uppercase; padding: 12px; border-bottom: 1px solid var(--line); }
+    .data-table td { padding: 16px 12px; border-bottom: 1px solid var(--line); }
+    .back-link { display: inline-block; margin-top: 24px; color: var(--primary); text-decoration: none; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1 id="detail-title">Category Details</h1>
+      <p style="color: #a8b3cf;">Individual account breakdown for your Digital Twin.</p>
+    </div>
+
+    <div class="panel">
+      <table class="data-table">
+        <thead>
+            <tr style="color: #9fb0db; text-transform: uppercase; font-size: 0.8rem; border-bottom: 1px solid #223150;">
+                <th style="padding: 15px;">Asset / Coin</th>
+                <th style="padding: 15px;">Stored In (Wallet)</th>
+                <th style="padding: 15px;">Allocation (SGD)</th>
+                <th style="padding: 15px;">Est. USD</th>
+                <th style="padding: 15px; text-align: right;">Action</th> </tr>
+        </thead>
+        <tbody id="detail-body"></tbody>
+      </table>
+    </div>
+
+    <a href="assets.html" class="back-link">← Back to Assets</a>
+  </div>
+
+  <script src="mock-data.js"></script>
+  <script>
+    function formatMoney(val) {
+      return new Intl.NumberFormat('en-SG', { 
+        style: 'currency', currency: 'SGD', maximumFractionDigits: 0 
+      }).format(val);
+    }
+
+    // --- UPDATED: Disconnect Logic with Guard ---
+    function disconnectAccount(index) {
+      const category = localStorage.getItem('selectedCategory') || 'Bank';
+      const savedData = localStorage.getItem('savedPortfolio');
+      const portfolio = savedData ? JSON.parse(savedData) : window.mockPortfolio;
+
+      // 1. Get the account info
+      const account = portfolio.detailedAccounts[category][index];
+      const accountName = (account.coin || account.name || "").toLowerCase();
+
+      // 2. DEMO GUARD: Only allow these specific keywords
+      const allowed = ["posb", "dbs", "coinbase", "tiger"];
+      const isAllowed = allowed.some(keyword => accountName.includes(keyword));
+
+      if (!isAllowed) {
+        alert("Action Restricted: Only POSB/DBS, Tiger Brokers, or Coinbase accounts can be disconnected in this demo.");
+        return; 
+      }
+
+      // 3. If allowed, remove and update totals
+      portfolio.detailedAccounts[category].splice(index, 1);
+
+      const summaryMap = { 
+        "Bank": "Cash Accounts", 
+        "Investment": "ETF / Equity Portfolio", 
+        "Crypto": "Crypto Wallets",
+        "Private Asset": "Private Equipment"
+      };
+      
+      const summaryItem = portfolio.assetBreakdown.find(a => a.asset === summaryMap[category]);
+      if (summaryItem) summaryItem.value -= account.balance;
+      portfolio.summary.netWorth -= account.balance;
+
+      // 4. Save and Reload
+      localStorage.setItem('savedPortfolio', JSON.stringify(portfolio));
+      location.reload(); 
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const category = localStorage.getItem('selectedCategory') || 'Bank';
+      const savedData = localStorage.getItem('savedPortfolio');
+      const portfolio = savedData ? JSON.parse(savedData) : window.mockPortfolio;
+      const data = portfolio.detailedAccounts[category];
+
+      const displayTitle = category === "Bank" ? "Cash" : 
+                           category === "Investment" ? "Investment" : category;
+      document.getElementById('detail-title').textContent = displayTitle + " Breakdown";
+
+      if (data && data.length > 0) {
+        document.getElementById('detail-body').innerHTML = data.map((item, index) => {
+            const assetName = item.coin || item.name || "Unknown Asset";
+            const walletName = item.wallet || item.accNo || "Linked Account";
+            const symbol = item.symbol || "";
+            const usdValue = item.valueUsd ? item.valueUsd.toLocaleString() : "0";
+
+            // --- OPTIONAL: Make the button look disabled if not a demo account ---
+            const lowerName = assetName.toLowerCase();
+            const isDemoAcc = ["posb", "dbs", "coinbase", "tiger"].some(k => lowerName.includes(k));
+            const btnStyle = isDemoAcc 
+              ? "background: rgba(255, 109, 109, 0.1); color: #ff6d6d; border: 1px solid rgba(255, 109, 109, 0.3);" 
+              : "background: rgba(255, 255, 255, 0.05); color: #666; border: 1px solid #333; cursor: not-allowed;";
+
+            return `
+            <tr style="border-bottom: 1px solid #223150;">
+                <td style="padding: 15px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                      <span style="font-weight: bold;">${assetName}</span>
+                      ${symbol ? `<span style="font-size: 0.7rem; color: #a8b3cf; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">${symbol}</span>` : ''}
+                  </div>
+                </td>
+                <td style="padding: 15px; color: #a8b3cf; font-size: 0.9rem;">${walletName}</td>
+                <td style="padding: 15px; font-weight: bold; color: #39c6e9;">${formatMoney(item.balance)}</td>
+                <td style="padding: 15px; color: #6d7cff; font-family: monospace;">$${usdValue}</td>
+                <td style="padding: 15px; text-align: right;">
+                    <button onclick="disconnectAccount(${index})" style="${btnStyle} padding: 6px 12px; border-radius: 8px; font-size: 0.75rem;">
+                      Disconnect
+                    </button>
+                </td>
+            </tr>
+            `;
+        }).join('');
+      } else {
+        document.getElementById('detail-body').innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px; color:#a8b3cf;">No accounts linked.</td></tr>';
+      }
+    });
+  </script>
+  
+</body>
+</html>

@@ -5,125 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Assets | Lifepath AI</title>
   <style>
-:root {
-  --bg: #081120;
-  --line: #223150;
-  --text: #edf2ff;
-  --muted: #a8b3cf;
-  --primary: #6d7cff;
-  --shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
-  --radius: 20px;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background:
-    radial-gradient(circle at top right, rgba(109, 124, 255, 0.12), transparent 28%),
-    radial-gradient(circle at top left, rgba(57, 198, 233, 0.08), transparent 22%),
-    var(--bg);
-  color: var(--text);
-}
-a { color: inherit; text-decoration: none; }
-.container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 48px; }
-.navbar {
-  display: flex; justify-content: space-between; align-items: center; gap: 16px;
-  margin-bottom: 24px; padding: 16px 18px;
-  background: rgba(16, 26, 46, 0.78); border: 1px solid var(--line);
-  border-radius: 18px; box-shadow: var(--shadow);
-}
-.brand { display: flex; flex-direction: column; gap: 4px; }
-.brand-title { font-size: 1.25rem; font-weight: 700; }
-.brand-subtitle { color: var(--muted); font-size: 0.9rem; }
-.nav-links { display: flex; flex-wrap: wrap; gap: 10px; }
-.nav-link {
-  padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line);
-  color: var(--muted); background: rgba(255,255,255,0.02);
-}
-.nav-link.active { color: white; background: rgba(109, 124, 255, 0.18); border-color: rgba(109, 124, 255, 0.5); }
-.page-header { margin-bottom: 18px; }
-.eyebrow { color: #95a4ff; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.74rem; margin-bottom: 10px; }
-.page-title { margin: 0 0 10px; font-size: 2rem; }
-.page-subtitle { color: var(--muted); line-height: 1.6; margin: 0; }
-.panel {
-  padding: 22px; margin-bottom: 22px;
-  background: linear-gradient(180deg, rgba(21,33,58,0.98), rgba(16,26,46,0.98));
-  border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
-}
-.section-title { margin: 0 0 14px; font-size: 1.1rem; }
-.connector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.connector-card {
-  width: 100%; text-align: left; padding: 16px; background: rgba(255,255,255,0.02);
-  border: 1px solid var(--line); border-radius: 18px; color: white; cursor: pointer;
-}
-.connector-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
-.connector-name { font-weight: 700; font-size: 1rem; }
-.connector-subtitle { color: var(--muted); font-size: 0.9rem; line-height: 1.45; }
-.connector-badge {
-  font-size: 0.76rem; padding: 5px 10px; border-radius: 999px;
-  background: rgba(57, 198, 233, 0.12); color: #92ebff; border: 1px solid rgba(57, 198, 233, 0.3);
-}
-.layout-2 { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 18px; }
-.table-wrap { overflow-x: auto; }
-.data-table { width: 100%; border-collapse: collapse; }
-.data-table th, .data-table td { padding: 14px 10px; border-bottom: 1px solid var(--line); text-align: left; }
-.data-table th { color: #9fb0db; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; }
-.toast {
-  position: fixed; top: 18px; right: 18px; background: #111c31; color: white;
-  border: 1px solid rgba(109, 124, 255, 0.45); border-radius: 14px; padding: 14px 16px;
-  box-shadow: var(--shadow); opacity: 0; transform: translateY(-10px); pointer-events: none; transition: 0.2s ease;
-}
-.toast.show { opacity: 1; transform: translateY(0); }
-@media (max-width: 1024px) {
-  .layout-2 { grid-template-columns: 1fr; }
-  .connector-grid { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 720px) {
-  .connector-grid { grid-template-columns: 1fr; }
-  .navbar { flex-direction: column; align-items: flex-start; }
-  .page-title { font-size: 1.6rem; }
-}
-
-/* New Modal Styles */
-.modal-overlay {
-  display: none; position: fixed; inset: 0; 
-  background: rgba(8, 17, 32, 0.85); z-index: 2000; 
-  align-items: center; justify-content: center; backdrop-filter: blur(8px);
-}
-.modal-content {
-  width: min(420px, 90%); padding: 28px;
-  background: var(--panel); border: 1px solid var(--primary);
-  border-radius: var(--radius); box-shadow: var(--shadow);
-  position: relative;
-}
-.close-btn {
-  position: absolute; top: 15px; right: 20px;
-  background: none; border: none; color: var(--muted);
-  font-size: 1.5rem; cursor: pointer;
-}
-.provider-list { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
-.provider-btn {
-  display: flex; align-items: center; gap: 14px; width: 100%;
-  padding: 14px; background: rgba(255,255,255,0.03);
-  border: 1px solid var(--line); border-radius: 12px;
-  color: white; cursor: pointer; transition: 0.2s;
-}
-.provider-btn:hover { background: rgba(109, 124, 255, 0.1); border-color: var(--primary); }
-.primary-btn {
-  background: var(--primary); color: white; border: none;
-  padding: 8px 16px; border-radius: 12px; cursor: pointer; font-weight: 600;
-}
+    :root { --bg: #081120; --line: #223150; --text: #edf2ff; --muted: #a8b3cf; --primary: #6d7cff; --shadow: 0 20px 45px rgba(0, 0, 0, 0.28); --radius: 20px; --panel: #101a2e; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: radial-gradient(circle at top right, rgba(109, 124, 255, 0.12), transparent 28%), radial-gradient(circle at top left, rgba(57, 198, 233, 0.08), transparent 22%), var(--bg); color: var(--text); }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 48px; }
+    .navbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; padding: 16px 18px; background: rgba(16, 26, 46, 0.78); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .brand { display: flex; flex-direction: column; gap: 4px; }
+    .brand-title { font-size: 1.25rem; font-weight: 700; }
+    .brand-subtitle { color: var(--muted); font-size: 0.9rem; }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 10px; }
+    .nav-link { padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: rgba(255,255,255,0.02); cursor: pointer; }
+    .nav-link.active { color: white; background: rgba(109, 124, 255, 0.18); border-color: rgba(109, 124, 255, 0.5); }
+    .panel { padding: 22px; margin-bottom: 22px; background: linear-gradient(180deg, rgba(21,33,58,0.98), rgba(16,26,46,0.98)); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .section-title { margin: 0 0 14px; font-size: 1.1rem; }
+    .layout-2 { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 18px; }
+    .table-wrap { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th, .data-table td { padding: 14px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+    .data-table th { color: #9fb0db; font-size: 0.82rem; text-transform: uppercase; }
+    .ladder-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+    .ladder-row { display: grid; grid-template-columns: 80px 1fr; gap: 16px; align-items: center; padding: 14px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--line); }
+    .tier-badge { font-size: 0.75rem; font-weight: 800; padding: 6px; text-align: center; border-radius: 8px; background: var(--primary); color: white; }
+    .ladder-info { display: flex; flex-direction: column; gap: 4px; }
+    .ladder-title { font-weight: 700; font-size: 0.95rem; }
+    .ladder-note { font-size: 0.82rem; color: var(--muted); }
   </style>
+
+  <script src="mock-data.js"></script>
+  <script src="state.js"></script> 
 </head>
 <body>
-  <div class="toast" id="toast"></div>
-
   <div class="container">
     <nav class="navbar">
       <div class="brand">
         <div class="brand-title">Lifepath AI</div>
         <div class="brand-subtitle">Unified Wealth Wallet</div>
       </div>
+
+      <div class="global-money-bar" style="display: flex; gap: 20px; background: rgba(255,255,255,0.05); padding: 8px 18px; border-radius: 12px; border: 1px solid var(--line);">
+        <div style="text-align: right;">
+          <div style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase;">Total Net Worth</div>
+          <div id="nav-sgd" style="font-weight: 700; color: #fff;">S$ 286,500</div>
+        </div>
+        <div style="width: 1px; background: var(--line); margin: 4px 0;"></div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase;">USD Equivalent</div>
+          <div id="nav-usd" style="font-weight: 700; color: var(--primary);">$ 211,437</div>
+        </div>
+      </div>
+
       <div class="nav-links">
         <a class="nav-link" href="index.html">Dashboard</a>
         <a class="nav-link active" href="assets.html">Assets</a>
@@ -132,38 +63,17 @@ a { color: inherit; text-decoration: none; }
       </div>
     </nav>
 
-    <div class="page-header">
-      <div class="eyebrow">Wealth wallet</div>
-      <h1 class="page-title">Connect your financial world</h1>
-      <p class="page-subtitle">
-        Bring together bank cash, investment platforms, crypto wallets, and private assets into one clean investor view.
-      </p>
-    </div>
-
     <div class="layout-2">
       <div class="panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-          <h2 class="section-title" style="margin: 0;">Linked accounts</h2>
-          <button class="primary-btn" onclick="openConnectModal()">+ Connect New Account</button>
-        </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Account</th>
-                <th>Category</th>
-                <th>Balance</th>
-                <th>Status</th>
-                <th>Action</th> 
-              </tr>
-            </thead>
-            <tbody id="linked-table-body"></tbody>
-          </table>
-        </div>
+        <h2 class="section-title">Liquidity Ladder (Time-to-Cash)</h2>
+        <div class="ladder-container" id="liquidity-ladder"></div>
       </div>
 
       <div class="panel">
-        <h2 class="section-title">Asset type / value breakdown</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h2 class="section-title" style="margin: 0;">Asset type / value breakdown</h2>
+            <button class="nav-link" onclick="openConnectModal()" style="font-size: 0.7rem; color: var(--primary); border-color: var(--primary);">+ Link New Account</button>
+        </div>
         <div class="table-wrap">
           <table class="data-table">
             <thead>
@@ -180,181 +90,161 @@ a { color: inherit; text-decoration: none; }
     </div>
   </div>
 
-  <div class="modal-overlay" id="connect-modal">
-    <div class="modal-content">
-      <button class="close-btn" onclick="closeConnectModal()">&times;</button>
-      <h2 class="section-title">Select Provider</h2>
-      <p class="connector-subtitle">Choose a wallet or bank to link to your Digital Twin.</p>
-      <div class="provider-list">
-        <button class="provider-btn" onclick="mockConnect('DBS / POSB')">
-          <span>🏦</span> DBS / POSB (Bank)
-        </button>
-        
-        <button class="provider-btn" onclick="mockConnect('Tiger Brokers')">
-          <span>📈</span> Tiger Brokers (Investment)
-        </button>
-        
-        <button class="provider-btn" onclick="mockConnect('Syfe')">
-          <span>🤖</span> Syfe (Robo-Advisor)
-        </button>
-        
-        <button class="provider-btn" onclick="mockConnect('MetaMask')">
-          <span>🦊</span> MetaMask (Crypto)
-        </button>
+  <div id="connect-modal" style="display: none; position: fixed; inset: 0; background: rgba(8, 17, 32, 0.85); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+    <div style="width: min(420px, 90%); padding: 28px; background: #101a2e; border: 1px solid #6d7cff; border-radius: 20px; position: relative;">
+      <button onclick="closeConnectModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: #a8b3cf; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      <h2 style="margin: 0 0 10px; font-size: 1.1rem;">Select Provider</h2>
+      <p style="color: #a8b3cf; font-size: 0.9rem; margin-bottom: 20px;">Link an account to your Digital Twin.</p>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <button class="nav-link" style="text-align:left;" onclick="mockConnect('DBS / POSB')">🏦 Bank (DBS / POSB)</button>
+        <button class="nav-link" style="text-align:left;" onclick="mockConnect('Tiger Brokers')">📈 Investment (Tiger Brokers)</button>
+        <button class="nav-link" style="text-align:left;" onclick="mockConnect('Coinbase')">🦊 Crypto (Coinbase)</button>
       </div>
     </div>
-  </div> <script src="mock-data.js"></script>
-  <script src="connectors.js"></script>
+  </div>
 
-<script>
+  <div id="toast" style="position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 12px; background: #6d7cff; color: white; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 3000;"></div>
+
+  <script>
     function formatMoney(value) {
-      return new Intl.NumberFormat("en-SG", {
-        style: "currency",
-        currency: "SGD",
-        maximumFractionDigits: 0
-      }).format(value);
+      return new Intl.NumberFormat("en-SG", { style: "currency", currency: "SGD", maximumFractionDigits: 0 }).format(Number(value || 0));
     }
 
-    // 1. Define it once
-    function renderConnectors() {
-      const providers = [
-        { id: 'banks-grid', name: 'DBS / POSB', sub: 'Traditional Banking', badge: 'Popular' },
-        { id: 'investments-grid', name: 'Tiger Brokers', sub: 'Equities & ETFs', badge: 'Fast Link' },
-        { id: 'crypto-grid', name: 'MetaMask', sub: 'Web3 Wallet', badge: 'DeFi' },
-        { id: 'other-grid', name: '3D Printer', sub: 'Physical Asset', badge: 'Manual' }
-      ];
-
-      providers.forEach(p => {
-        const grid = document.getElementById(p.id);
-        if (grid) {
-          grid.innerHTML = `
-            <div class="connector-card" onclick="mockConnect('${p.name}')">
-              <div class="connector-top">
-                <span class="connector-name">${p.name}</span>
-                <span class="connector-badge">${p.badge}</span>
-              </div>
-              <div class="connector-subtitle">${p.sub}</div>
-            </div>
-          `;
-        }
-      });
-    }
-
-    // 2. Keep this focused only on the tables
     function getBadgeStyle(category) {
       switch(category) {
-        case 'Bank': return 'background: rgba(79, 70, 229, 0.15); color: #818cf8; border: 1px solid rgba(79, 70, 229, 0.4);';
-        case 'Investment': return 'background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);';
-        case 'Crypto': return 'background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);';
-        case 'Private Asset': return 'background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);';
-        default: return 'background: rgba(255, 255, 255, 0.05); color: #a8b3cf;';
+        case "Bank": return "background: rgba(79, 70, 229, 0.15); color: #818cf8; border: 1px solid rgba(79, 70, 229, 0.4);";
+        case "Investment": return "background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);";
+        case "Crypto": return "background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);";
+        case "Private Asset": return "background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);";
+        default: return "background: rgba(255, 255, 255, 0.05); color: #a8b3cf;";
       }
     }
+    function getSharedPortfolio() {
+    if (typeof StateManager !== "undefined") {
+      if (StateManager.getScenarioAdjustedPortfolio) {
+        return StateManager.getScenarioAdjustedPortfolio();
+      }
+      return StateManager.getPortfolio();
+    }
+    return window.mockPortfolio;
+  }
 
-    function renderTables() {
-      const linkedBody = document.getElementById("linked-table-body");
-      const assetBody = document.getElementById("asset-breakdown-body");
-
-      // Helper to map the summary asset names to their categories for coloring
-      const getCategoryFromAsset = (asset) => {
-        if (asset.includes("Cash")) return "Bank";
-        if (asset.includes("ETF") || asset.includes("Equity")) return "Investment";
-        if (asset.includes("Crypto")) return "Crypto";
-        if (asset.includes("Equipment") || asset.includes("Private")) return "Private Asset";
-        return "";
-      };
-
-      linkedBody.innerHTML = window.mockPortfolio.linkedAccounts.map((item, index) => `
-        <tr id="row-${index}">
-          <td style="font-weight: 600;">${item.name}</td>
-          <td>
-            <span style="padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; ${getBadgeStyle(item.category)}">
-              ${item.category}
-            </span>
-          </td>
-          <td style="font-family: monospace; font-size: 1rem;">${formatMoney(item.balance)}</td>
-          <td>
-            <span style="color: ${item.status === 'Connected' ? '#34d399' : '#a8b3cf'}; font-size: 0.85rem;">
-              ● ${item.status}
-            </span>
-          </td>
-          <td>
-            <button class="mini-btn" style="color: #ff4c4c; border-color: rgba(255, 76, 76, 0.3); background: none; cursor: pointer;" 
-                    onclick="disconnectAccount(${index}, '${item.name}')">
-              Disconnect
-            </button>
-          </td>
-        </tr>
-      `).join("");
-
-      // Updated: This part now uses the same badge styling as the left table
-      assetBody.innerHTML = window.mockPortfolio.assetBreakdown.map(item => `
-        <tr>
-          <td>
-            <span style="padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; ${getBadgeStyle(getCategoryFromAsset(item.asset))}">
-              ${item.asset}
-            </span>
-          </td>
-          <td><em style="color: var(--muted);">${item.type}</em></td>
-          <td style="font-family: monospace; font-size: 1rem; font-weight: 600;">${formatMoney(item.value)}</td>
-        </tr>
-      `).join("");
+    function getSharedPortfolio() {
+      return (typeof StateManager !== "undefined") ? StateManager.getPortfolio() : window.mockPortfolio;
     }
 
-    function openConnectModal() { document.getElementById('connect-modal').style.display = 'flex'; }
-    function closeConnectModal() { document.getElementById('connect-modal').style.display = 'none'; }
+    // Modal Control Logic [cite: 2026-02-13]
+    function openConnectModal() { document.getElementById("connect-modal").style.display = "flex"; }
+    function closeConnectModal() { document.getElementById("connect-modal").style.display = "none"; }
 
     function mockConnect(provider) {
       const toast = document.getElementById("toast");
-      toast.textContent = `Linking ${provider} to your Lifepath...`;
-      toast.style.background = "var(--primary)";
-      toast.classList.add("show");
+      toast.textContent = `Linking ${provider}...`;
+      toast.style.opacity = "1";
       closeConnectModal();
 
-      let balance = 0;
       let category = "";
-      if (provider === 'DBS / POSB') { balance = 22000; category = "Bank"; }
-      else if (provider === 'Tiger Brokers') { balance = 42000; category = "Investment"; }
-      else if (provider === 'Syfe') { balance = 38500; category = "Investment"; }
-      else if (provider === 'MetaMask') { balance = 25500; category = "Crypto"; }
+      let newItem = {};
 
-      window.mockPortfolio.linkedAccounts.push({ name: provider, category: category, balance: balance, status: "Connected" });
+      // Specific Demo Providers
+      if (provider === "DBS / POSB") {
+        category = "Bank";
+        newItem = { coin: "POSB Savings", symbol: "SGD", wallet: "POSB Digibank", balance: 5000, valueUsd: 3690 };
+      } else if (provider === "Tiger Brokers") {
+        category = "Investment";
+        newItem = { coin: "Tiger Portfolio", symbol: "TIGER", wallet: "Tiger Brokers", balance: 10000, valueUsd: 7380 };
+      } else if (provider === "Coinbase") {
+        category = "Crypto";
+        newItem = { coin: "Coinbase Wallet", symbol: "CB", wallet: "Coinbase App", balance: 2000, valueUsd: 1476 };
+      }
+
+      if (category && window.mockPortfolio.detailedAccounts[category]) {
+        // We add it to the list
+        window.mockPortfolio.detailedAccounts[category].push(newItem);
+        
+        // Update the Summary Table (The 4 big rows)
+        const summaryMap = { "Bank": "Cash Accounts", "Investment": "ETF / Equity Portfolio", "Crypto": "Crypto Wallets" };
+        const summaryItem = window.mockPortfolio.assetBreakdown.find(a => a.asset === summaryMap[category]);
+        if (summaryItem) summaryItem.value += newItem.balance;
+        
+        // Update Total Net Worth
+        window.mockPortfolio.summary.netWorth += newItem.balance;
+
+        // Save to browser "brain"
+        localStorage.setItem('savedPortfolio', JSON.stringify(window.mockPortfolio));
+        localStorage.setItem('selectedCategory', category);
+      }
 
       setTimeout(() => {
-        renderTables();
-        toast.classList.remove("show");
-      }, 2500);
+        window.location.href = 'details.html'; // Jump to the breakdown
+      }, 1200);
     }
 
-    function disconnectAccount(index, name) {
-      const allowList = ['DBS / POSB', 'Tiger Brokers', 'Syfe', 'MetaMask'];
-      if (!allowList.includes(name)) {
-        const toast = document.getElementById("toast");
-        toast.textContent = `⚠️ Action Restricted: ${name} is a core demo asset.`;
-        toast.style.background = "#f59e0b";
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 3000);
-        return;
+    function renderTables() {
+      const portfolio = getSharedPortfolio();
+      const assetBody = document.getElementById("asset-breakdown-body");
+      const ladderContainer = document.getElementById("liquidity-ladder");
+      const assetBreakdown = Array.isArray(portfolio.assetBreakdown) ? portfolio.assetBreakdown : [];
+      
+      if (ladderContainer) {
+        ladderContainer.innerHTML = assetBreakdown.map(item => `
+          <div class="ladder-row">
+            <div class="tier-badge">${item.liquidityTier || "T+?"}</div>
+            <div class="ladder-info">
+              <div class="ladder-title">${item.asset} — ${formatMoney(item.value)}</div>
+              <div class="ladder-note">${item.ladderNote || ""}</div>
+            </div>
+          </div>
+        `).join("");
       }
-      if (confirm(`Are you sure you want to disconnect ${name}?`)) {
-        const toast = document.getElementById("toast");
-        toast.textContent = `✅ Successfully disconnected ${name}.`;
-        toast.style.background = "#22c55e";
-        toast.classList.add("show");
-        const row = document.getElementById(`row-${index}`);
-        if (row) {
-          row.style.transition = "all 0.4s ease";
-          row.style.transform = "translateX(20px)";
-          row.style.opacity = "0";
-          setTimeout(() => row.remove(), 400);
-        }
-        setTimeout(() => toast.classList.remove("show"), 3000);
+
+      assetBody.innerHTML = assetBreakdown.map(item => {
+        const categoryMap = { "Cash Accounts": "Bank", "ETF / Equity Portfolio": "Investment", "Crypto Wallets": "Crypto", "Private Equipment": "Private Asset" };
+        const category = categoryMap[item.asset];
+        return `
+          <tr onclick="goToDetails('${category}')" style="cursor:pointer;" onmouseover="this.style.background='rgba(109,124,255,0.05)'" onmouseout="this.style.background='transparent'">
+            <td><span style="padding: 6px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; border: 1px solid currentColor; display: inline-block; min-width: 160px; text-align: center; ${getBadgeStyle(category)}">${item.asset}</span></td>
+            <td><em style="color: var(--muted);">${item.type}</em></td>
+            <td style="font-family: monospace; font-size: 1rem; font-weight: 600;">${formatMoney(item.value)}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function goToDetails(category) {
+      localStorage.setItem('selectedCategory', category);
+      window.location.href = 'details.html';
+    }
+
+    function syncGlobalNavbar() {
+      const portfolio = getSharedPortfolio();
+      const sgdEl = document.getElementById('nav-sgd');
+      const usdEl = document.getElementById('nav-usd');
+      if (portfolio && portfolio.summary && sgdEl && usdEl) {
+          const totalSgd = portfolio.summary.netWorth;
+          sgdEl.textContent = formatMoney(totalSgd);
+          usdEl.textContent = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(totalSgd * 0.738);
       }
     }
 
-    // 3. START EVERYTHING
-    renderConnectors();
+      document.addEventListener("DOMContentLoaded", () => {
     renderTables();
+    syncGlobalNavbar();
+  });
+
+  window.addEventListener("storage", (event) => {
+    if (event.key === "lifepath_data" || event.key === "lifepath_portfolio") {
+      renderTables();
+      syncGlobalNavbar();
+    }
+  });
+
+  window.addEventListener("storage", (event) => {
+    if (event.key === "lifepath_data" || event.key === "lifepath_portfolio") {
+      renderTables();
+      syncGlobalNavbar();
+    }
+  });
   </script>
 </body>
 </html>
