@@ -526,19 +526,19 @@
 
       <div class="panel">
         <div class="eyebrow">Overall status</div>
-        <div class="score-pill" id="status-pill">Stable financial position</div>        <p style="margin: 14px 0; color: var(--muted); font-size: 0.9rem;">
+        <div class="score-pill" id="status-pill">Stable financial position</div>
+        <p style="margin: 14px 0; color: var(--muted); font-size: 0.9rem;">
           How would your "Digital Twin" react to a sudden financial shock?
         </p>
 
-        <div class="button-row" style="gap: 8px;">
-          <button class="mini-btn" onclick="runMiniSim('recession', this)">📉 Recession</button>
-          <button class="mini-btn" onclick="runMiniSim('jobLoss', this)">💼 Job Loss</button>
-          <button class="mini-btn" onclick="runMiniSim('base', this)">🔄 Reset</button>
+        <div class="button-row" style="gap: 12px; margin-top: 10px;">
+          <button class="mini-btn" style="padding: 10px 18px; font-size: 0.85rem;" onclick="runMiniSim('recession', this)">📉 Recession</button>
+          <button class="mini-btn" style="padding: 10px 18px; font-size: 0.85rem;" onclick="runMiniSim('jobLoss', this)">💼 Job Loss</button>
+          <button class="mini-btn" style="padding: 10px 18px; font-size: 0.85rem;" onclick="runMiniSim('base', this)">🔄 Reset</button>
         </div>
 
-        <div id="sim-impact-box" style="display:none; margin-top:15px; padding:12px; background:rgba(255,76,76,0.05); border:1px solid rgba(255,76,76,0.2); border-radius:12px;">
-          <div style="font-size:0.8rem; color:var(--red); font-weight:700;">PROJECTION:</div>
-          <div id="sim-impact-text" style="font-size:0.85rem; color:var(--muted); margin-top:4px;"></div>
+        <div id="sim-impact-box" style="display:none; margin-top:15px; padding:12px; background:rgba(239, 68, 68, 0.05); border:1px solid rgba(239, 68, 68, 0.2); border-radius:12px;">
+            <div id="sim-impact-text" style="font-size:0.85rem; color:var(--red); font-weight:700;">⚠️ VULNERABILITY DETECTED</div>
         </div>
       </div>
     </section>
@@ -875,28 +875,96 @@
       const impactBox = document.getElementById("sim-impact-box");
       const impactText = document.getElementById("sim-impact-text");
       const statusPill = document.getElementById("status-pill");
+      const nwValueEl = document.getElementById("net-worth");
+      const wsValueEl = document.getElementById("wellness-score");
+      const liqBufferEl = document.getElementById("liquidity-buffer");
+      const insightsEl = document.getElementById("quick-insights");
 
-      btn.parentElement.querySelectorAll('.mini-btn').forEach(b => b.style.background = 'transparent');
-      if (key !== 'base') btn.style.background = 'var(--primary)';
+      // 1. Reset active buttons styling & handle larger sizes
+      btn.parentElement.querySelectorAll('.mini-btn').forEach(b => {
+          b.style.background = 'transparent';
+          b.style.color = 'var(--muted)';
+          b.style.borderColor = 'var(--line)';
+      });
 
-      if (key === 'base') {
-        impactBox.style.display = "none";
-        statusPill.textContent = "Stable financial position";
-        statusPill.style.background = "rgba(34, 197, 94, 0.14)";
-        renderDashboard();
-        return;
+      if (key !== 'base') {
+          btn.style.background = 'var(--primary)';
+          btn.style.color = 'white';
+          btn.style.borderColor = 'var(--primary)';
       }
 
+      // 2. Handle the "Reset to Base Case"
+      if (key === 'base') {
+          impactBox.style.display = "none";
+          
+          // Reset Text Colors
+          nwValueEl.style.color = "var(--text)";
+          wsValueEl.style.color = "#7ef0a2"; 
+          liqBufferEl.style.color = "var(--text)";
+          
+          // Reset Status Pill
+          statusPill.textContent = "Stable financial position";
+          statusPill.style.background = "rgba(34, 197, 94, 0.14)";
+          statusPill.style.color = "#9ef0b5";
+          
+          // Full Dashboard Refresh (restores original chart and insights from mock-data)
+          renderDashboard(); 
+          return;
+      }
+
+      // 3. Handle the "Shock" Scenario UI
       impactBox.style.display = "block";
-      impactText.innerHTML = `Net Worth would drop to <strong>${formatMoney(scenario.netWorth)}</strong>. <br>Score: <strong>${scenario.wellnessScore}/100</strong>.`;
+      // Top card now only shows a high-level alert header
+      impactText.innerHTML = `<span style="color:var(--red);">⚠️ VULNERABILITY DETECTED</span>`;
+
+      // 4. Update Main Numbers with Red Alerts
+      nwValueEl.textContent = formatMoney(convertFromSGD(scenario.netWorth));
+      wsValueEl.textContent = `${scenario.wellnessScore}/100`;
       
-      statusPill.textContent = "High Vulnerability Detected";
-      statusPill.style.background = "rgba(239, 68, 68, 0.14)";
+      // Dynamic Liquidity Change
+      const baseMonths = window.mockPortfolio.summary.emergencyMonths;
+      const stressedMonths = (key === 'jobLoss') ? (baseMonths * 0.5).toFixed(1) : (baseMonths * 0.8).toFixed(1);
+      liqBufferEl.textContent = stressedMonths + " months";
+      
+      // Set Colors for Shock
+      nwValueEl.style.color = "var(--red)";
+      wsValueEl.style.color = "var(--red)";
+      liqBufferEl.style.color = "var(--red)";
+
+      // Update Status Pill
+      statusPill.textContent = "Critical Risk Identified";
+      statusPill.style.background = "rgba(239, 68, 68, 0.2)";
       statusPill.style.color = "#ff8e8e";
 
-      document.getElementById("net-worth").textContent = formatMoney(convertFromSGD(scenario.netWorth));
-      document.getElementById("wellness-score").textContent = `${scenario.wellnessScore}/100`;
-    }
+      // 5. Update Insights with detailed Simulator Data
+      // We move the "Income stops..." description here to clear up the top card
+      const recoveryTime = (key === 'recession' ? "14 Months" : "6 Months");
+      
+      insightsEl.innerHTML = `
+        <li style="color:var(--red); font-weight:700; margin-bottom: 4px;">🚨 Simulation: ${key.toUpperCase()}</li>
+        <li style="margin-bottom:10px; font-style: italic; color:var(--muted); line-height: 1.4;">${scenario.changeText}</li>
+        <li><strong>Wealth Survival:</strong> 9.4 Years</li>
+        <li><strong>Liquidity Failure:</strong> <span style="color:var(--red);">2.7 Months</span></li>
+        <li><strong>Regret Risk:</strong> <span style="color:var(--red); font-weight:bold;">HIGH</span></li>
+        <li><strong>Goal Probability:</strong> ${scenario.retirementProbability}%</li>
+        <li style="margin-top:10px; border-top:1px dashed var(--line); padding-top:10px; color:var(--text);">
+            <strong>AI Recommended Action:</strong> Raise $20,600 by trimming ETF portfolio.
+        </li>
+        <li style="color:var(--green); font-size:0.9rem; margin-top:12px; font-weight:700;"> ✨ Projected Impact: +16 Stability Score recovery.</li>
+    `;
+
+      // 6. Update the Pie Chart with Stressed Allocation
+      const stressedAllocation = JSON.parse(JSON.stringify(window.mockPortfolio.allocation));
+      if (key === 'recession') {
+          stressedAllocation.find(a => a.label === "Investments").value *= 0.8;
+          stressedAllocation.find(a => a.label === "Crypto").value *= 0.6;
+          renderChart({ allocation: stressedAllocation });
+      } else {
+          // For Job Loss Day 1, we keep the chart static as discussed
+          renderChart(window.mockPortfolio);
+      }
+  }
+
 
     window.addEventListener("storage", () => renderDashboard());
     
