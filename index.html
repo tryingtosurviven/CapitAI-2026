@@ -882,6 +882,15 @@
       const navSgdEl = document.getElementById("nav-sgd");
       const navUsdEl = document.getElementById("nav-usd");
 
+      const updatedPortfolio = JSON.parse(JSON.stringify(window.mockPortfolio));
+      updatedPortfolio.summary.netWorth = scenario.netWorth;
+      // Update the breakdown so the Assets page tables also change
+      if (key === 'marketCrash') {
+          updatedPortfolio.assetBreakdown.find(a => a.asset === "ETF / Equity Portfolio").value *= 0.8;
+          updatedPortfolio.assetBreakdown.find(a => a.asset === "Crypto Wallets").value *= 0.6;
+      }
+      localStorage.setItem('savedPortfolio', JSON.stringify(updatedPortfolio));
+
       // 1. Button Styling
       btn.parentElement.querySelectorAll('.mini-btn').forEach(b => {
           b.style.background = 'transparent';
@@ -897,6 +906,10 @@
           impactBox.style.display = "none";
           nwValueEl.style.color = "var(--text)";
           wsValueEl.style.color = "#7ef0a2"; 
+          
+          // IMPORTANT: Clear the simulation data so other pages go back to normal
+          localStorage.removeItem('savedPortfolio');
+          
           renderDashboard(); 
           return;
       }

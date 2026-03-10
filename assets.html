@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assets | Lifepath AI</title>
+  <title>Assets | CapitAI</title>
   <style>
     :root { --bg: #081120; --line: #223150; --text: #edf2ff; --muted: #a8b3cf; --primary: #6d7cff; --shadow: 0 20px 45px rgba(0, 0, 0, 0.28); --radius: 20px; --panel: #101a2e; }
     * { box-sizing: border-box; }
@@ -39,7 +39,7 @@
   <div class="container">
     <nav class="navbar">
       <div class="brand">
-        <div class="brand-title">Lifepath AI</div>
+        <div class="brand-title">CapitAI</div>
         <div class="brand-subtitle">Unified Wealth Wallet</div>
       </div>
 
@@ -129,10 +129,6 @@
     return window.mockPortfolio;
   }
 
-    function getSharedPortfolio() {
-      return (typeof StateManager !== "undefined") ? StateManager.getPortfolio() : window.mockPortfolio;
-    }
-
     // Modal Control Logic [cite: 2026-02-13]
     function openConnectModal() { document.getElementById("connect-modal").style.display = "flex"; }
     function closeConnectModal() { document.getElementById("connect-modal").style.display = "none"; }
@@ -181,11 +177,17 @@
     }
 
     function renderTables() {
-      const portfolio = getSharedPortfolio();
+      // 1. Get the data (Checking for simulation first)
+      const savedData = localStorage.getItem('savedPortfolio');
+      const portfolio = savedData ? JSON.parse(savedData) : getSharedPortfolio();
+      
       const assetBody = document.getElementById("asset-breakdown-body");
       const ladderContainer = document.getElementById("liquidity-ladder");
+      
+      // Safety check to ensure assetBreakdown exists
       const assetBreakdown = Array.isArray(portfolio.assetBreakdown) ? portfolio.assetBreakdown : [];
       
+      // 2. Render the Liquidity Ladder
       if (ladderContainer) {
         ladderContainer.innerHTML = assetBreakdown.map(item => `
           <div class="ladder-row">
@@ -197,6 +199,27 @@
           </div>
         `).join("");
       }
+
+      // 3. Render the Asset Breakdown Table
+      if (assetBody) {
+        assetBody.innerHTML = assetBreakdown.map(item => {
+          const categoryMap = { 
+            "Cash Accounts": "Bank", 
+            "ETF / Equity Portfolio": "Investment", 
+            "Crypto Wallets": "Crypto", 
+            "Private Equipment": "Private Asset" 
+          };
+          const category = categoryMap[item.asset];
+          return `
+            <tr onclick="goToDetails('${category}')" style="cursor:pointer;" onmouseover="this.style.background='rgba(109,124,255,0.05)'" onmouseout="this.style.background='transparent'">
+              <td><span style="padding: 6px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; border: 1px solid currentColor; display: inline-block; min-width: 160px; text-align: center; ${getBadgeStyle(category)}">${item.asset}</span></td>
+              <td><em style="color: var(--muted);">${item.type}</em></td>
+              <td style="font-family: monospace; font-size: 1rem; font-weight: 600;">${formatMoney(item.value)}</td>
+            </tr>
+          `;
+        }).join("");
+      }
+    
 
       assetBody.innerHTML = assetBreakdown.map(item => {
         const categoryMap = { "Cash Accounts": "Bank", "ETF / Equity Portfolio": "Investment", "Crypto Wallets": "Crypto", "Private Equipment": "Private Asset" };
@@ -217,17 +240,32 @@
     }
 
     function syncGlobalNavbar() {
-      const portfolio = getSharedPortfolio();
-      const sgdEl = document.getElementById('nav-sgd');
-      const usdEl = document.getElementById('nav-usd');
-      if (portfolio && portfolio.summary && sgdEl && usdEl) {
+      const sgdEl = document.getElementById("nav-sgd");
+      const usdEl = document.getElementById("nav-usd");
+      
+      // 1. Try to get simulated data first
+      const savedData = localStorage.getItem('savedPortfolio');
+      
+      // 2. If no simulation is active, use the base portfolio
+      const portfolio = savedData ? JSON.parse(savedData) : window.mockPortfolio;
+      
+      if (portfolio && portfolio.summary) {
           const totalSgd = portfolio.summary.netWorth;
-          sgdEl.textContent = formatMoney(totalSgd);
-          usdEl.textContent = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(totalSgd * 0.738);
+          
+          // 3. Force update the UI
+          if (sgdEl) sgdEl.textContent = formatMoney(totalSgd);
+          if (usdEl) usdEl.textContent = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+              maximumFractionDigits: 0
+          }).format(totalSgd * 0.738);
+          
+          console.log("Navbar Synced to:", totalSgd);
       }
-    }
+  }
 
-      document.addEventListener("DOMContentLoaded", () => {
+
+  document.addEventListener("DOMContentLoaded", () => {
     renderTables();
     syncGlobalNavbar();
   });
