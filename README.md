@@ -7,3 +7,8 @@ The platform includes several integrated modules. A Unified Wealth Wallet consol
 CapitAI also features a Financial Shock Simulator that allows users to stress-test their portfolio against real-world scenarios such as market crashes, job loss, or crypto volatility. Scenario simulations dynamically update portfolio stability and liquidity runway.
 
 Built using HTML, CSS, and Vanilla JavaScript, the prototype uses a lightweight global state system to connect modules into a seamless, interactive financial dashboard.
+
+
+![Dashboard Preview](screenshots/dashboard_base.png)
+![Market Crash Dashboard Preview](screenshots/market_crash.png)
+![Job Loss Dashboard Preview](screenshots/job_loss.png)
