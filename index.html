@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lifepath AI | Wealth Wellness Hub</title>
+  <title>CapitAI | Wealth Wellness Hub</title>
   <style>
     :root {
       --bg: #081120;
@@ -257,6 +257,11 @@
       border-color: rgba(109, 124, 255, 0.5);
     }
 
+    .button-row .mini-btn[style*="background: var(--primary)"] {
+      color: white !important;
+      box-shadow: 0 4px 12px rgba(109, 124, 255, 0.3);
+    }
+
     .toolbar-inline {
       display: flex;
       justify-content: space-between;
@@ -468,7 +473,7 @@
   <div class="container">
     <nav class="navbar">
       <div class="brand">
-        <div class="brand-title">Lifepath AI</div>
+        <div class="brand-title">CapitAI</div>
         <div class="brand-subtitle">Your Financial Digital Twin</div>
       </div>
       <div class="nav-links">
@@ -503,10 +508,20 @@
 
       <div class="panel">
         <div class="eyebrow">Overall status</div>
-        <div class="score-pill">Stable financial position</div>
-        <p style="margin-top:14px; color:var(--muted); line-height:1.7;">
-          Your current profile is well diversified, though liquidity and crypto exposure should be monitored closely.
+        <div class="score-pill" id="status-pill">Stable financial position</div>        <p style="margin: 14px 0; color: var(--muted); font-size: 0.9rem;">
+          How would your "Digital Twin" react to a sudden financial shock?
         </p>
+
+        <div class="button-row" style="gap: 8px;">
+          <button class="mini-btn" onclick="runMiniSim('recession', this)">📉 Recession</button>
+          <button class="mini-btn" onclick="runMiniSim('jobLoss', this)">💼 Job Loss</button>
+          <button class="mini-btn" onclick="runMiniSim('base', this)">🔄 Reset</button>
+        </div>
+
+        <div id="sim-impact-box" style="display:none; margin-top:15px; padding:12px; background:rgba(255,76,76,0.05); border:1px solid rgba(255,76,76,0.2); border-radius:12px;">
+          <div style="font-size:0.8rem; color:var(--red); font-weight:700;">PROJECTION:</div>
+          <div id="sim-impact-text" style="font-size:0.85rem; color:var(--muted); margin-top:4px;"></div>
+        </div>
       </div>
     </section>
 
@@ -577,7 +592,6 @@
           <div class="button-row">
             <a class="primary-btn" href="assets.html">View Assets</a>
             <a class="primary-btn" href="insights.html">View Insights</a>
-            <a class="primary-btn" href="simulator.html">Run Simulator</a>
           </div>
         </div>
       </div>
@@ -648,7 +662,9 @@
     }
 
     function renderDashboard() {
-      const portfolio = window.mockPortfolio;
+      // Add this line so your Dashboard stays synced with your Assets page!
+      const savedData = localStorage.getItem('savedPortfolio');
+      const portfolio = savedData ? JSON.parse(savedData) : window.mockPortfolio;
 
       const netWorthValue = convertFromSGD(portfolio.summary.netWorth);
 
@@ -830,6 +846,36 @@ async function fetchLivePortfolio() {
   }
 }
 
+function runMiniSim(key, btn) {
+  const scenario = window.mockPortfolio.scenarios[key];
+  const impactBox = document.getElementById("sim-impact-box");
+  const impactText = document.getElementById("sim-impact-text");
+  const statusPill = document.getElementById("status-pill");
+
+  // Reset active buttons
+  btn.parentElement.querySelectorAll('.mini-btn').forEach(b => b.style.background = 'transparent');
+  if (key !== 'base') btn.style.background = 'var(--primary)';
+
+  if (key === 'base') {
+    impactBox.style.display = "none";
+    statusPill.textContent = "Stable financial position";
+    statusPill.style.background = "rgba(34, 197, 94, 0.14)";
+    renderDashboard(); // Reverts numbers to normal
+    return;
+  }
+
+  // Update the UI to show the "Shock"
+  impactBox.style.display = "block";
+  impactText.innerHTML = `Net Worth would drop to <strong>${formatMoney(scenario.netWorth)}</strong>. <br>Wealth Wellness Score: <strong>${scenario.wellnessScore}/100</strong>.`;
+  
+  statusPill.textContent = "High Vulnerability Detected";
+  statusPill.style.background = "rgba(239, 68, 68, 0.14)";
+  statusPill.style.color = "#ff8e8e";
+
+  // Temporarily update the big numbers on the dashboard to show the "What If"
+  document.getElementById("net-worth").textContent = formatMoney(scenario.netWorth);
+  document.getElementById("wellness-score").textContent = `${scenario.wellnessScore}/100`;
+}
 
 
     renderDashboard();
