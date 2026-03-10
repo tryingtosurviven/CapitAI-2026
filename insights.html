@@ -14,6 +14,7 @@
       --primary: #0ea5e9;
       --green: #10b981;
       --amber: #f59e0b;
+      --red: #ef4444;
       --radius: 12px;
     }
 
@@ -144,7 +145,7 @@
       <div class="nav-links">
         <a class="nav-link" href="index.html">Dashboard</a>
         <a class="nav-link" href="assets.html">Assets</a>
-        <a class="nav-link" href="insights.html">Insights</a>
+        <a class="nav-link active" href="insights.html">Insights</a>
         <a class="nav-link" href="simulator.html">Simulator</a>
       </div>
     </nav>
@@ -221,7 +222,8 @@
       <span id="tag-profile" style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">Balanced profile</span>
       <span id="tag-liquidity" style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">8.3 months cash runway</span>
       <span id="tag-wwi" style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">WWI 78 / 100</span>
-      <span id="tag-scenario" style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">Base case</span>
+      <span id="tag-scenario" style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">Active scenario: Base case</span>
+      <span id="tag-regret" style="font-size: 0.7rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; color: var(--muted);">Regret probability: LOW</span>
     </div>
   </div>
 
@@ -238,7 +240,7 @@
       return window.mockPortfolio;
     }
 
-        function getSharedState() {
+    function getSharedState() {
       if (typeof StateManager !== "undefined") {
         if (StateManager.getState) return StateManager.getState();
         if (StateManager.get) return StateManager.get();
@@ -249,7 +251,7 @@
     function getScoreColor(score) {
       if (score >= 80) return "var(--green)";
       if (score >= 60) return "var(--amber)";
-      return "#ef4444";
+      return "var(--red)";
     }
 
     function setMetric(idBase, value) {
@@ -263,14 +265,18 @@
     }
 
     function renderInsightsPage() {
-            const portfolio = getSharedPortfolio();
+      const portfolio = getSharedPortfolio();
       const summary = portfolio?.summary ?? {};
       const analytics = portfolio?.analytics ?? {};
+      const user = portfolio?.user ?? {};
 
       const activeScenario =
         summary.activeScenarioLabel ||
         portfolio?.activeScenarioLabel ||
-        "Base case";
+        (getSharedState()?.activeScenario || "Base case");
+
+      const sharedState = getSharedState() || {};
+      const regretProbability = sharedState.regretProbability || "LOW";
 
       const diversification = analytics.diversification ?? 81;
       const liquidity = analytics.liquidity ?? 74;
@@ -280,7 +286,8 @@
       const liquidityMonths = summary.emergencyMonths ?? 8.3;
       const totalNetWorth = summary.netWorth ?? 0;
       const usdEquivalent = Math.round(totalNetWorth * 0.738);
-            document.getElementById("nav-sgd").textContent =
+
+      document.getElementById("nav-sgd").textContent =
         `S$ ${totalNetWorth.toLocaleString()}`;
       document.getElementById("nav-usd").textContent =
         `$ ${usdEquivalent.toLocaleString()}`;
@@ -323,7 +330,21 @@
       document.getElementById("tag-liquidity").textContent = `${liquidityMonths} months cash runway`;
       document.getElementById("tag-wwi").textContent = `WWI ${wwi} / 100`;
       document.getElementById("tag-scenario").textContent =
-        activeScenario && activeScenario !== "None" ? activeScenario : "Base case";
+        `Active scenario: ${activeScenario && activeScenario !== "None" ? activeScenario : "Base case"}`;
+
+      const regretTag = document.getElementById("tag-regret");
+      regretTag.textContent = `Regret probability: ${regretProbability}`;
+
+      if (regretProbability === "HIGH") {
+        regretTag.style.color = "var(--red)";
+        regretTag.style.border = "1px solid var(--red)";
+      } else if (regretProbability === "MEDIUM") {
+        regretTag.style.color = "var(--amber)";
+        regretTag.style.border = "1px solid var(--amber)";
+      } else {
+        regretTag.style.color = "var(--green)";
+        regretTag.style.border = "1px solid var(--green)";
+      }
     }
 
     document.addEventListener("DOMContentLoaded", () => {

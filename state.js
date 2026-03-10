@@ -6,19 +6,19 @@ const StateManager = {
 
   scenarioTitles: {
     base: "Base case",
-    recession: "Recession scenario",
-    cryptoCrash: "Crypto crash scenario",
-    rateHike: "Interest rate hike scenario",
-    jobLoss: "Job loss scenario",
-    medicalEmergency: "Medical emergency scenario"
+    marketCrash: "Market crash (-30%)",
+    cryptoCrash: "Crypto crash",
+    jobLoss: "Job loss (6 months)",
+    housingPurchase: "Housing purchase",
+    childEducation: "Child education cost"
   },
 
   scenarioWeights: {
-    recession: { investments: 0.42, crypto: 0.12, private: 0.46 },
-    cryptoCrash: { investments: 0.47, crypto: 0.08, private: 0.45 },
-    rateHike: { investments: 0.42, crypto: 0.14, private: 0.44 },
-    jobLoss: { investments: 0.44, crypto: 0.16, private: 0.40 },
-    medicalEmergency: { investments: 0.44, crypto: 0.15, private: 0.41 }
+    marketCrash: { investments: 0.38, crypto: 0.10, private: 0.52 },
+    cryptoCrash: { investments: 0.48, crypto: 0.05, private: 0.47 },
+    jobLoss: { investments: 0.42, crypto: 0.12, private: 0.46 },
+    housingPurchase: { investments: 0.36, crypto: 0.08, private: 0.56 },
+    childEducation: { investments: 0.40, crypto: 0.10, private: 0.50 }
   },
 
   getDefaultSummary() {
@@ -425,7 +425,7 @@ const StateManager = {
     });
   },
 
-    updateDetailedAccountsForTargets(detailedAccounts, targets) {
+  updateDetailedAccountsForTargets(detailedAccounts, targets) {
     const groups = this.clone(detailedAccounts || {});
     const categoryMap = {
       Bank: "cash",
@@ -500,7 +500,7 @@ const StateManager = {
       { label: "Private Assets", value: targets.private, color: "#10b981" }
     ];
 
-        stressed.assetBreakdown = this.updateAssetBreakdownForTargets(stressed.assetBreakdown, targets);
+    stressed.assetBreakdown = this.updateAssetBreakdownForTargets(stressed.assetBreakdown, targets);
     stressed.linkedAccounts = this.updateLinkedAccountsForTargets(stressed.linkedAccounts, targets);
     stressed.detailedAccounts = this.updateDetailedAccountsForTargets(stressed.detailedAccounts, targets);
 
@@ -520,19 +520,19 @@ const StateManager = {
     };
 
     const scenarioInsightMap = {
-      recession: "Active scenario impact: market weakness reduces investable asset value and makes illiquid holdings harder to rely on in the near term.",
-      cryptoCrash: "Active scenario impact: digital assets reprice sharply lower, increasing concentration pain and reducing recovery confidence.",
-      rateHike: "Active scenario impact: higher rates pressure market valuations and weaken future affordability for major life goals.",
-      jobLoss: "Active scenario impact: income disruption makes liquidity runway the most important short-term resilience lever.",
-      medicalEmergency: "Active scenario impact: sudden healthcare costs reduce near-term flexibility and make liquid reserves more valuable."
+      marketCrash: "Active scenario impact: a broad market drawdown hits listed investments hard and weakens near-term confidence.",
+      cryptoCrash: "Active scenario impact: digital assets reprice sharply lower, increasing concentration pain and regret risk.",
+      jobLoss: "Active scenario impact: income disruption makes liquidity runway the most important short-term survival lever.",
+      housingPurchase: "Active scenario impact: a large capital outflow into property sharply reduces liquid flexibility and raises concentration risk.",
+      childEducation: "Active scenario impact: future education funding needs reduce available surplus and put more pressure on disciplined planning."
     };
 
     const scenarioActionMap = {
-      recession: "Scenario response: prioritise resilient liquid assets and reduce concentrated downside exposure before risk events deepen.",
-      cryptoCrash: "Scenario response: reduce digital asset concentration and rebuild balance through diversified core holdings.",
-      rateHike: "Scenario response: preserve flexibility by strengthening cash reserves and avoiding overreliance on rate-sensitive assets.",
-      jobLoss: "Scenario response: extend your cash runway immediately and avoid locking additional wealth into illiquid positions.",
-      medicalEmergency: "Scenario response: rebuild emergency liquidity first so future shocks do not force distressed selling."
+      marketCrash: "Scenario response: avoid panic selling, preserve liquidity, and rebalance gradually into diversified core assets.",
+      cryptoCrash: "Scenario response: reduce digital asset concentration and rebuild confidence using a clearer target allocation.",
+      jobLoss: "Scenario response: extend your cash runway immediately and pause non-essential long-term commitments.",
+      housingPurchase: "Scenario response: ring-fence a property fund early so the purchase does not damage emergency resilience.",
+      childEducation: "Scenario response: create a dedicated education bucket so long-term goals do not compete with core liquidity needs."
     };
 
     scenarioAdjusted.insights = [
@@ -598,7 +598,7 @@ const StateManager = {
     this.syncSummaryWithPortfolio(portfolio);
   },
 
-    get() {
+  get() {
     const raw = localStorage.getItem(this.summaryKey);
     try {
       return raw ? JSON.parse(raw) : this.getDefaultSummary();

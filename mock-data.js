@@ -6,13 +6,12 @@ window.mockPortfolio = {
   },
 
   summary: {
-    netWorth: 286500, //
-    wealthWellnessScore: 78, //
+    netWorth: 286500,
+    wealthWellnessScore: 78,
     monthlyExpenses: 4200,
-    emergencyMonths: 8.3 //
+    emergencyMonths: 8.3
   },
 
-  // One clean version of Detailed Accounts
   detailedAccounts: {
     Bank: [
       { coin: "Savings Account", symbol: "POSB", wallet: "POSB Digibank", balance: 15000, valueUsd: 11070 },
@@ -24,8 +23,6 @@ window.mockPortfolio = {
       { coin: "REIT+ Portfolio", symbol: "REIT", wallet: "Syfe", balance: 38500, valueUsd: 28413 },
       { coin: "Core Equity", symbol: "CASH+", wallet: "Endowus", balance: 29000, valueUsd: 21402 }
     ],
-    // Inside detailedAccounts in mock-data.js
-    // Inside detailedAccounts in mock-data.js
     Crypto: [
       { coin: "Bitcoin", symbol: "BTC", wallet: "Crypto.com App", balance: 10000, valueUsd: 7380 },
       { coin: "Ethereum", symbol: "ETH", wallet: "MetaMask (Mainnet)", balance: 15000, valueUsd: 11070 },
@@ -33,7 +30,6 @@ window.mockPortfolio = {
       { coin: "Chainlink", symbol: "LINK", wallet: "MetaMask (Mainnet)", balance: 6000, valueUsd: 4428 },
       { coin: "Polygon", symbol: "MATIC", wallet: "MetaMask (Mainnet)", balance: 4500, valueUsd: 3321 }
     ],
-
     "Private Asset": [
       { coin: "3D Printer Cluster", symbol: "BIZ", wallet: "Physical Assets", balance: 100000, valueUsd: 73800 }
     ]
@@ -80,11 +76,82 @@ window.mockPortfolio = {
   },
 
   scenarios: {
-    base: { netWorth: 286500, wellnessScore: 78, retirementProbability: 74, liquidityMonths: 8.3 },
-    recession: { netWorth: 248000, wellnessScore: 67, retirementProbability: 61, liquidityMonths: 7.8, changeText: "Global equities weaken, private assets slow down, and risk appetite falls." },
-    cryptoCrash: { netWorth: 262500, wellnessScore: 70, retirementProbability: 66, liquidityMonths: 8.1, changeText: "Digital asset prices fall sharply and drag down your total portfolio value." },
-    rateHike: { netWorth: 274200, wellnessScore: 72, retirementProbability: 69, liquidityMonths: 7.4, changeText: "Higher interest rates reduce asset valuations and increase future borrowing stress." },
-    jobLoss: { netWorth: 281000, wellnessScore: 64, retirementProbability: 65, liquidityMonths: 5.2, changeText: "Income stops temporarily, increasing pressure on liquidity and emergency reserves." },
-    medicalEmergency: { netWorth: 270000, wellnessScore: 68, retirementProbability: 67, liquidityMonths: 6.0, changeText: "Unexpected healthcare costs reduce your cash buffer and short-term resilience." }
+    base: {
+      netWorth: 286500,
+      wellnessScore: 78,
+      retirementProbability: 74,
+      liquidityMonths: 8.3,
+      wealthSurvivalYears: 18.4,
+      liquidityFailureMonths: 8.3,
+      regretProbability: "LOW",
+      actionPriority: "Stay disciplined",
+      headline: "Stable baseline with moderate volatility exposure.",
+      changeText: "This is your current baseline before any shock is applied."
+    },
+
+    marketCrash: {
+      netWorth: 228400,
+      wellnessScore: 61,
+      retirementProbability: 56,
+      liquidityMonths: 6.4,
+      wealthSurvivalYears: 11.0,
+      liquidityFailureMonths: 3.2,
+      regretProbability: "HIGH",
+      actionPriority: "Protect liquidity first",
+      headline: "A -30% market crash materially weakens your long-term plan.",
+      changeText: "Equities fall sharply, confidence drops, and liquid market wealth shrinks quickly."
+    },
+
+    cryptoCrash: {
+      netWorth: 254500,
+      wellnessScore: 68,
+      retirementProbability: 63,
+      liquidityMonths: 7.6,
+      wealthSurvivalYears: 13.8,
+      liquidityFailureMonths: 4.6,
+      regretProbability: "HIGH",
+      actionPriority: "Reduce concentration",
+      headline: "Crypto volatility spills into overall portfolio confidence.",
+      changeText: "Digital asset prices fall sharply and drag down your total portfolio value."
+    },
+
+    jobLoss: {
+      netWorth: 279000,
+      wellnessScore: 59,
+      retirementProbability: 60,
+      liquidityMonths: 4.1,
+      wealthSurvivalYears: 9.4,
+      liquidityFailureMonths: 2.7,
+      regretProbability: "HIGH",
+      actionPriority: "Extend cash runway",
+      headline: "A 6-month income loss exposes your short-term fragility.",
+      changeText: "Income stops temporarily, increasing pressure on liquidity and emergency reserves."
+    },
+
+    housingPurchase: {
+      netWorth: 268000,
+      wellnessScore: 62,
+      retirementProbability: 58,
+      liquidityMonths: 3.8,
+      wealthSurvivalYears: 10.6,
+      liquidityFailureMonths: 2.4,
+      regretProbability: "MEDIUM",
+      actionPriority: "Avoid overcommitting",
+      headline: "A housing purchase reduces flexibility and concentrates wealth.",
+      changeText: "Down payment and associated costs reduce available cash and increase illiquid exposure."
+    },
+
+    childEducation: {
+      netWorth: 272500,
+      wellnessScore: 65,
+      retirementProbability: 61,
+      liquidityMonths: 5.0,
+      wealthSurvivalYears: 12.1,
+      liquidityFailureMonths: 3.5,
+      regretProbability: "MEDIUM",
+      actionPriority: "Start goal-based funding",
+      headline: "Education planning adds recurring long-term funding pressure.",
+      changeText: "Education costs reduce future investable surplus and make disciplined planning more important."
+    }
   }
 };

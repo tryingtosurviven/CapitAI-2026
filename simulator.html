@@ -284,17 +284,17 @@ a {
       <div class="eyebrow">Scenario testing</div>
       <h1 class="page-title">Stress-test your financial future</h1>
       <p class="page-subtitle">
-        Apply a scenario and see how your wealth, wellness score, liquidity, and goal probability change.
+        Apply a scenario and see how your wealth, liquidity, resilience, and regret risk change instantly.
       </p>
     </div>
 
     <div class="panel">
       <div class="button-row">
-        <button class="scenario-btn" onclick="applyScenario('recession', this)">Simulate Recession</button>
+        <button class="scenario-btn" onclick="applyScenario('marketCrash', this)">Market Crash (-30%)</button>
+        <button class="scenario-btn" onclick="applyScenario('jobLoss', this)">Job Loss (6 months)</button>
+        <button class="scenario-btn" onclick="applyScenario('housingPurchase', this)">Housing Purchase</button>
+        <button class="scenario-btn" onclick="applyScenario('childEducation', this)">Child Education Cost</button>
         <button class="scenario-btn" onclick="applyScenario('cryptoCrash', this)">Crypto Crash</button>
-        <button class="scenario-btn" onclick="applyScenario('rateHike', this)">Interest Rate Hike</button>
-        <button class="scenario-btn" onclick="applyScenario('jobLoss', this)">Job Loss</button>
-        <button class="scenario-btn" onclick="applyScenario('medicalEmergency', this)">Medical Emergency</button>
         <button class="secondary-btn" onclick="applyScenario('base', this)">Reset to Base Case</button>
       </div>
 
@@ -320,10 +320,43 @@ a {
         </div>
       </div>
 
+      <div class="result-grid" style="margin-top:14px;">
+        <div class="result-box">
+          <div class="result-label">Wealth survival</div>
+          <div class="result-value" id="sim-survival">0.0 years</div>
+        </div>
+
+        <div class="result-box">
+          <div class="result-label">Liquidity failure</div>
+          <div class="result-value" id="sim-failure">0.0 months</div>
+        </div>
+
+        <div class="result-box">
+          <div class="result-label">Probability of regret</div>
+          <div class="result-value" id="sim-regret">LOW</div>
+        </div>
+
+        <div class="result-box">
+          <div class="result-label">Action priority</div>
+          <div class="result-value" id="sim-priority" style="font-size:1.1rem;">Stay disciplined</div>
+        </div>
+      </div>
+
       <div class="panel" style="margin-top:16px; padding:18px;">
-        <h2 class="section-title" id="scenario-title">Base case</h2>
+        <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:flex-start;">
+          <div>
+            <h2 class="section-title" id="scenario-title">Base case</h2>
+            <div id="scenario-headline" style="font-size:1.1rem; font-weight:700; margin-bottom:8px; color:#ffffff;">
+              Stable baseline with moderate volatility exposure.
+            </div>
+          </div>
+          <div id="scenario-badge" style="padding:8px 12px; border-radius:999px; border:1px solid var(--line); color:var(--muted);">
+            LOW regret risk
+          </div>
+        </div>
+
         <p class="result-explainer" id="scenario-description">
-          Your current portfolio shows a balanced but slightly crypto-sensitive wealth profile.
+          This is your current baseline before any shock is applied.
         </p>
       </div>
     </div>
@@ -340,11 +373,11 @@ a {
 
     const titles = {
       base: "Base case",
-      recession: "Recession scenario",
-      cryptoCrash: "Crypto crash scenario",
-      rateHike: "Interest rate hike scenario",
-      jobLoss: "Job loss scenario",
-      medicalEmergency: "Medical emergency scenario"
+      marketCrash: "Market crash (-30%)",
+      cryptoCrash: "Crypto crash",
+      jobLoss: "Job loss (6 months)",
+      housingPurchase: "Housing purchase",
+      childEducation: "Child education cost"
     };
 
     function getBasePortfolio() {
@@ -366,7 +399,11 @@ a {
       netWorth: 0,
       wellnessScore: 0,
       retirementProbability: 0,
-      liquidityMonths: 0
+      liquidityMonths: 0,
+      wealthSurvivalYears: 0,
+      liquidityFailureMonths: 0,
+      regretProbability: "LOW",
+      actionPriority: "Stay disciplined"
     };
 
     function animateValue(obj, start, end, duration, isCurrency = false, suffix = "") {
@@ -379,7 +416,7 @@ a {
 
         if (isCurrency) {
           obj.textContent = formatMoney(currentVal);
-        } else if (suffix === " months") {
+        } else if (suffix === " months" || suffix === " years") {
           obj.textContent = currentVal.toFixed(1) + suffix;
         } else {
           obj.textContent = Math.floor(currentVal) + suffix;
@@ -389,7 +426,7 @@ a {
           window.requestAnimationFrame(step);
         } else {
           if (isCurrency) obj.textContent = formatMoney(end);
-          else if (suffix === " months") obj.textContent = end.toFixed(1) + suffix;
+          else if (suffix === " months" || suffix === " years") obj.textContent = Number(end).toFixed(1) + suffix;
           else obj.textContent = end + suffix;
         }
       };
@@ -397,11 +434,31 @@ a {
       window.requestAnimationFrame(step);
     }
 
+    function getRegretColor(level) {
+      if (level === "HIGH") return "var(--red)";
+      if (level === "MEDIUM") return "var(--amber)";
+      return "var(--green)";
+    }
+
+    function setScenarioBadge(level) {
+      const badge = document.getElementById("scenario-badge");
+      const color = getRegretColor(level);
+
+      badge.textContent = `${level} regret risk`;
+      badge.style.borderColor = color;
+      badge.style.color = color;
+      badge.style.background = "rgba(255,255,255,0.03)";
+    }
+
     function renderScenarioValues(nextData, animate = true) {
       const nwEl = document.getElementById("sim-networth");
       const wsEl = document.getElementById("sim-score");
       const rpEl = document.getElementById("sim-retire");
       const lmEl = document.getElementById("sim-liquidity");
+      const survivalEl = document.getElementById("sim-survival");
+      const failureEl = document.getElementById("sim-failure");
+      const regretEl = document.getElementById("sim-regret");
+      const priorityEl = document.getElementById("sim-priority");
       const navSgd = document.getElementById("nav-sgd");
       const navUsd = document.getElementById("nav-usd");
 
@@ -414,7 +471,7 @@ a {
       const isBetter = nextData.netWorth > currentData.netWorth;
       const colorClass = isWorse ? "val-drop" : (isBetter ? "val-recover" : "");
 
-      [nwEl, wsEl, rpEl, lmEl].forEach(el => {
+      [nwEl, wsEl, rpEl, lmEl, survivalEl, failureEl].forEach(el => {
         el.className = "result-value val-transition";
         if (colorClass) el.classList.add(colorClass);
       });
@@ -424,15 +481,27 @@ a {
         animateValue(wsEl, currentData.wellnessScore, nextData.wellnessScore, 800, false, "/100");
         animateValue(rpEl, currentData.retirementProbability, nextData.retirementProbability, 800, false, "%");
         animateValue(lmEl, currentData.liquidityMonths, nextData.liquidityMonths, 800, false, " months");
+        animateValue(survivalEl, currentData.wealthSurvivalYears, nextData.wealthSurvivalYears, 800, false, " years");
+        animateValue(failureEl, currentData.liquidityFailureMonths, nextData.liquidityFailureMonths, 800, false, " months");
       } else {
         nwEl.textContent = formatMoney(nextData.netWorth);
         wsEl.textContent = `${nextData.wellnessScore}/100`;
         rpEl.textContent = `${nextData.retirementProbability}%`;
         lmEl.textContent = `${Number(nextData.liquidityMonths || 0).toFixed(1)} months`;
+        survivalEl.textContent = `${Number(nextData.wealthSurvivalYears || 0).toFixed(1)} years`;
+        failureEl.textContent = `${Number(nextData.liquidityFailureMonths || 0).toFixed(1)} months`;
       }
 
+      regretEl.textContent = nextData.regretProbability || "LOW";
+      regretEl.style.color = getRegretColor(nextData.regretProbability || "LOW");
+
+      priorityEl.textContent = nextData.actionPriority || "Stay disciplined";
+      setScenarioBadge(nextData.regretProbability || "LOW");
+
       setTimeout(() => {
-        [nwEl, wsEl, rpEl, lmEl].forEach(el => el.classList.remove("val-drop", "val-recover"));
+        [nwEl, wsEl, rpEl, lmEl, survivalEl, failureEl].forEach(el => {
+          el.classList.remove("val-drop", "val-recover");
+        });
       }, 1000);
 
       currentData = { ...nextData };
@@ -450,24 +519,34 @@ a {
       if (typeof StateManager !== "undefined" && StateManager.update) {
         StateManager.update({
           activeScenario: titles[key] || "Base case",
-          activeScenarioKey: key
+          activeScenarioKey: key,
+          regretProbability: (key === "base" ? "LOW" : (scenario?.regretProbability || "LOW"))
         });
       }
 
       const adjustedSummary = getAdjustedSummary();
+      const effectiveScenario = key === "base"
+        ? (portfolio?.scenarios?.base || {})
+        : (scenario || {});
 
       const nextData = {
         netWorth: Number(adjustedSummary.netWorth ?? portfolio?.summary?.netWorth ?? 0),
         wellnessScore: Number(adjustedSummary.wealthWellnessScore ?? portfolio?.summary?.wealthWellnessScore ?? 0),
-        retirementProbability: Number(adjustedSummary.retirementProbability ?? portfolio?.summary?.retirementProbability ?? 0),
-        liquidityMonths: Number(adjustedSummary.emergencyMonths ?? portfolio?.summary?.emergencyMonths ?? 0)
+        retirementProbability: Number(effectiveScenario.retirementProbability ?? portfolio?.summary?.retirementProbability ?? 0),
+        liquidityMonths: Number(adjustedSummary.emergencyMonths ?? portfolio?.summary?.emergencyMonths ?? 0),
+        wealthSurvivalYears: Number(effectiveScenario.wealthSurvivalYears ?? 0),
+        liquidityFailureMonths: Number(effectiveScenario.liquidityFailureMonths ?? 0),
+        regretProbability: effectiveScenario.regretProbability || "LOW",
+        actionPriority: effectiveScenario.actionPriority || "Stay disciplined"
       };
 
       renderScenarioValues(nextData, true);
 
       document.getElementById("scenario-title").textContent = titles[key] || "Base case";
+      document.getElementById("scenario-headline").textContent =
+        effectiveScenario.headline || "Stable baseline with moderate volatility exposure.";
       document.getElementById("scenario-description").textContent =
-        scenario?.changeText || "This is your current baseline before any shock is applied.";
+        effectiveScenario.changeText || "This is your current baseline before any shock is applied.";
 
       if (typeof StateManager !== "undefined" && StateManager.update) {
         StateManager.update({
@@ -476,7 +555,8 @@ a {
           liquidityMonths: nextData.liquidityMonths,
           retirementProbability: nextData.retirementProbability,
           activeScenario: titles[key] || "Base case",
-          activeScenarioKey: key
+          activeScenarioKey: key,
+          regretProbability: nextData.regretProbability
         });
       }
     }
