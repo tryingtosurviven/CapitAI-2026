@@ -694,29 +694,42 @@
     }
 
     function renderDashboard() {
-      // Add this line so your Dashboard stays synced with your Assets page!
+      // 1. GET THE SOURCE OF TRUTH FIRST
       const savedData = localStorage.getItem('savedPortfolio');
       const portfolio = savedData ? JSON.parse(savedData) : window.mockPortfolio;
 
       let globalState = null;
       if (typeof StateManager !== "undefined") {
-        globalState = StateManager.get();
+          globalState = StateManager.get();
       }
 
+      // 2. EXTRACT VALUES FROM THE CURRENT STATE (Simulated or Base)
       const displayNetWorth = portfolio.summary.netWorth;
       const displayScore = portfolio.summary.wealthWellnessScore;
       const displayLiquidity = portfolio.summary.emergencyMonths;
-
       const netWorthValue = convertFromSGD(displayNetWorth);
 
+      // 3. UPDATE ALL UI ELEMENTS USING THE SAME DATA
       document.getElementById("net-worth").textContent = formatMoney(netWorthValue);
       document.getElementById("wellness-score").textContent = `${displayScore}/100`;
       document.getElementById("liquidity-buffer").textContent = `${displayLiquidity} months`;
       document.getElementById("user-goal").textContent = portfolio.user.goal;
+      
+      // Update Top Navbar specifically to match the state
+      const navSgdEl = document.getElementById("nav-sgd");
+      const navUsdEl = document.getElementById("nav-usd");
+      if (navSgdEl) navSgdEl.textContent = formatMoney(displayNetWorth);
+      if (navUsdEl) navUsdEl.textContent = new Intl.NumberFormat("en-US", { 
+          style: "currency", 
+          currency: "USD", 
+          maximumFractionDigits: 0 
+      }).format(displayNetWorth * 0.738);
 
+      // 4. REST OF THE UI (Labels, Insights, Charts)
       const dataModeLabel = document.getElementById("data-mode-label");
-      if (globalState && globalState.activeScenario !== "Base case" && globalState.activeScenario !== "None") {
-        dataModeLabel.innerHTML = `<span style="color: #ff4c4c;">⚠️ ACTIVE SCENARIO: ${globalState.activeScenario}</span>`;
+      if (savedData) {
+        // If there's a simulation, show the alert label
+        dataModeLabel.innerHTML = `<span style="color: #ff4c4c;">⚠️ ACTIVE SIMULATION MODE</span>`;
       } else {
         dataModeLabel.textContent = globalState?.dataSource || "Simulated LifePath dataset (safe for demo)";
       }
@@ -726,10 +739,9 @@
         .join("");
 
       renderRebalanceCard(portfolio);
-      renderToastIfNeeded(portfolio);
       renderChart(portfolio);
-      syncGlobalNavbar();
     }
+ 
 
     function renderRebalanceCard(portfolio) {
       const allocation = Array.isArray(portfolio.allocation) ? portfolio.allocation : [];
@@ -882,46 +894,42 @@
       const navSgdEl = document.getElementById("nav-sgd");
       const navUsdEl = document.getElementById("nav-usd");
 
+      // 1. Button Styling
+      btn.parentElement.querySelectorAll('.mini-btn').forEach(b => {
+          b.style.background = 'transparent';
+          b.style.color = 'var(--muted)';
+      });
+
+      // 2. RESET LOGIC (If user clicks Reset)
+      if (key === 'base') {
+          localStorage.removeItem('savedPortfolio'); // Clear memory
+          impactBox.style.display = "none";
+          nwValueEl.style.color = "var(--text)";
+          wsValueEl.style.color = "#7ef0a2"; 
+          renderDashboard(); 
+          return;
+      }
+
+      // 3. PERSISTENCE LOGIC (Save the simulation for the Assets page)
       const updatedPortfolio = JSON.parse(JSON.stringify(window.mockPortfolio));
       updatedPortfolio.summary.netWorth = scenario.netWorth;
-      // Update the breakdown so the Assets page tables also change
+      
       if (key === 'marketCrash') {
           updatedPortfolio.assetBreakdown.find(a => a.asset === "ETF / Equity Portfolio").value *= 0.8;
           updatedPortfolio.assetBreakdown.find(a => a.asset === "Crypto Wallets").value *= 0.6;
       }
       localStorage.setItem('savedPortfolio', JSON.stringify(updatedPortfolio));
 
-      // 1. Button Styling
-      btn.parentElement.querySelectorAll('.mini-btn').forEach(b => {
-          b.style.background = 'transparent';
-          b.style.color = 'var(--muted)';
-      });
-      if (key !== 'base') {
-          btn.style.background = 'var(--primary)';
-          btn.style.color = 'white';
-      }
-
-      // 2. RESET LOGIC
-      if (key === 'base') {
-          impactBox.style.display = "none";
-          nwValueEl.style.color = "var(--text)";
-          wsValueEl.style.color = "#7ef0a2"; 
-          
-          // IMPORTANT: Clear the simulation data so other pages go back to normal
-          localStorage.removeItem('savedPortfolio');
-          
-          renderDashboard(); 
-          return;
-      }
-
-      // 3. APPLY SHOCK NUMBERS
+      // 4. UI UPDATES
+      btn.style.background = 'var(--primary)';
+      btn.style.color = 'white';
       impactBox.style.display = "block";
-      const simulatedTotal = scenario.netWorth;
       
+      const simulatedTotal = scenario.netWorth;
       nwValueEl.textContent = formatMoney(convertFromSGD(simulatedTotal));
       nwValueEl.style.color = "var(--red)";
       
-      // Sync Top Navbar
+      // Sync Top Navbar Immediately
       navSgdEl.textContent = formatMoney(simulatedTotal);
       navUsdEl.textContent = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(simulatedTotal * 0.738);
 
@@ -930,7 +938,7 @@
 
       const baseMonths = window.mockPortfolio.summary.emergencyMonths;
 
-      // 4. SCENARIO SPECIFIC LOGIC
+      // 5. SCENARIO SPECIFIC CONTENT
       if (key === 'marketCrash' || key === 'recession') {
           liqBufferEl.textContent = (baseMonths * 0.8).toFixed(1) + " months";
           liqBufferEl.style.color = "var(--amber)";
@@ -953,20 +961,14 @@
               <li style="color:var(--green); font-weight:700; margin-top:8px;">✨ Projected Impact: +8 Stability Score recovery.</li>
           `;
 
-          // --- FORCED CHART UPDATE ---
-          // We create a custom allocation array where the values are crashed
-          const crashedAllocation = [
+          renderChart({ allocation: [
               { label: "Cash", value: 45000, color: "#4f46e5" },
-              { label: "Investments", value: 110000, color: "#06b6d4" }, // Shrunk from 148k
-              { label: "Crypto", value: 15000, color: "#f59e0b" },      // Shrunk from 35k
+              { label: "Investments", value: 110000, color: "#06b6d4" },
+              { label: "Crypto", value: 15000, color: "#f59e0b" },
               { label: "Private Assets", value: 58400, color: "#10b981" }
-          ];
-          
-          // Directly call renderChart with this new specific data
-          renderChart({ allocation: crashedAllocation });
+          ]});
 
       } else if (key === 'jobLoss') {
-          // ... (Keep your Job Loss logic the same)
           liqBufferEl.textContent = (baseMonths * 0.5).toFixed(1) + " months";
           liqBufferEl.style.color = "var(--red)";
           statusPill.textContent = "Critical Risk Identified";
@@ -984,10 +986,12 @@
               <li style="margin-top:10px; border-top:1px dashed var(--line); padding-top:10px;">
                   <strong>AI Advice:</strong> Raise $20,600 by trimming ETF portfolio.
               </li>
+              <li style="color:var(--green); font-weight:700; margin-top:8px;">✨ Projected Impact: +16 Stability Score recovery.</li>
           `;
-          renderChart(window.mockPortfolio); // Normal proportions
+          renderChart(window.mockPortfolio);
       }
-  }
+    }
+    
 
   
 
