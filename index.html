@@ -532,7 +532,7 @@
         </p>
 
         <div class="button-row" style="gap: 12px; margin-top: 10px;">
-          <button class="mini-btn" style="padding: 10px 18px; font-size: 0.85rem;" onclick="runMiniSim('recession', this)">📉 Recession</button>
+          <button class="mini-btn" style="padding: 10px 18px; font-size: 0.85rem;" onclick="runMiniSim('marketCrash', this)">📉 MarketCrash</button>
           <button class="mini-btn" style="padding: 10px 18px; font-size: 0.85rem;" onclick="runMiniSim('jobLoss', this)">💼 Job Loss</button>
           <button class="mini-btn" style="padding: 10px 18px; font-size: 0.85rem;" onclick="runMiniSim('base', this)">🔄 Reset</button>
         </div>
@@ -879,91 +879,104 @@
       const wsValueEl = document.getElementById("wellness-score");
       const liqBufferEl = document.getElementById("liquidity-buffer");
       const insightsEl = document.getElementById("quick-insights");
+      const navSgdEl = document.getElementById("nav-sgd");
+      const navUsdEl = document.getElementById("nav-usd");
 
-      // 1. Reset active buttons styling & handle larger sizes
+      // 1. Button Styling
       btn.parentElement.querySelectorAll('.mini-btn').forEach(b => {
           b.style.background = 'transparent';
           b.style.color = 'var(--muted)';
-          b.style.borderColor = 'var(--line)';
       });
-
       if (key !== 'base') {
           btn.style.background = 'var(--primary)';
           btn.style.color = 'white';
-          btn.style.borderColor = 'var(--primary)';
       }
 
-      // 2. Handle the "Reset to Base Case"
+      // 2. RESET LOGIC
       if (key === 'base') {
           impactBox.style.display = "none";
-          
-          // Reset Text Colors
           nwValueEl.style.color = "var(--text)";
           wsValueEl.style.color = "#7ef0a2"; 
-          liqBufferEl.style.color = "var(--text)";
-          
-          // Reset Status Pill
-          statusPill.textContent = "Stable financial position";
-          statusPill.style.background = "rgba(34, 197, 94, 0.14)";
-          statusPill.style.color = "#9ef0b5";
-          
-          // Full Dashboard Refresh (restores original chart and insights from mock-data)
           renderDashboard(); 
           return;
       }
 
-      // 3. Handle the "Shock" Scenario UI
+      // 3. APPLY SHOCK NUMBERS
       impactBox.style.display = "block";
-      // Top card now only shows a high-level alert header
-      impactText.innerHTML = `<span style="color:var(--red);">⚠️ VULNERABILITY DETECTED</span>`;
-
-      // 4. Update Main Numbers with Red Alerts
-      nwValueEl.textContent = formatMoney(convertFromSGD(scenario.netWorth));
-      wsValueEl.textContent = `${scenario.wellnessScore}/100`;
+      const simulatedTotal = scenario.netWorth;
       
-      // Dynamic Liquidity Change
-      const baseMonths = window.mockPortfolio.summary.emergencyMonths;
-      const stressedMonths = (key === 'jobLoss') ? (baseMonths * 0.5).toFixed(1) : (baseMonths * 0.8).toFixed(1);
-      liqBufferEl.textContent = stressedMonths + " months";
-      
-      // Set Colors for Shock
+      nwValueEl.textContent = formatMoney(convertFromSGD(simulatedTotal));
       nwValueEl.style.color = "var(--red)";
-      wsValueEl.style.color = "var(--red)";
-      liqBufferEl.style.color = "var(--red)";
-
-      // Update Status Pill
-      statusPill.textContent = "Critical Risk Identified";
-      statusPill.style.background = "rgba(239, 68, 68, 0.2)";
-      statusPill.style.color = "#ff8e8e";
-
-      // 5. Update Insights with detailed Simulator Data
-      // We move the "Income stops..." description here to clear up the top card
-      const recoveryTime = (key === 'recession' ? "14 Months" : "6 Months");
       
-      insightsEl.innerHTML = `
-        <li style="color:var(--red); font-weight:700; margin-bottom: 4px;">🚨 Simulation: ${key.toUpperCase()}</li>
-        <li style="margin-bottom:10px; font-style: italic; color:var(--muted); line-height: 1.4;">${scenario.changeText}</li>
-        <li><strong>Wealth Survival:</strong> 9.4 Years</li>
-        <li><strong>Liquidity Failure:</strong> <span style="color:var(--red);">2.7 Months</span></li>
-        <li><strong>Regret Risk:</strong> <span style="color:var(--red); font-weight:bold;">HIGH</span></li>
-        <li><strong>Goal Probability:</strong> ${scenario.retirementProbability}%</li>
-        <li style="margin-top:10px; border-top:1px dashed var(--line); padding-top:10px; color:var(--text);">
-            <strong>AI Recommended Action:</strong> Raise $20,600 by trimming ETF portfolio.
-        </li>
-        <li style="color:var(--green); font-size:0.9rem; margin-top:12px; font-weight:700;"> ✨ Projected Impact: +16 Stability Score recovery.</li>
-    `;
+      // Sync Top Navbar
+      navSgdEl.textContent = formatMoney(simulatedTotal);
+      navUsdEl.textContent = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(simulatedTotal * 0.738);
 
-      // 6. Update the Pie Chart with Stressed Allocation
-      const stressedAllocation = JSON.parse(JSON.stringify(window.mockPortfolio.allocation));
-      if (key === 'recession') {
-          stressedAllocation.find(a => a.label === "Investments").value *= 0.8;
-          stressedAllocation.find(a => a.label === "Crypto").value *= 0.6;
-          renderChart({ allocation: stressedAllocation });
-      } else {
-          // For Job Loss Day 1, we keep the chart static as discussed
-          renderChart(window.mockPortfolio);
+      wsValueEl.textContent = `${scenario.wellnessScore}/100`;
+      wsValueEl.style.color = "var(--red)";
+
+      const baseMonths = window.mockPortfolio.summary.emergencyMonths;
+
+      // 4. SCENARIO SPECIFIC LOGIC
+      if (key === 'marketCrash' || key === 'recession') {
+          liqBufferEl.textContent = (baseMonths * 0.8).toFixed(1) + " months";
+          liqBufferEl.style.color = "var(--amber)";
+          statusPill.textContent = "Market Volatility Alert";
+          statusPill.style.background = "rgba(245, 158, 11, 0.2)";
+          statusPill.style.color = "#fbbf24";
+          impactText.style.color = "var(--amber)"; 
+          impactText.innerHTML = `<span>⚠️ MARKET VOLATILITY DETECTED</span>`;
+
+          insightsEl.innerHTML = `
+              <li style="color:var(--red); font-weight:700; margin-bottom: 4px;">🚨 Simulation: MARKET CRASH</li>
+              <li style="margin-bottom:10px; font-style: italic; color:var(--muted); line-height: 1.4;">Equities fall sharply and liquid market wealth shrinks quickly.</li>
+              <li><strong>Market Drawdown:</strong> <span style="color:var(--red);">-S$ 54,000</span></li>
+              <li><strong>Wealth Survival:</strong> 12.4 Years</li>
+              <li><strong>Regret Risk:</strong> <span style="color:var(--amber); font-weight:bold;">MEDIUM</span></li>
+              <li><strong>Goal Probability:</strong> 68% (Down from 85%)</li>
+              <li style="margin-top:10px; border-top:1px dashed var(--line); padding-top:10px; color:var(--text);">
+                  <strong>AI Advice:</strong> Rebalance $15,000 to safe-haven assets (Bonds/Gold).
+              </li>
+              <li style="color:var(--green); font-weight:700; margin-top:8px;">✨ Projected Impact: +8 Stability Score recovery.</li>
+          `;
+
+          // --- FORCED CHART UPDATE ---
+          // We create a custom allocation array where the values are crashed
+          const crashedAllocation = [
+              { label: "Cash", value: 45000, color: "#4f46e5" },
+              { label: "Investments", value: 110000, color: "#06b6d4" }, // Shrunk from 148k
+              { label: "Crypto", value: 15000, color: "#f59e0b" },      // Shrunk from 35k
+              { label: "Private Assets", value: 58400, color: "#10b981" }
+          ];
+          
+          // Directly call renderChart with this new specific data
+          renderChart({ allocation: crashedAllocation });
+
+      } else if (key === 'jobLoss') {
+          // ... (Keep your Job Loss logic the same)
+          liqBufferEl.textContent = (baseMonths * 0.5).toFixed(1) + " months";
+          liqBufferEl.style.color = "var(--red)";
+          statusPill.textContent = "Critical Risk Identified";
+          statusPill.style.background = "rgba(239, 68, 68, 0.2)";
+          statusPill.style.color = "#ff8e8e";
+          impactText.style.color = "var(--red)";   
+          impactText.innerHTML = `<span>⚠️ CRITICAL VULNERABILITY DETECTED</span>`;
+
+          insightsEl.innerHTML = `
+              <li style="color:var(--red); font-weight:700; margin-bottom: 4px;">🚨 Simulation: JOB LOSS</li>
+              <li><strong>Wealth Survival:</strong> 9.4 Years</li>
+              <li><strong>Goal Probability:</strong> 60% (Down from 85%)</li>
+              <li><strong>Liquidity Failure:</strong> <span style="color:var(--red);">2.7 Months</span></li>
+              <li><strong>Regret Risk:</strong> <span style="color:var(--red); font-weight:bold;">HIGH</span></li>
+              <li style="margin-top:10px; border-top:1px dashed var(--line); padding-top:10px;">
+                  <strong>AI Advice:</strong> Raise $20,600 by trimming ETF portfolio.
+              </li>
+          `;
+          renderChart(window.mockPortfolio); // Normal proportions
       }
   }
+
+  
 
 
     window.addEventListener("storage", () => renderDashboard());
