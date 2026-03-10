@@ -7,7 +7,7 @@
   <style>
     :root {
       /* Premium Fintech Palette */
-      --bg: #050a15; 
+      --bg: #050a15;
       --panel: #0f172a;
       --panel-hover: #1e293b;
       --line: #334155;
@@ -29,7 +29,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: var(--bg); /* Clean, professional solid background */
+      background: var(--bg);
       color: var(--text);
     }
 
@@ -109,14 +109,13 @@
       border-radius: var(--radius);
       transition: all 0.2s ease-in-out;
       box-shadow: var(--shadow);
-      padding: 24px; /* Standardized padding for Tickrs-style look */
+      padding: 24px;
     }
 
     .panel:hover {
       border-color: var(--primary);
       background: var(--panel-hover);
     }
-    
 
     .eyebrow {
       color: #95a4ff;
@@ -605,13 +604,14 @@
     <section class="panel copilot-card">
       <h2 class="section-title">AI Decision Copilot</h2>
       <p class="card-note" style="margin-bottom:12px;">
-        Ask about life goals, affordability, liquidity, or stress scenarios.
+        Ask about life goals, affordability, liquidity, or stress scenarios based on your financial profile.
       </p>
 
       <div class="chip-row">
         <button class="chip-btn" onclick="quickAsk('Can I afford a $1.5M house?')">🏠 Home Goal</button>
         <button class="chip-btn" onclick="quickAsk('How is my liquidity?')">💧 Liquidity Check</button>
         <button class="chip-btn" onclick="quickAsk('What happens if crypto drops 50%?')">📉 Crash Scenario</button>
+        <button class="chip-btn" onclick="quickAsk('What should I rebalance right now?')">🧭 Rebalance Advice</button>
       </div>
 
       <div class="chat-box" id="chat-output">
@@ -687,7 +687,7 @@
         globalState = StateManager.get();
       }
 
-            const displayNetWorth = portfolio.summary.netWorth;
+      const displayNetWorth = portfolio.summary.netWorth;
       const displayScore = portfolio.summary.wealthWellnessScore;
       const displayLiquidity = portfolio.summary.emergencyMonths;
 
@@ -849,7 +849,6 @@
               { label: "Private Assets", value: metrics.allocation.private || 0, color: "#10b981" }
             ];
 
-            // IMPORTANT: also sync asset breakdown so Assets page matches Dashboard
             portfolio.assetBreakdown = [
               {
                 asset: "Cash Accounts",
@@ -928,14 +927,15 @@
     });
 
     renderDashboard();
+
     function syncGlobalNavbar() {
-      const sgdEl = document.getElementById('nav-sgd');
-      const usdEl = document.getElementById('nav-usd');
+      const sgdEl = document.getElementById("nav-sgd");
+      const usdEl = document.getElementById("nav-usd");
       const portfolio = getSharedPortfolio();
-      
+
       if (portfolio && portfolio.summary) {
         const totalSgd = portfolio.summary.netWorth;
-        const fxRate = 0.738; // Matches your simulated exchange rate
+        const fxRate = 0.738;
 
         sgdEl.textContent = new Intl.NumberFormat("en-SG", {
           style: "currency", currency: "SGD", maximumFractionDigits: 0

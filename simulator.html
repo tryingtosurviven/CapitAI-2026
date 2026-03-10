@@ -228,9 +228,122 @@ a {
   transform: scale(1.08);
 }
 
+.advisor-panel {
+  margin-top: 16px;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(109, 124, 255, 0.35);
+  background: linear-gradient(180deg, rgba(109, 124, 255, 0.10), rgba(16, 26, 46, 0.96));
+}
+
+.advisor-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.advisor-badge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #d7ddff;
+  border: 1px solid rgba(109,124,255,0.45);
+  background: rgba(109,124,255,0.12);
+}
+
+.advisor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.advisor-box {
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03);
+}
+
+.advisor-label {
+  color: #98a8d3;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.advisor-main {
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.45;
+  margin-bottom: 8px;
+}
+
+.advisor-sub {
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.7;
+}
+
+.impact-panel {
+  margin-bottom: 12px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03);
+}
+
+.impact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.impact-card {
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03);
+}
+
+.impact-title {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.impact-number {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.impact-number.positive {
+  color: var(--green);
+}
+
+.impact-number.negative {
+  color: var(--red);
+}
+
+.advisor-footnote {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
 @media (max-width: 1024px) {
   .result-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .advisor-grid,
+  .impact-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -356,8 +469,66 @@ a {
         </div>
 
         <p class="result-explainer" id="scenario-description">
-          This is your current baseline before any shock is applied.
         </p>
+
+        <div class="advisor-panel">
+          <div class="advisor-topbar">
+            <div>
+              <h2 class="section-title" style="margin-bottom:6px;">AI Decision Copilot</h2>
+              <p class="result-explainer" style="margin:0;">
+                Proactive portfolio guidance based on the currently selected stress scenario.
+              </p>
+            </div>
+            <div class="advisor-badge" id="advisor-confidence">Confidence: HIGH</div>
+          </div>
+
+          <div class="advisor-grid">
+            <div class="advisor-box">
+              <div class="advisor-label">Detected issue</div>
+              <div class="advisor-main" id="advisor-issue">
+                Checking portfolio concentration and liquidity...
+              </div>
+              <div class="advisor-sub" id="advisor-context">
+                Lifepath AI is reviewing your allocation, liquidity runway, and active scenario.
+              </div>
+            </div>
+
+            <div class="advisor-box">
+              <div class="advisor-label">Recommended action</div>
+              <div class="advisor-main" id="advisor-action">
+                Generating action plan...
+              </div>
+              <div class="advisor-sub" id="advisor-rationale">
+                Recommendation rationale will appear here.
+              </div>
+            </div>
+          </div>
+
+          <div class="impact-panel">
+            <div class="advisor-label" style="margin-bottom:12px;">Projected impact</div>
+
+            <div class="impact-grid">
+              <div class="impact-card">
+                <div class="impact-title">Stability score</div>
+                <div class="impact-number positive" id="advisor-impact-stability">+0</div>
+              </div>
+
+              <div class="impact-card">
+                <div class="impact-title">Liquidity runway</div>
+                <div class="impact-number positive" id="advisor-impact-liquidity">+0.0 months</div>
+              </div>
+
+              <div class="impact-card">
+                <div class="impact-title">Volatility exposure</div>
+                <div class="impact-number negative" id="advisor-impact-volatility">0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="advisor-footnote" id="advisor-footnote">
+            Recommendation engine compares your current allocation against balanced guardrails and surfaces the highest-priority action.
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -507,6 +678,118 @@ a {
       currentData = { ...nextData };
     }
 
+    function roundToNearestHundred(value) {
+      return Math.max(0, Math.round(Number(value || 0) / 100) * 100);
+    }
+
+    function getAllocationValue(portfolio, label) {
+      const allocation = Array.isArray(portfolio?.allocation) ? portfolio.allocation : [];
+      return Number(allocation.find(item => item.label === label)?.value || 0);
+    }
+
+    function getAdvisorAnalysis(portfolio, scenarioKey) {
+      const cash = getAllocationValue(portfolio, "Cash");
+      const investments = getAllocationValue(portfolio, "Investments");
+      const crypto = getAllocationValue(portfolio, "Crypto");
+      const privateAssets = getAllocationValue(portfolio, "Private Assets");
+
+      const total = cash + investments + crypto + privateAssets;
+      const monthlyExpenses = Number(portfolio?.summary?.monthlyExpenses || 4200);
+      const emergencyMonths = Number(portfolio?.summary?.emergencyMonths || 0);
+
+      const cryptoPct = total > 0 ? crypto / total : 0;
+      const privatePct = total > 0 ? privateAssets / total : 0;
+      const activeScenarioTitle = titles[scenarioKey] || "Base case";
+
+      const targetCryptoPct = 0.12;
+      const targetPrivatePct = 0.35;
+      const targetEmergencyMonths = 9;
+
+      let result = {
+        issue: "Your portfolio is broadly within balanced guardrails.",
+        context: `Liquidity runway is ${emergencyMonths.toFixed(1)} months and no major concentration breach is detected.`,
+        action: "No urgent rebalance needed. Continue disciplined monthly investing and maintain your emergency reserve.",
+        rationale: "The current allocation does not show a severe weakness relative to a balanced investor profile.",
+        confidence: "Confidence: MEDIUM",
+        stabilityImpact: "+4",
+        liquidityImpact: "+0.0 months",
+        volatilityImpact: "-2"
+      };
+
+      const cryptoTrim = roundToNearestHundred(Math.max(0, crypto - (total * targetCryptoPct)));
+      const privateTrim = roundToNearestHundred(Math.max(0, privateAssets - (total * targetPrivatePct)));
+      const cashShortfall = roundToNearestHundred(Math.max(0, (targetEmergencyMonths * monthlyExpenses) - cash));
+
+      const scenarioNeedsCash =
+        scenarioKey === "jobLoss" ||
+        scenarioKey === "housingPurchase" ||
+        scenarioKey === "childEducation";
+
+      if ((scenarioKey === "cryptoCrash" || cryptoPct > targetCryptoPct) && cryptoTrim > 0) {
+        result.issue = `Your crypto allocation is ${(cryptoPct * 100).toFixed(1)}%. Your balanced target is 12.0%.`;
+        result.context = scenarioKey !== "base"
+          ? `This is more dangerous under the active scenario: ${activeScenarioTitle}.`
+          : "This concentration adds avoidable volatility and regret risk.";
+        result.action = `Sell ${formatMoney(cryptoTrim)} crypto → move to ${scenarioNeedsCash ? "cash reserve" : "ETF portfolio"}.`;
+        result.rationale = scenarioNeedsCash
+          ? "Because the current scenario puts more pressure on liquidity, the first priority is extending cash runway."
+          : "This lowers volatility while keeping your capital in a more diversified long-term portfolio.";
+        result.confidence = "Confidence: HIGH";
+        result.stabilityImpact = "+22";
+        result.liquidityImpact = scenarioNeedsCash ? "+3.0 months" : "+0.8 months";
+        result.volatilityImpact = "-14";
+      } else if (cashShortfall > 0) {
+        const source = crypto > investments ? "crypto exposure" : "ETF portfolio";
+        const shiftAmount = roundToNearestHundred(Math.min(cashShortfall, Math.max(crypto, investments)));
+
+        result.issue = `Your liquidity runway is only ${emergencyMonths.toFixed(1)} months. Recommended buffer is 9.0 months.`;
+        result.context = scenarioKey !== "base"
+          ? `This is the main weakness under the active scenario: ${activeScenarioTitle}.`
+          : "Low liquid reserves increase forced-selling risk when life events happen.";
+        result.action = `Raise ${formatMoney(shiftAmount)} cash by trimming ${source} → move to emergency reserve.`;
+        result.rationale = "A stronger cash buffer improves resilience during income shocks, large purchases, and volatile markets.";
+        result.confidence = "Confidence: HIGH";
+        result.stabilityImpact = "+16";
+        result.liquidityImpact = `+${Math.max(1.5, (shiftAmount / monthlyExpenses)).toFixed(1)} months`;
+        result.volatilityImpact = "-6";
+      } else if (privatePct > targetPrivatePct && privateTrim > 0) {
+        result.issue = `Private assets are ${(privatePct * 100).toFixed(1)}% of total wealth. Balanced cap is 35.0%.`;
+        result.context = "Too much illiquid concentration reduces flexibility during emergencies or big decisions.";
+        result.action = `Gradually shift ${formatMoney(privateTrim)} from private assets → ETF portfolio over time.`;
+        result.rationale = "This improves diversification and keeps more of your wealth easier to rebalance or access.";
+        result.confidence = "Confidence: MEDIUM";
+        result.stabilityImpact = "+11";
+        result.liquidityImpact = "+1.2 months";
+        result.volatilityImpact = "-5";
+      }
+
+      return result;
+    }
+
+    function renderAdvisorCard(scenarioKey) {
+      const portfolio = getAdjustedSummary && typeof StateManager !== "undefined" && StateManager.getScenarioAdjustedPortfolio
+        ? StateManager.getScenarioAdjustedPortfolio()
+        : getBasePortfolio();
+
+      const advisor = getAdvisorAnalysis(portfolio, scenarioKey);
+
+      document.getElementById("advisor-issue").textContent = advisor.issue;
+      document.getElementById("advisor-context").textContent = advisor.context;
+      document.getElementById("advisor-action").textContent = advisor.action;
+      document.getElementById("advisor-rationale").textContent = advisor.rationale;
+      document.getElementById("advisor-confidence").textContent = advisor.confidence;
+      document.getElementById("advisor-impact-stability").textContent = advisor.stabilityImpact;
+      document.getElementById("advisor-impact-liquidity").textContent = advisor.liquidityImpact;
+      document.getElementById("advisor-impact-volatility").textContent = advisor.volatilityImpact;
+
+      const footnote = document.getElementById("advisor-footnote");
+      if (scenarioKey && scenarioKey !== "base") {
+        footnote.textContent = `Active scenario detected: ${titles[scenarioKey]}. Advisor recommendations are adjusted for this stress case.`;
+      } else {
+        footnote.textContent = "Recommendation engine compares your current allocation against balanced guardrails and surfaces the highest-priority action.";
+      }
+    }
+
     function applyScenario(key, btnElement = null) {
       const portfolio = getBasePortfolio();
       const scenario = portfolio?.scenarios?.[key];
@@ -547,6 +830,8 @@ a {
         effectiveScenario.headline || "Stable baseline with moderate volatility exposure.";
       document.getElementById("scenario-description").textContent =
         effectiveScenario.changeText || "This is your current baseline before any shock is applied.";
+
+      renderAdvisorCard(key);
 
       if (typeof StateManager !== "undefined" && StateManager.update) {
         StateManager.update({
