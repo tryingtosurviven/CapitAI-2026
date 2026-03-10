@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Insights | Lifepath AI</title>
+  <title>Insights | CapitAI</title>
   <style>
     :root {
       --bg: #050a15;
@@ -126,7 +126,7 @@
   <div class="container">
     <nav class="navbar" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px;">
       <div class="brand">
-        <div class="brand-title">Lifepath AI</div>
+        <div class="brand-title">CapitAI</div>
         <div class="brand-subtitle">Unified Wealth Wallet</div>
       </div>
 
@@ -205,7 +205,7 @@
 
       <div class="panel">
         <h2 class="section-title">Suggested next-best actions</h2>
-        <div id="suggested-actions-list"></div>
+        <div id="suggested-actions-list" class="suggested-actions"></div>
 
         <div style="margin-top:20px; padding:20px; background:rgba(109,124,255,0.05); border:1px solid var(--primary); border-radius:12px;">
           <div class="card-title" style="color:var(--primary);">Top Priority</div>
@@ -230,132 +230,115 @@
   <script src="mock-data.js"></script>
   <script src="state.js"></script>
   <script>
-    function getSharedPortfolio() {
-      if (typeof StateManager !== "undefined") {
-        if (StateManager.getScenarioAdjustedPortfolio) {
-          return StateManager.getScenarioAdjustedPortfolio();
-        }
-        return StateManager.getPortfolio() || window.mockPortfolio;
-      }
-      return window.mockPortfolio;
+    // 1. Universal Formatting Helper
+    function formatMoney(value) {
+      return new Intl.NumberFormat("en-SG", { 
+        style: "currency", 
+        currency: "SGD", 
+        maximumFractionDigits: 0 
+      }).format(Number(value || 0));
     }
 
-    function getSharedState() {
-      if (typeof StateManager !== "undefined") {
-        if (StateManager.getState) return StateManager.getState();
-        if (StateManager.get) return StateManager.get();
-      }
-      return null;
-    }
-
-    function getScoreColor(score) {
-      if (score >= 80) return "var(--green)";
-      if (score >= 60) return "var(--amber)";
-      return "var(--red)";
-    }
-
-    function setMetric(idBase, value) {
-      const color = getScoreColor(value);
-
-      document.getElementById(`metric-${idBase}`).textContent = value;
-      document.getElementById(`metric-${idBase}`).style.color = color;
-
-      document.getElementById(`bar-${idBase}`).style.width = `${value}%`;
-      document.getElementById(`bar-${idBase}-label`).textContent = value;
-    }
-
+    // 2. Main Render Function
     function renderInsightsPage() {
-      const portfolio = getSharedPortfolio();
-      const summary = portfolio?.summary ?? {};
-      const analytics = portfolio?.analytics ?? {};
-      const user = portfolio?.user ?? {};
+      // 1. DATA SYNC: Prioritize the simulation "note" in memory
+      const savedData = localStorage.getItem('savedPortfolio');
+      const portfolio = savedData ? JSON.parse(savedData) : window.mockPortfolio;
 
-      const activeScenario =
-        summary.activeScenarioLabel ||
-        portfolio?.activeScenarioLabel ||
-        (getSharedState()?.activeScenario || "Base case");
+      const summary = portfolio.summary || {};
+      const analytics = portfolio.analytics || {};
+      const user = portfolio.user || {};
 
-      const sharedState = getSharedState() || {};
-      const regretProbability = sharedState.regretProbability || "LOW";
+      // 2. NAVBAR SYNC
+      const totalSgd = summary.netWorth || 286500;
+      document.getElementById("nav-sgd").textContent = formatMoney(totalSgd);
+      document.getElementById("nav-usd").textContent = new Intl.NumberFormat("en-US", { 
+        style: "currency", currency: "USD", maximumFractionDigits: 0 
+      }).format(totalSgd * 0.738);
 
-      const diversification = analytics.diversification ?? 81;
-      const liquidity = analytics.liquidity ?? 74;
-      const fragility = analytics.fragility ?? 63;
-      const behavior = analytics.behavior ?? 79;
-      const wwi = summary.wealthWellnessScore ?? 78;
-      const liquidityMonths = summary.emergencyMonths ?? 8.3;
-      const totalNetWorth = summary.netWorth ?? 0;
-      const usdEquivalent = Math.round(totalNetWorth * 0.738);
+      // 3. SCORE BARS: Update metrics and colors
+      updateMetricCard("diversification", analytics.diversification || 81);
+      updateMetricCard("liquidity", analytics.liquidity || 74);
+      updateMetricCard("fragility", analytics.fragility || 63);
+      updateMetricCard("behavior", analytics.behavior || 79);
 
-      document.getElementById("nav-sgd").textContent =
-        `S$ ${totalNetWorth.toLocaleString()}`;
-      document.getElementById("nav-usd").textContent =
-        `$ ${usdEquivalent.toLocaleString()}`;
+      // 4. BIG SCORE
+      const wwi = summary.wealthWellnessScore || 78;
+      const wwiEl = document.getElementById("wwi-score");
+      wwiEl.textContent = `${wwi} / 100`;
+      wwiEl.style.color = wwi < 70 ? "var(--red)" : "var(--primary)";
 
-      setMetric("diversification", diversification);
-      setMetric("liquidity", liquidity);
-      setMetric("fragility", fragility);
-      setMetric("behavior", behavior);
-
-      document.getElementById("wwi-score").textContent = `${wwi} / 100`;
-      document.getElementById("goal-label").textContent = `Goal: ${user.goal || "Retire by 50"}`;
-
-      let summaryText = `${wwi} indicates solid financial health with some moderate exposure to volatility and liquidity stress. Benchmark: Average balanced investor score is 70.`;
-      if (activeScenario && activeScenario !== "None" && activeScenario !== "Base case") {
-        summaryText = `${wwi} reflects your portfolio under the active ${activeScenario} scenario. This view is scenario-adjusted rather than base case.`;
-      }
-      document.getElementById("wwi-summary-text").textContent = summaryText;
-
+      // 5. DYNAMIC TEXT: Identify scenario by Score (WWI) instead of exact Money
       const insightsList = document.getElementById("portfolio-insights-list");
-      const insights = portfolio.insights || [];
-      insightsList.innerHTML = insights.map(item => `
-        <div class="card" style="padding:15px; background:rgba(255,255,255,0.03); font-size:0.9rem; color:var(--muted);">${item}</div>
-      `).join("");
-
       const actionsList = document.getElementById("suggested-actions-list");
-      const actions = analytics.suggestedActions || [];
-      actionsList.innerHTML = actions.map((action, index) => `
-        <div class="action-card">
-          <strong>Action ${index + 1}:</strong> ${action}
-        </div>
-      `).join("");
+      const summaryTextEl = document.getElementById("wwi-summary-text");
+      const topPriorityEl = document.getElementById("top-priority-text");
+      const bottomCardEl = document.getElementById("bottom-insight-card");
 
-      document.getElementById("top-priority-text").textContent =
-        actions[0] || "Maintain your current allocation and continue monitoring liquidity resilience.";
+      if (wwi === 61) { // MARKET CRASH CASE
+          summaryTextEl.textContent = "Your score has dropped significantly due to high market fragility. Immediate rebalancing is required to protect remaining capital.";
+          insightsList.innerHTML = `
+            <div class="card" style="padding:15px; background:rgba(239, 68, 68, 0.1); border:1px solid var(--red); color:var(--text);">🚨 Equity exposure dropped by 20%, breaching your safety floor.</div>
+            <div class="card" style="padding:15px; background:rgba(255, 255, 255, 0.03); color:var(--muted);">Crypto volatility is currently the primary driver of portfolio fragility.</div>
+          `;
+          actionsList.innerHTML = `
+            <div class="action-card"><strong>Action 1:</strong> Liquidate high-volatility tokens.</div>
+            <div class="action-card"><strong>Action 2:</strong> Rebalance ETF portfolio to Bonds.</div>
+          `;
+          topPriorityEl.innerHTML = "<strong>CRITICAL:</strong> Move S$15,000 from volatile assets to high-yield cash or bonds to stabilize your Fragility Score.";
+          bottomCardEl.textContent = "In a market crash, your illiquid 3D printing assets provide zero protection.";
 
-      document.getElementById("bottom-insight-card").textContent =
-        insights[2] || "Private assets add long-term value, but they should not be treated as immediate emergency liquidity.";
+      } else if (wwi === 59) { // JOB LOSS CASE
+          summaryTextEl.textContent = "Liquidity Strength is now your primary risk. Your cash runway has been cut in half.";
+          insightsList.innerHTML = `
+            <div class="card" style="padding:15px; background:rgba(239, 68, 68, 0.1); border:1px solid var(--red); color:var(--text);">⚠️ Emergency buffer will be exhausted in 2.7 months at current burn rate.</div>
+            <div class="card" style="padding:15px; background:rgba(255, 255, 255, 0.03); color:var(--muted);">Behavioral discipline is high, but mathematical reality requires cost-cutting.</div>
+          `;
+          actionsList.innerHTML = `
+            <div class="action-card"><strong>Action 1:</strong> Halt all discretionary subscriptions.</div>
+            <div class="action-card"><strong>Action 2:</strong> Apply for emergency credit line as back-up.</div>
+          `;
+          topPriorityEl.innerHTML = "<strong>URGENT:</strong> Reduce discretionary spending by 30% immediately to extend cash runway to 6 months.";
+          bottomCardEl.textContent = "Your business equipment provides zero liquidity during unemployment. Avoid new purchases.";
 
-      document.getElementById("tag-profile").textContent = `${user.profile || "Balanced"} profile`;
-      document.getElementById("tag-liquidity").textContent = `${liquidityMonths} months cash runway`;
-      document.getElementById("tag-wwi").textContent = `WWI ${wwi} / 100`;
-      document.getElementById("tag-scenario").textContent =
-        `Active scenario: ${activeScenario && activeScenario !== "None" ? activeScenario : "Base case"}`;
-
-      const regretTag = document.getElementById("tag-regret");
-      regretTag.textContent = `Regret probability: ${regretProbability}`;
-
-      if (regretProbability === "HIGH") {
-        regretTag.style.color = "var(--red)";
-        regretTag.style.border = "1px solid var(--red)";
-      } else if (regretProbability === "MEDIUM") {
-        regretTag.style.color = "var(--amber)";
-        regretTag.style.border = "1px solid var(--amber)";
-      } else {
-        regretTag.style.color = "var(--green)";
-        regretTag.style.border = "1px solid var(--green)";
+      } else { // BASE CASE
+          summaryTextEl.textContent = "78 indicates solid financial health with some moderate exposure to volatility. You are on track for your retirement goal.";
+          insightsList.innerHTML = (portfolio.insights || []).map(item => `
+            <div class="card" style="padding:15px; background:rgba(255,255,255,0.03); color:var(--muted);">${item}</div>
+          `).join("");
+          actionsList.innerHTML = (analytics.suggestedActions || []).map((a, i) => `
+            <div class="action-card"><strong>Action ${i+1}:</strong> ${a}</div>
+          `).join("");
+          topPriorityEl.textContent = "Dial crypto down from 14% toward 8-10% over the next 3-6 months.";
+          bottomCardEl.textContent = "Private assets like your 3D printing business are valuable but illiquid.";
       }
+
+      // 6. TAGS: Update footer info
+      document.getElementById("tag-wwi").textContent = `WWI ${wwi} / 100`;
+      document.getElementById("tag-liquidity").textContent = `${summary.emergencyMonths || 8.3} months cash runway`;
+      document.getElementById("tag-scenario").textContent = `Active scenario: ${savedData ? "SIMULATION MODE" : "Base case"}`;
+    }
+      
+
+    // Helper to color and update bars
+    function updateMetricCard(id, value) {
+      const scoreEl = document.getElementById(`metric-${id}`);
+      const barEl = document.getElementById(`bar-${id}`);
+      const labelEl = document.getElementById(`bar-${id}-label`);
+
+      if (scoreEl) {
+        scoreEl.textContent = value;
+        scoreEl.style.color = value < 70 ? "var(--red)" : (value < 85 ? "var(--amber)" : "var(--green)");
+      }
+      if (barEl) barEl.style.width = `${value}%`;
+      if (labelEl) labelEl.textContent = value;
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      renderInsightsPage();
-    });
+    // Run on load
+    document.addEventListener("DOMContentLoaded", renderInsightsPage);
 
-    window.addEventListener("storage", (event) => {
-      if (event.key === "lifepath_data" || event.key === "lifepath_portfolio") {
-        renderInsightsPage();
-      }
-    });
+    // Listen for resets/changes in other tabs
+    window.addEventListener("storage", renderInsightsPage);
   </script>
 </body>
 </html>

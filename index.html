@@ -910,13 +910,33 @@
           return;
       }
 
-      // 3. PERSISTENCE LOGIC (Save the simulation for the Assets page)
+      // 3. PERSISTENCE LOGIC (Save simulation with scores for Insights page)
       const updatedPortfolio = JSON.parse(JSON.stringify(window.mockPortfolio));
       updatedPortfolio.summary.netWorth = scenario.netWorth;
-      
+      updatedPortfolio.summary.wealthWellnessScore = scenario.wellnessScore;
+
       if (key === 'marketCrash') {
-          updatedPortfolio.assetBreakdown.find(a => a.asset === "ETF / Equity Portfolio").value *= 0.8;
-          updatedPortfolio.assetBreakdown.find(a => a.asset === "Crypto Wallets").value *= 0.6;
+          updatedPortfolio.analytics = {
+              diversification: 72, 
+              liquidity: 85, 
+              fragility: 35, 
+              behavior: 65,
+              suggestedActions: [
+                  "Move S$15,000 from volatile assets to high-yield cash.",
+                  "Avoid panic selling; rebalance to target allocation."
+              ]
+          };
+      } else if (key === 'jobLoss') {
+          updatedPortfolio.analytics = {
+              diversification: 95,
+              liquidity: 40, 
+              fragility: 80,
+              behavior: 86,
+              suggestedActions: [
+                  "Reduce discretionary spending by 30% immediately.",
+                  "Treat business assets as illiquid; focus on cash preservation."
+              ]
+          };
       }
       localStorage.setItem('savedPortfolio', JSON.stringify(updatedPortfolio));
 
@@ -929,7 +949,6 @@
       nwValueEl.textContent = formatMoney(convertFromSGD(simulatedTotal));
       nwValueEl.style.color = "var(--red)";
       
-      // Sync Top Navbar Immediately
       navSgdEl.textContent = formatMoney(simulatedTotal);
       navUsdEl.textContent = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(simulatedTotal * 0.738);
 
@@ -950,14 +969,7 @@
 
           insightsEl.innerHTML = `
               <li style="color:var(--red); font-weight:700; margin-bottom: 4px;">🚨 Simulation: MARKET CRASH</li>
-              <li style="margin-bottom:10px; font-style: italic; color:var(--muted); line-height: 1.4;">Equities fall sharply and liquid market wealth shrinks quickly.</li>
               <li><strong>Market Drawdown:</strong> <span style="color:var(--red);">-S$ 54,000</span></li>
-              <li><strong>Wealth Survival:</strong> 12.4 Years</li>
-              <li><strong>Regret Risk:</strong> <span style="color:var(--amber); font-weight:bold;">MEDIUM</span></li>
-              <li><strong>Goal Probability:</strong> 68% (Down from 85%)</li>
-              <li style="margin-top:10px; border-top:1px dashed var(--line); padding-top:10px; color:var(--text);">
-                  <strong>AI Advice:</strong> Rebalance $15,000 to safe-haven assets (Bonds/Gold).
-              </li>
               <li style="color:var(--green); font-weight:700; margin-top:8px;">✨ Projected Impact: +8 Stability Score recovery.</li>
           `;
 
@@ -967,7 +979,6 @@
               { label: "Crypto", value: 15000, color: "#f59e0b" },
               { label: "Private Assets", value: 58400, color: "#10b981" }
           ]});
-
       } else if (key === 'jobLoss') {
           liqBufferEl.textContent = (baseMonths * 0.5).toFixed(1) + " months";
           liqBufferEl.style.color = "var(--red)";
@@ -979,22 +990,12 @@
 
           insightsEl.innerHTML = `
               <li style="color:var(--red); font-weight:700; margin-bottom: 4px;">🚨 Simulation: JOB LOSS</li>
-              <li><strong>Wealth Survival:</strong> 9.4 Years</li>
-              <li><strong>Goal Probability:</strong> 60% (Down from 85%)</li>
               <li><strong>Liquidity Failure:</strong> <span style="color:var(--red);">2.7 Months</span></li>
-              <li><strong>Regret Risk:</strong> <span style="color:var(--red); font-weight:bold;">HIGH</span></li>
-              <li style="margin-top:10px; border-top:1px dashed var(--line); padding-top:10px;">
-                  <strong>AI Advice:</strong> Raise $20,600 by trimming ETF portfolio.
-              </li>
               <li style="color:var(--green); font-weight:700; margin-top:8px;">✨ Projected Impact: +16 Stability Score recovery.</li>
           `;
           renderChart(window.mockPortfolio);
       }
-    }
-    
-
-  
-
+    } // Braced closed here!
 
     window.addEventListener("storage", () => renderDashboard());
     
