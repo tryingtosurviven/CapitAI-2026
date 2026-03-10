@@ -8,7 +8,11 @@ CapitAI also features a Financial Shock Simulator that allows users to stress-te
 
 Built using HTML, CSS, and Vanilla JavaScript, the prototype uses a lightweight global state system to connect modules into a seamless, interactive financial dashboard.
 
-
+#DASHBOARD (MAIN) 
 ![Dashboard Preview](screenshots/dashboard_base.png)
+
+#MARKET CRASH DASHBOARD
 ![Market Crash Dashboard Preview](screenshots/market_crash.png)
+
+#JOB LOSS DASHBOARD
 ![Job Loss Dashboard Preview](screenshots/job_loss.png)
