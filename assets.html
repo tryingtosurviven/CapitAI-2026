@@ -140,9 +140,14 @@
       toast.style.opacity = "1";
       closeConnectModal();
 
+      // 1. Get the current active state (Simulation OR Default)
+      const savedData = localStorage.getItem('savedPortfolio');
+      let currentPortfolio = savedData ? JSON.parse(savedData) : JSON.parse(JSON.stringify(window.mockPortfolio));
+
       let category = "";
       let newItem = {};
 
+      // 2. Define the new asset data
       if (provider === "DBS / POSB") {
         category = "Bank";
         newItem = { coin: "POSB Savings", symbol: "SGD", wallet: "POSB Digibank", balance: 5000, valueUsd: 3690 };
@@ -154,19 +159,28 @@
         newItem = { coin: "Coinbase Wallet", symbol: "CB", wallet: "Coinbase App", balance: 2000, valueUsd: 1476 };
       }
 
-      if (category && window.mockPortfolio.detailedAccounts[category]) {
-        window.mockPortfolio.detailedAccounts[category].push(newItem);
+      if (category && currentPortfolio.detailedAccounts[category]) {
+        // 3. Add to the detailed list
+        currentPortfolio.detailedAccounts[category].push(newItem);
+        
+        // 4. Update the Breakdown Table values
         const summaryMap = { "Bank": "Cash Accounts", "Investment": "ETF / Equity Portfolio", "Crypto": "Crypto Wallets" };
-        const summaryItem = window.mockPortfolio.assetBreakdown.find(a => a.asset === summaryMap[category]);
+        const summaryItem = currentPortfolio.assetBreakdown.find(a => a.asset === summaryMap[category]);
         if (summaryItem) summaryItem.value += newItem.balance;
-        window.mockPortfolio.summary.netWorth += newItem.balance;
+        
+        // 5. IMPORTANT: Update the Net Worth relative to the CURRENT state
+        currentPortfolio.summary.netWorth += newItem.balance;
 
-        localStorage.setItem('savedPortfolio', JSON.stringify(window.mockPortfolio));
+        // 6. Save the new combined state (Simulation + New Asset)
+        localStorage.setItem('savedPortfolio', JSON.stringify(currentPortfolio));
         localStorage.setItem('selectedCategory', category);
       }
 
-      setTimeout(() => { window.location.href = 'details.html'; }, 1200);
+      setTimeout(() => {
+        window.location.href = 'details.html'; 
+      }, 1200);
     }
+
 
     function renderTables() {
       // 1. Get the data (Checking simulation memory first)
