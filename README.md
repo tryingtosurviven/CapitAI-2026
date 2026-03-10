@@ -1,14 +1,9 @@
-The Solution: Lifepath AI is a unified Wealth Wellness Hub designed to cure financial fragmentation. Modern investors manage wealth across traditional banks, brokerages, and Web3 wallets, obscuring their true financial resilience. Lifepath AI aggregates these disconnected ecosystems into a single, intelligent "Digital Twin" to provide actionable, scenario-tested guidance.
+Lifepath AI is a prototype Wealth Wellness Hub designed to solve the growing problem of fragmented financial ecosystems. Modern investors manage assets across banks, brokerage platforms, private holdings, and digital wallets, making it difficult to understand their true financial resilience. Lifepath AI aggregates these disconnected sources into a unified financial model, providing a clear and actionable view of total wealth.
 
-How it Solves the Problem:
-Unlike standard dashboards that passively display net worth, Lifepath AI acts as a proactive decision engine. We built four core modules:
+Unlike traditional dashboards that only display net worth, Lifepath AI acts as a proactive financial decision platform. It combines portfolio visualization with financial wellness analytics to evaluate key indicators such as diversification, liquidity resilience, concentration risk, and behavioral discipline.
 
-Unified Wealth Wallet: Aggregates and categorizes traditional, private, and digital assets into a dynamic Liquidity Ladder.
+The platform includes several integrated modules. A Unified Wealth Wallet consolidates traditional and digital assets into a structured portfolio view with a dynamic liquidity ladder. The Analytics Engine evaluates financial wellness using core portfolio health indicators. An Insights module generates personalized, color-coded recommendations to help users improve financial resilience.
 
-Analytics Engine: Calculates a proprietary "Wealth Wellness Index" based on diversification, liquidity, fragility, and behavioral discipline.
+Lifepath AI also features a Financial Shock Simulator that allows users to stress-test their portfolio against real-world scenarios such as market crashes, job loss, or crypto volatility. Scenario simulations dynamically update portfolio stability and liquidity runway.
 
-Actionable Insights: Generates personalized, color-coded recommendations (e.g., reducing crypto exposure) and allows users to simulate the exact mathematical impact of those fixes before executing them.
-
-Future Shock Simulator: An interactive stress-testing environment where users can run scenarios like "Job Loss" or "Crypto Crash" to instantly see how their portfolio and retirement probability will survive the shock.
-
-Built using HTML, CSS, and Vanilla JavaScript, the prototype features a custom global state-management engine for a seamless, interconnected user experience.
+Built using HTML, CSS, and Vanilla JavaScript, the prototype uses a lightweight global state system to connect modules into a seamless, interactive financial dashboard.
