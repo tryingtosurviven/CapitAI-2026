@@ -32,7 +32,7 @@ const StateManager = {
       activeScenario: "Base case",
       activeScenarioKey: "base",
       lastUpdated: "Today at 9:00 AM",
-      dataSource: "Simulated LifePath dataset"
+      dataSource: "Simulated CapitAI dataset"
     };
   },
 

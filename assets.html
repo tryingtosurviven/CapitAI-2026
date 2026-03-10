@@ -30,6 +30,9 @@
     .ladder-info { display: flex; flex-direction: column; gap: 4px; }
     .ladder-title { font-weight: 700; font-size: 0.95rem; }
     .ladder-note { font-size: 0.82rem; color: var(--muted); }
+    a.nav-link[href="simulator.html"] {
+  display: none !important;
+}
   </style>
 
   <script src="mock-data.js"></script>
@@ -56,11 +59,10 @@
       </div>
 
       <div class="nav-links">
-        <a class="nav-link" href="index.html">Dashboard</a>
-        <a class="nav-link active" href="assets.html">Assets</a>
-        <a class="nav-link" href="insights.html">Insights</a>
-        <a class="nav-link" href="simulator.html">Simulator</a>
-      </div>
+  <a class="nav-link" href="index.html">Dashboard</a>
+  <a class="nav-link active" href="assets.html">Assets</a>
+  <a class="nav-link" href="insights.html">Insights</a>
+</div>
     </nav>
 
     <div class="layout-2">
